@@ -24,7 +24,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        //OAuth2User
+        // OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
@@ -34,17 +34,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+        String token = jwtUtil.createJwt(username, role, 60*60*1000L);
 
-        response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/");
+        response.addCookie(createCookie("Authorization", "Bearer " + token));
+
+        // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
+        if (customUserDetails.getRole().equals("ROLE_GUEST")) {
+            response.sendRedirect("http://localhost:3000/sign-up");
+        } else {
+            response.sendRedirect("http://localhost:3000/");
+        }
     }
 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
-        //cookie.setSecure(true);
+//        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 

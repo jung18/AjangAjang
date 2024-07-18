@@ -78,8 +78,9 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .anyRequest().authenticated());
+                        .requestMatchers("/", "/test").permitAll()
+                        .requestMatchers("/sign-up").hasRole("GUEST")
+                        .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
         httpSecurity
