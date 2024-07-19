@@ -4,7 +4,6 @@ import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.oauth.model.dto.UserDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +24,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
-        String authorization = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("Authorization")) {
-                authorization = cookie.getValue();
-            }
-        }
+        // request에서 Authorization 헤더를 찾음
+        String authorization = request.getHeader("Authorization");
 
         // Authorization 헤더 검증
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        if (authorization == null || !authorization.startsWith("Bearer/")) {
             log.info("token null");
             filterChain.doFilter(request, response);
 
@@ -44,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // Bearer 부분 제거 후 순수 토큰만 획득
-        String token = authorization.split(" ")[1];
+        String token = authorization.split("/")[1];
 
         // 토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {

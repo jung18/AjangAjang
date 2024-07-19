@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
@@ -35,8 +37,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         String token = jwtUtil.createJwt(username, role, 60*60*1000L);
-
-        response.addCookie(createCookie("Authorization", "Bearer " + token));
+        response.addCookie(createCookie("Authorization", "Bearer/" + token));
 
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
@@ -50,9 +51,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
-//        cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
 
         return cookie;
     }
