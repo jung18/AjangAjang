@@ -6,13 +6,18 @@ import com.ajangajang.backend.board.model.entity.BoardMedia;
 import com.ajangajang.backend.board.model.entity.MediaType;
 import com.ajangajang.backend.board.model.repository.BoardMediaRepository;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.user.model.dto.UserProfileDto;
+import com.ajangajang.backend.user.model.entity.User;
+import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +27,16 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
+    private final UserRepository userRepository;
     private final FileService fileService;
 
     public Long save(CreateBoardDto dto, List<MultipartFile> files) {
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(),
                                 dto.getTag(), dto.getDeliveryType(), dto.getStatus());
+        User writer = userRepository.findById(dto.getWriterId()).orElse(null);
 
-        setBoardMedia(files, board);
+        setBoardMedia(files, board); // file upload, media save
+        board.setWriter(writer);
         return boardRepository.save(board).getId();
     }
 
@@ -40,19 +48,26 @@ public class BoardService {
                         media.getCreatedAt()))
                 .collect(Collectors.toList());
 
-//        User findUser = findBoard.getWriter();
-//        UserDto userDto = new UserDto(findUser.getUsername(), findUser.getProfileUrl());
+        User findWriter = findBoard.getWriter();
+        UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
 
-        return new BoardDto(findBoard.getTitle(), findBoard.getPrice(), findBoard.getContent(),
-                            findBoard.getDeliveryType(), findBoard.getTag(), findBoard.getStatus(),
-                            mediaDtoList, findBoard.getCreatedAt(), findBoard.getUpdatedAt());
+        return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
+                            findBoard.getContent(), findBoard.getDeliveryType(), findBoard.getTag(),
+                            findBoard.getStatus(), mediaDtoList, findBoard.getCreatedAt(),
+                            findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAll() {
-        return boardRepository.findAll().stream()
-                .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(), board.getDeliveryType(),
-                                                board.getTag(), board.getStatus()))
-                .collect(Collectors.toList());
+        List<Board> boards = boardRepository.findAllWithWriter();
+        List<BoardListDto> result = new ArrayList<>();
+        for (Board board : boards) {
+            User writer = board.getWriter();
+            UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
+                                                        writer.getProfileImg());
+            result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
+                                        board.getDeliveryType(), board.getTag(), board.getStatus()));
+        }
+        return result;
     }
 
     public void update(Long id, UpdateBoardDto updateParam, List<MultipartFile> files) {
@@ -82,7 +97,7 @@ public class BoardService {
 
     private void setBoardMedia(List<MultipartFile> files, Board board) {
         if (files != null && !files.isEmpty()) {
-            // fileName, mediaType
+            // Url + fileName, mediaType
             Map<String, MediaType> filesInfo = fileService.uploadFile(files);
             for (Map.Entry<String, MediaType> entry : filesInfo.entrySet()) {
                 BoardMedia media = new BoardMedia(entry.getValue(), entry.getKey());

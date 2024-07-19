@@ -1,4 +1,4 @@
-package com.ajangajang.backend.config;
+package com.ajangajang.backend.board.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

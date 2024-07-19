@@ -4,7 +4,6 @@ import com.ajangajang.backend.board.model.entity.DeliveryType;
 import com.ajangajang.backend.board.model.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
