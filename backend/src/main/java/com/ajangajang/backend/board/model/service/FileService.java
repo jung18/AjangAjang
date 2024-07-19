@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 @Service
@@ -47,13 +46,15 @@ public class FileService {
         return fileUrls;
     }
 
-    public void delete(String fileName){
+    public void delete(String fileUrl){
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
         DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
         amazonS3Client.deleteObject(request);
     }
 
-    public void deleteFiles(List<String> fileNames){
-        for (String fileName : fileNames) {
+    public void deleteFiles(List<String> fileUrls){
+        for (String fileUrl : fileUrls) {
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
             DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
             amazonS3Client.deleteObject(request);
         }
@@ -61,7 +62,7 @@ public class FileService {
 
     public MediaType getMediaType(MultipartFile file) {
         List<String> IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif");
-        List<String> VIDEO_TYPES = Arrays.asList("video/mp4", "video/mpeg", "video/quicktime");
+        List<String> VIDEO_TYPES = Arrays.asList("video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo");
 
         String mimeType = file.getContentType();
 

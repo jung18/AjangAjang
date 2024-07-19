@@ -73,10 +73,10 @@ public class BoardService {
     }
 
     public void delete(Long id) {
-        List<String> fileNames = boardRepository.findById(id).orElse(null).getMediaList().stream()
+        List<String> fileUrls = boardRepository.findById(id).orElse(null).getMediaList().stream()
                 .map(media -> media.getMediaUrl())
                 .collect(Collectors.toList());
-        fileService.deleteFiles(fileNames);
+        fileService.deleteFiles(fileUrls);
         boardRepository.deleteById(id);
     }
 
@@ -95,8 +95,8 @@ public class BoardService {
     private void deleteFiles(List<Long> deleteFileIds) {
         if (!deleteFileIds.isEmpty()) {
             for (Long deleteFileId : deleteFileIds) {
-                String deleteFileName = boardMediaRepository.findById(deleteFileId).orElse(null).getMediaUrl();
-                fileService.delete(deleteFileName);
+                String deleteFileUrl = boardMediaRepository.findById(deleteFileId).orElse(null).getMediaUrl();
+                fileService.delete(deleteFileUrl);
                 boardMediaRepository.deleteById(deleteFileId);
             }
         }
