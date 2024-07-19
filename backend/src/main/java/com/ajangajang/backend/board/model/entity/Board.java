@@ -1,5 +1,6 @@
 package com.ajangajang.backend.board.model.entity;
 
+import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -41,10 +42,11 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    @JoinColumn(name = "user_id")
-//    private User writer;
+    // 유저 (작성자)
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "user_id")
+    private User writer;
 
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
