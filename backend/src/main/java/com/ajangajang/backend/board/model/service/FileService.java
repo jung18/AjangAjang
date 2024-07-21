@@ -62,13 +62,26 @@ public class FileService {
     }
 
     private String uploadAndGetUrl(MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename();
+        // 파일명 생성
+        String uniqueFileName = generateUniqueFileName(file);
+        // 파일 변환
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-        amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+        // 업로드
+        amazonS3Client.putObject(bucket, uniqueFileName, file.getInputStream(), metadata);
 
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+        return amazonS3Client.getUrl(bucket, uniqueFileName).toString();
+    }
+
+    private String generateUniqueFileName(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        String uniqueFileName;
+        do {
+            uniqueFileName = UUID.randomUUID() + "_" + fileName;
+        } while (amazonS3Client.doesObjectExist(bucket, uniqueFileName));
+
+        return uniqueFileName;
     }
 
     public MediaType getMediaType(MultipartFile file) {
