@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,15 +58,7 @@ public class BoardService {
 
     public List<BoardListDto> findAll() {
         List<Board> boards = boardRepository.findAllWithWriter();
-        List<BoardListDto> result = new ArrayList<>();
-        for (Board board : boards) {
-            User writer = board.getWriter();
-            UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
-                                                        writer.getProfileImg());
-            result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
-                                        board.getDeliveryType(), board.getTag(), board.getStatus()));
-        }
-        return result;
+        return getBoardListDtos(boards);
     }
 
     public void update(Long id, UpdateBoardDto updateParam, List<MultipartFile> files) {
@@ -95,10 +86,20 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
+    public List<BoardListDto> searchByQuery(String query) {
+        List<Board> boards = boardRepository.findAllByQuery(query);
+        return getBoardListDtos(boards);
+    }
+
+    public List<BoardListDto> filterByTag(String tag) {
+        List<Board> boards = boardRepository.findAllByTag(tag);
+        return getBoardListDtos(boards);
+    }
+
     private void setBoardMedia(List<MultipartFile> files, Board board) {
         if (files != null && !files.isEmpty()) {
             // Url + fileName, mediaType
-            Map<String, MediaType> filesInfo = fileService.uploadFile(files);
+            Map<String, MediaType> filesInfo = fileService.uploadFiles(files);
             for (Map.Entry<String, MediaType> entry : filesInfo.entrySet()) {
                 BoardMedia media = new BoardMedia(entry.getValue(), entry.getKey());
                 board.addMedia(media);
@@ -115,6 +116,18 @@ public class BoardService {
                 boardMediaRepository.deleteById(deleteFileId);
             }
         }
+    }
+
+    private static List<BoardListDto> getBoardListDtos(List<Board> boards) {
+        List<BoardListDto> result = new ArrayList<>();
+        for (Board board : boards) {
+            User writer = board.getWriter();
+            UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
+                    writer.getProfileImg());
+            result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
+                    board.getDeliveryType(), board.getTag(), board.getStatus()));
+        }
+        return result;
     }
 
 }

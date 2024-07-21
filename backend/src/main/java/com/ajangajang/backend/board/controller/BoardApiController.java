@@ -57,4 +57,16 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/board/search")
+    public ResponseEntity<?> searchBoard(@RequestParam(value = "query") String query) {
+        List<BoardListDto> result = boardService.searchByQuery(query);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/board/filter")
+    public ResponseEntity<?> searchFilter(@RequestParam(value = "tag") String tag) {
+        List<BoardListDto> result = boardService.filterByTag(tag);
+        return ResponseEntity.ok(result);
+    }
+
 }
