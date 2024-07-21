@@ -22,27 +22,28 @@ public class FileService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    
+    public String uploadProfileImage(MultipartFile file) {
+        String url;
+        try {
+            url = uploadAndGetUrl(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "error";
+        }
+        return url;
+    }
 
-    public Map<String, MediaType> uploadFile(List<MultipartFile> files) {
-
+    public Map<String, MediaType> uploadFiles(List<MultipartFile> files) {
         Map<String, MediaType> fileUrls = new HashMap<>();
-
         try {
             for (MultipartFile file : files) {
-                String fileName=file.getOriginalFilename();
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(file.getContentType());
-                metadata.setContentLength(file.getSize());
-                amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-                String fileUrl = amazonS3Client.getUrl(bucket, fileName).toString();
-                // return fileUrl : mediaType
-                fileUrls.put(fileUrl, getMediaType(file));
+                fileUrls.put(uploadAndGetUrl(file), getMediaType(file));
             }
         } catch (IOException e) {
             fileUrls.put("error", MediaType.UNKNOWN);
             e.printStackTrace();
         }
-
         return fileUrls;
     }
 
@@ -58,6 +59,16 @@ public class FileService {
             DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
             amazonS3Client.deleteObject(request);
         }
+    }
+
+    private String uploadAndGetUrl(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+
+        return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
     public MediaType getMediaType(MultipartFile file) {
