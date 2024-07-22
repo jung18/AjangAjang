@@ -54,19 +54,19 @@ public class BoardApiController {
     @DeleteMapping("/board/{id}")
     public ResponseEntity<?> deleteBoard(@PathVariable("id") Long id) {
         boardService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/board/search")
     public ResponseEntity<?> searchBoard(@RequestParam(value = "query") String query) {
         List<BoardListDto> result = boardService.searchByQuery(query);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Map.of("data", result));
     }
 
     @GetMapping("/board/filter")
     public ResponseEntity<?> searchFilter(@RequestParam(value = "tag") String tag) {
         List<BoardListDto> result = boardService.filterByTag(tag);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Map.of("data", result));
     }
 
 }
