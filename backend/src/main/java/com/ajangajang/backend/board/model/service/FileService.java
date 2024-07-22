@@ -1,6 +1,8 @@
 package com.ajangajang.backend.board.model.service;
 
 import com.ajangajang.backend.board.model.entity.MediaType;
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -28,8 +30,7 @@ public class FileService {
         try {
             url = uploadAndGetUrl(file);
         } catch (IOException e) {
-            e.printStackTrace();
-            return "error";
+            throw new CustomGlobalException(CustomStatusCode.FILE_UPLOAD_FAIL);
         }
         return url;
     }
@@ -41,8 +42,7 @@ public class FileService {
                 fileUrls.put(uploadAndGetUrl(file), getMediaType(file));
             }
         } catch (IOException e) {
-            fileUrls.put("error", MediaType.UNKNOWN);
-            e.printStackTrace();
+            throw new CustomGlobalException(CustomStatusCode.FILE_UPLOAD_FAIL);
         }
         return fileUrls;
     }
@@ -95,7 +95,7 @@ public class FileService {
         } else if (VIDEO_TYPES.contains(mimeType)) {
             return MediaType.VIDEO;
         } else {
-            return MediaType.UNKNOWN;
+            throw new CustomGlobalException(CustomStatusCode.UNSUPPORTED_FILE_FORMAT);
         }
     }
 

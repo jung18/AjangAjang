@@ -4,6 +4,7 @@ import com.ajangajang.backend.board.model.entity.DeliveryType;
 import com.ajangajang.backend.board.model.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateBoardDto {
 
     private String title;
@@ -23,4 +25,12 @@ public class UpdateBoardDto {
 
     private List<Long> deleteFileIds = new ArrayList<>();
 
+    public UpdateBoardDto(String title, Integer price, String content, DeliveryType deliveryType, String tag, Status status) {
+        this.title = title;
+        this.price = price;
+        this.content = content;
+        this.deliveryType = deliveryType;
+        this.tag = tag;
+        this.status = status;
+    }
 }

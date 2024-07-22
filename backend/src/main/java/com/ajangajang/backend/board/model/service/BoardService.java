@@ -6,6 +6,8 @@ import com.ajangajang.backend.board.model.entity.BoardMedia;
 import com.ajangajang.backend.board.model.entity.MediaType;
 import com.ajangajang.backend.board.model.repository.BoardMediaRepository;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
@@ -32,7 +34,7 @@ public class BoardService {
     public Long save(CreateBoardDto dto, List<MultipartFile> files) {
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(),
                                 dto.getTag(), dto.getDeliveryType(), dto.getStatus());
-        User writer = userRepository.findById(dto.getWriterId()).orElse(null);
+        User writer = userRepository.findById(dto.getWriterId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
 
         setBoardMedia(files, board); // file upload, media save
         board.setWriter(writer);
@@ -40,7 +42,7 @@ public class BoardService {
     }
 
     public BoardDto findById(Long id) {
-        Board findBoard = boardRepository.findById(id).orElse(null);
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
 
         List<BoardMediaDto> mediaDtoList = findBoard.getMediaList().stream()
                 .map(media -> new BoardMediaDto(media.getId(), media.getMediaType(), media.getMediaUrl(),
@@ -62,7 +64,10 @@ public class BoardService {
     }
 
     public void update(Long id, UpdateBoardDto updateParam, List<MultipartFile> files) {
-        Board findBoard = boardRepository.findById(id).orElse(null);
+        if (updateParam == null && files == null) {
+            throw new CustomGlobalException(CustomStatusCode.EMPTY_UPDATE_DATA);
+        }
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         // 내용 업데이트
         if (updateParam != null) {
             findBoard.setTitle(updateParam.getTitle());
@@ -71,15 +76,16 @@ public class BoardService {
             findBoard.setTag(updateParam.getTag());
             findBoard.setStatus(updateParam.getStatus());
             findBoard.setDeliveryType(updateParam.getDeliveryType());
+            // 파일 삭제
+            deleteFiles(updateParam.getDeleteFileIds());
         }
         // 새 파일 추가
         setBoardMedia(files, findBoard);
-        // 파일 삭제
-        deleteFiles(updateParam.getDeleteFileIds());
     }
 
     public void delete(Long id) {
-        List<String> fileUrls = boardRepository.findById(id).orElse(null).getMediaList().stream()
+        List<String> fileUrls = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND))
+                .getMediaList().stream()
                 .map(media -> media.getMediaUrl())
                 .collect(Collectors.toList());
         fileService.deleteFiles(fileUrls);
@@ -111,7 +117,9 @@ public class BoardService {
     private void deleteFiles(List<Long> deleteFileIds) {
         if (!deleteFileIds.isEmpty()) {
             for (Long deleteFileId : deleteFileIds) {
-                String deleteFileUrl = boardMediaRepository.findById(deleteFileId).orElse(null).getMediaUrl();
+                String deleteFileUrl = boardMediaRepository.findById(deleteFileId)
+                        .orElseThrow(() -> new CustomGlobalException(CustomStatusCode.MEDIA_NOT_FOUND))
+                        .getMediaUrl();
                 fileService.delete(deleteFileUrl);
                 boardMediaRepository.deleteById(deleteFileId);
             }

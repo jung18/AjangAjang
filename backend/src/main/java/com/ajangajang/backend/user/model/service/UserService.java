@@ -1,6 +1,8 @@
 package com.ajangajang.backend.user.model.service;
 
 import com.ajangajang.backend.board.model.service.FileService;
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.SignUpDto;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
@@ -36,32 +38,30 @@ public class UserService {
     public String saveProfileImage(MultipartFile profile, String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            return null;
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
         }
         String profileUrl = fileService.uploadProfileImage(profile);
         user.setProfileImg(profileUrl);
         return profileUrl;
     }
 
-    public boolean updateProfileImage(MultipartFile profile, String username) {
+    public void updateProfileImage(MultipartFile profile, String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            return false;
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
         }
         fileService.delete(user.getProfileImg());
         String profileUrl = fileService.uploadProfileImage(profile);
         user.setProfileImg(profileUrl);
-        return true;
     }
 
-    public boolean deleteProfileImage(String username) {
+    public void deleteProfileImage(String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            return false;
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
         }
         fileService.delete(user.getProfileImg());
         user.setProfileImg(null);
-        return true;
     }
 
 }

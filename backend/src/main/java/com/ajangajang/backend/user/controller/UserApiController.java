@@ -26,9 +26,6 @@ public class UserApiController {
                                          @RequestBody MultipartFile profile) {
         String username = customOAuth2User.getUsername();
         String profileUrl = userService.saveProfileImage(profile, username);
-        if (profileUrl == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return ResponseEntity.ok(Map.of("profileUrl", profileUrl));
     }
 
@@ -36,19 +33,15 @@ public class UserApiController {
     public ResponseEntity<?> updateProfileImage(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                                 @RequestBody MultipartFile profile) {
         String username = customOAuth2User.getUsername();
-        if (userService.updateProfileImage(profile, username)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        userService.updateProfileImage(profile, username);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/profile")
     public ResponseEntity<?> deleteProfileImage(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        if (userService.deleteProfileImage(username)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        userService.deleteProfileImage(username);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
