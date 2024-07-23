@@ -13,9 +13,10 @@ public class BoardListDto {
     private Long boardId;
     private UserProfileDto writer;
     private String title;
-    private Integer price;
+    private int price;
     private String deliveryType;
     private String category;
     private Status status;
+    private int likeCount;
 
 }

@@ -2,10 +2,7 @@ package com.ajangajang.backend.board.model.service;
 
 import com.ajangajang.backend.board.model.dto.*;
 import com.ajangajang.backend.board.model.entity.*;
-import com.ajangajang.backend.board.model.repository.BoardMediaRepository;
-import com.ajangajang.backend.board.model.repository.BoardRepository;
-import com.ajangajang.backend.board.model.repository.CategoryRepository;
-import com.ajangajang.backend.board.model.repository.DeliveryTypeRepository;
+import com.ajangajang.backend.board.model.repository.*;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
@@ -28,6 +25,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final CategoryRepository categoryRepository;
     private final DeliveryTypeRepository deliveryTypeRepository;
     private final UserRepository userRepository;
@@ -58,11 +56,12 @@ public class BoardService {
 
         User findWriter = findBoard.getWriter();
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
+        int likeCount = boardLikeRepository.countLikesByBoardId(id);
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
                             findBoard.getContent(), findBoard.getDeliveryType().getType(),
                             findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
-                            mediaDtoList, findBoard.getCreatedAt(), findBoard.getUpdatedAt());
+                            mediaDtoList, likeCount, findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAll() {
@@ -140,15 +139,16 @@ public class BoardService {
         }
     }
 
-    private static List<BoardListDto> getBoardListDtos(List<Board> boards) {
+    private List<BoardListDto> getBoardListDtos(List<Board> boards) {
         List<BoardListDto> result = new ArrayList<>();
         for (Board board : boards) {
             User writer = board.getWriter();
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
+            int likeCount = boardLikeRepository.countLikesByBoardId(board.getId());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
                     board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                    board.getStatus()));
+                    board.getStatus(), likeCount));
         }
         return result;
     }

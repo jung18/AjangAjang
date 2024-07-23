@@ -4,11 +4,14 @@ import com.ajangajang.backend.board.model.dto.BoardDto;
 import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.board.model.dto.CreateBoardDto;
 import com.ajangajang.backend.board.model.dto.UpdateBoardDto;
+import com.ajangajang.backend.board.model.service.BoardLikeService;
 import com.ajangajang.backend.board.model.service.BoardService;
+import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,7 @@ import java.util.Map;
 public class BoardApiController {
 
     private final BoardService boardService;
+    private final BoardLikeService boardLikeService;
 
     @PostMapping("/board")
     public ResponseEntity<?> saveBoard(
@@ -67,6 +71,22 @@ public class BoardApiController {
     public ResponseEntity<?> searchFilter(@RequestParam(value = "tag") String tag) {
         List<BoardListDto> result = boardService.filterByTag(tag);
         return ResponseEntity.ok(Map.of("data", result));
+    }
+
+    @PostMapping("/board/{id}/likes")
+    public ResponseEntity<?> saveLike(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                       @PathVariable("id") Long id) {
+        String username = customOAuth2User.getUsername();
+        boardLikeService.likeBoard(username, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/board/{id}/likes")
+    public ResponseEntity<?> deleteLike(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                       @PathVariable("id") Long id) {
+        String username = customOAuth2User.getUsername();
+        boardLikeService.unlikeBoard(username, id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
