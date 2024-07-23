@@ -10,7 +10,6 @@ import lombok.Setter;
 public class UserInfoDto {
 
     private String name;
-    private String email;
     private String nickname;
     private String phone;
     private int kidAge;

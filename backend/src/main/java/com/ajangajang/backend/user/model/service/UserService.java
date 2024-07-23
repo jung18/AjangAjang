@@ -37,7 +37,7 @@ public class UserService {
             return null;
         }
 
-        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getEmail(), user.getNickname(),
+        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getNickname(),
                 user.getPhone(), user.getKidAge(), user.getKidGender(), user.getProfileImg());
 
         return userInfoDto;
@@ -51,7 +51,7 @@ public class UserService {
             return null;
         }
 
-        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getEmail(), user.getNickname(),
+        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getNickname(),
                 user.getPhone(), user.getKidAge(), user.getKidGender(), user.getProfileImg());
 
         return userInfoDto;

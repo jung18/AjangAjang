@@ -46,7 +46,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setUsername(username);
             user.setName(oAuth2Response.getName());
             user.setRole("ROLE_GUEST");
-            user.setEmail(oAuth2Response.getEmail());
 
             userRepository.save(user);
 
@@ -58,7 +57,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(userDto);
         } else {
             existData.setName(oAuth2Response.getName());
-            existData.setEmail(oAuth2Response.getEmail());
 
             userRepository.save(existData);
 
