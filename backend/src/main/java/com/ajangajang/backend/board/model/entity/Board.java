@@ -35,13 +35,15 @@ public class Board {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    private String tag;
-
-    @Enumerated(EnumType.STRING)
-    private DeliveryType deliveryType;
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+    @OneToOne
+    @JoinColumn(name = "delivery_type_id")
+    private DeliveryType deliveryType;
     // 유저 (작성자)
     @ManyToOne
     @JsonIgnore
@@ -51,13 +53,11 @@ public class Board {
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
 
-    public Board(String title, Integer price, String content, String tag, DeliveryType deliveryType, Status status) {
+    public Board(String title, Integer price, String content, Status status) {
         this.title = title;
         this.price = price;
         this.content = content;
-        this.tag = tag;
         this.status = status;
-        this.deliveryType = deliveryType;
     }
 
     public void addMedia(BoardMedia media) {

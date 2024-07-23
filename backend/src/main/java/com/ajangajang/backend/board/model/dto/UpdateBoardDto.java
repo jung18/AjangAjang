@@ -1,6 +1,5 @@
 package com.ajangajang.backend.board.model.dto;
 
-import com.ajangajang.backend.board.model.entity.DeliveryType;
 import com.ajangajang.backend.board.model.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,18 +18,18 @@ public class UpdateBoardDto {
     private String title;
     private Integer price;
     private String content;
-    private DeliveryType deliveryType;
-    private String tag;
+    private String deliveryType;
+    private String category;
     private Status status;
 
     private List<Long> deleteFileIds = new ArrayList<>();
 
-    public UpdateBoardDto(String title, Integer price, String content, DeliveryType deliveryType, String tag, Status status) {
+    public UpdateBoardDto(String title, Integer price, String content, String deliveryType, String category, Status status) {
         this.title = title;
         this.price = price;
         this.content = content;
         this.deliveryType = deliveryType;
-        this.tag = tag;
+        this.category = category;
         this.status = status;
     }
 }

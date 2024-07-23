@@ -1,6 +1,5 @@
 package com.ajangajang.backend.board.model.dto;
 
-import com.ajangajang.backend.board.model.entity.DeliveryType;
 import com.ajangajang.backend.board.model.entity.Status;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
 import lombok.AllArgsConstructor;
@@ -20,8 +19,8 @@ public class BoardDto {
     private String title;
     private Integer price;
     private String content;
-    private DeliveryType deliveryType;
-    private String tag;
+    private String deliveryType;
+    private String category;
     private Status status;
     private List<BoardMediaDto> mediaList = new ArrayList<>();
 

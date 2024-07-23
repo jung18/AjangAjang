@@ -1,11 +1,11 @@
 package com.ajangajang.backend.board.model.service;
 
 import com.ajangajang.backend.board.model.dto.*;
-import com.ajangajang.backend.board.model.entity.Board;
-import com.ajangajang.backend.board.model.entity.BoardMedia;
-import com.ajangajang.backend.board.model.entity.MediaType;
+import com.ajangajang.backend.board.model.entity.*;
 import com.ajangajang.backend.board.model.repository.BoardMediaRepository;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.board.model.repository.CategoryRepository;
+import com.ajangajang.backend.board.model.repository.DeliveryTypeRepository;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
@@ -28,16 +28,23 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
+    private final CategoryRepository categoryRepository;
+    private final DeliveryTypeRepository deliveryTypeRepository;
     private final UserRepository userRepository;
+
     private final FileService fileService;
 
     public Long save(CreateBoardDto dto, List<MultipartFile> files) {
-        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(),
-                                dto.getTag(), dto.getDeliveryType(), dto.getStatus());
         User writer = userRepository.findById(dto.getWriterId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
+        Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
+        DeliveryType savedDeliveryType = deliveryTypeRepository.save(new DeliveryType(dto.getDeliveryType()));
 
-        setBoardMedia(files, board); // file upload, media save
+        board.setCategory(savedCategory);
+        board.setDeliveryType(savedDeliveryType);
         board.setWriter(writer);
+        setBoardMedia(files, board); // file upload, media save
+
         return boardRepository.save(board).getId();
     }
 
@@ -53,9 +60,9 @@ public class BoardService {
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
-                            findBoard.getContent(), findBoard.getDeliveryType(), findBoard.getTag(),
-                            findBoard.getStatus(), mediaDtoList, findBoard.getCreatedAt(),
-                            findBoard.getUpdatedAt());
+                            findBoard.getContent(), findBoard.getDeliveryType().getType(),
+                            findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
+                            mediaDtoList, findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAll() {
@@ -67,15 +74,22 @@ public class BoardService {
         if (updateParam == null && files == null) {
             throw new CustomGlobalException(CustomStatusCode.EMPTY_UPDATE_DATA);
         }
+        // 엔티티 조회
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
+        Category findCategory = categoryRepository.findById(findBoard.getCategory().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CATEGORY_NOT_FOUND));
+        DeliveryType findDeliveryType = deliveryTypeRepository.findById(findBoard.getDeliveryType().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.DELIVERY_NOT_FOUND));
+
         // 내용 업데이트
         if (updateParam != null) {
+            findCategory.setCategoryName(updateParam.getCategory());
+            findDeliveryType.setType(updateParam.getDeliveryType());
+
             findBoard.setTitle(updateParam.getTitle());
             findBoard.setPrice(updateParam.getPrice());
             findBoard.setContent(updateParam.getContent());
-            findBoard.setTag(updateParam.getTag());
+            findBoard.setCategory(findCategory);
             findBoard.setStatus(updateParam.getStatus());
-            findBoard.setDeliveryType(updateParam.getDeliveryType());
+            findBoard.setDeliveryType(findDeliveryType);
             // 파일 삭제
             deleteFiles(updateParam.getDeleteFileIds());
         }
@@ -133,7 +147,8 @@ public class BoardService {
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
-                    board.getDeliveryType(), board.getTag(), board.getStatus()));
+                    board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
+                    board.getStatus()));
         }
         return result;
     }
