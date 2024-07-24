@@ -1,18 +1,13 @@
-package com.ajangajang.backend.user.controller;
+package com.ajangajang.backend.oauth.controller;
 
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
-import com.ajangajang.backend.user.model.dto.SignUpDto;
+import com.ajangajang.backend.user.model.dto.UserInputDto;
 import com.ajangajang.backend.user.model.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,19 +21,11 @@ public class SignUpController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                    @Valid @RequestBody SignUpDto signUpDto, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+                                    @RequestBody UserInputDto userInputDto) {
 
         // 유저 이름 가져오기
         String username = customOAuth2User.getUsername();
-
-        if (userService.signUp(username, signUpDto) == null) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        userService.signUp(username, userInputDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

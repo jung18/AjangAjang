@@ -1,5 +1,7 @@
 package com.ajangajang.backend.oauth.model.service;
 
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.oauth.model.dto.*;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
@@ -42,7 +44,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
 
-        User existData = userRepository.findByUsername(username);
+        User existData = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
 
         if (existData == null) {
             User user = new User();
