@@ -1,6 +1,6 @@
 package com.ajangajang.backend.oauth.model.dto;
 
-public interface OAuth2Response {
+public interface OAuth2UserDetails {
 
     //제공자 (Ex. naver, google, ...)
     String getProvider();

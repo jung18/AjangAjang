@@ -27,41 +27,41 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info(oAuth2User.toString());
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        OAuth2Response oAuth2Response = null;
+        OAuth2UserDetails oAuth2UserDetails = null;
         if (registrationId.equals("naver")) {
-            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+            oAuth2UserDetails = new NaverUserDetails(oAuth2User.getAttributes());
         }
         else if (registrationId.equals("google")) {
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+            oAuth2UserDetails = new GoogleUserDetails(oAuth2User.getAttributes());
         }
         else if (registrationId.equals("kakao")) {
-            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+            oAuth2UserDetails = new KakaoUserDetails(oAuth2User.getAttributes());
         }
         else {
             return null;
         }
 
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        String username = oAuth2UserDetails.getProvider() + " " + oAuth2UserDetails.getProviderId();
 
         User existData = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
 
         if (existData == null) {
             User user = new User();
             user.setUsername(username);
-            user.setName(oAuth2Response.getName());
+            user.setName(oAuth2UserDetails.getName());
             user.setRole("ROLE_GUEST");
 
             userRepository.save(user);
 
             UserDto userDto = new UserDto();
             userDto.setUsername(username);
-            userDto.setName(oAuth2Response.getName());
+            userDto.setName(oAuth2UserDetails.getName());
             userDto.setRole("ROLE_GUEST");
 
             return new CustomOAuth2User(userDto);
         } else {
-            existData.setName(oAuth2Response.getName());
+            existData.setName(oAuth2UserDetails.getName());
 
             userRepository.save(existData);
 

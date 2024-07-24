@@ -2,11 +2,11 @@ package com.ajangajang.backend.oauth.model.dto;
 
 import java.util.Map;
 
-public class GoogleResponse implements OAuth2Response {
+public class GoogleUserDetails implements OAuth2UserDetails {
 
     private final Map<String, Object> attribute;
 
-    public GoogleResponse(Map<String, Object> attribute) {
+    public GoogleUserDetails(Map<String, Object> attribute) {
         this.attribute = attribute;
     }
 
