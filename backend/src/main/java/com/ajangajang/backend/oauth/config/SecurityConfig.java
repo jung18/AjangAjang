@@ -78,7 +78,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/test").permitAll()
+                        .requestMatchers("/", "/test", "/reissue").permitAll()
                         .requestMatchers("/sign-up").hasRole("GUEST")
                         .anyRequest().hasRole("USER"));
 
