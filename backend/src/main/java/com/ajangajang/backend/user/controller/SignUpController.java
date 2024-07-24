@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController()
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class SignUpController {
@@ -25,8 +25,8 @@ public class SignUpController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto signUpDto, BindingResult bindingResult,
-                                    @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<?> signUp(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                    @Valid @RequestBody SignUpDto signUpDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -35,7 +35,7 @@ public class SignUpController {
         // 유저 이름 가져오기
         String username = customOAuth2User.getUsername();
 
-        if (userService.signUp(signUpDto, username) == null) {
+        if (userService.signUp(username, signUpDto) == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
