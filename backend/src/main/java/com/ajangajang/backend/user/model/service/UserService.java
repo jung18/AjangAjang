@@ -63,6 +63,7 @@ public class UserService {
         }
         fileService.delete(user.getProfileImg());
         user.setProfileImg(null);
+    }
 
     public UserInfoDto findMyInfo(String username) {
 
