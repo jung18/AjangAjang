@@ -1,17 +1,24 @@
 package com.ajangajang.backend.user.model.service;
 
+import com.ajangajang.backend.board.model.service.FileService;
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.SignUpDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FileService fileService;
 
     public User signUp(String username, SignUpDto signUpDto) {
 
@@ -28,6 +35,34 @@ public class UserService {
             return null;
         }
     }
+
+    public String saveProfileImage(MultipartFile profile, String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
+        String profileUrl = fileService.uploadProfileImage(profile);
+        user.setProfileImg(profileUrl);
+        return profileUrl;
+    }
+
+    public void updateProfileImage(MultipartFile profile, String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
+        fileService.delete(user.getProfileImg());
+        String profileUrl = fileService.uploadProfileImage(profile);
+        user.setProfileImg(profileUrl);
+    }
+
+    public void deleteProfileImage(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
+        fileService.delete(user.getProfileImg());
+        user.setProfileImg(null);
 
     public UserInfoDto findMyInfo(String username) {
 

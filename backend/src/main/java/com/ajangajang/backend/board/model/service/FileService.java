@@ -1,6 +1,8 @@
 package com.ajangajang.backend.board.model.service;
 
 import com.ajangajang.backend.board.model.entity.MediaType;
+import com.ajangajang.backend.exception.CustomGlobalException;
+import com.ajangajang.backend.exception.CustomStatusCode;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -22,27 +24,26 @@ public class FileService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    
+    public String uploadProfileImage(MultipartFile file) {
+        String url;
+        try {
+            url = uploadAndGetUrl(file);
+        } catch (IOException e) {
+            throw new CustomGlobalException(CustomStatusCode.FILE_UPLOAD_FAIL);
+        }
+        return url;
+    }
 
-    public Map<String, MediaType> uploadFile(List<MultipartFile> files) {
-
+    public Map<String, MediaType> uploadFiles(List<MultipartFile> files) {
         Map<String, MediaType> fileUrls = new HashMap<>();
-
         try {
             for (MultipartFile file : files) {
-                String fileName=file.getOriginalFilename();
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(file.getContentType());
-                metadata.setContentLength(file.getSize());
-                amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-                String fileUrl = amazonS3Client.getUrl(bucket, fileName).toString();
-                // return fileUrl : mediaType
-                fileUrls.put(fileUrl, getMediaType(file));
+                fileUrls.put(uploadAndGetUrl(file), getMediaType(file));
             }
         } catch (IOException e) {
-            fileUrls.put("error", MediaType.UNKNOWN);
-            e.printStackTrace();
+            throw new CustomGlobalException(CustomStatusCode.FILE_UPLOAD_FAIL);
         }
-
         return fileUrls;
     }
 
@@ -60,6 +61,29 @@ public class FileService {
         }
     }
 
+    private String uploadAndGetUrl(MultipartFile file) throws IOException {
+        // 파일명 생성
+        String uniqueFileName = generateUniqueFileName(file);
+        // 파일 변환
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        // 업로드
+        amazonS3Client.putObject(bucket, uniqueFileName, file.getInputStream(), metadata);
+
+        return amazonS3Client.getUrl(bucket, uniqueFileName).toString();
+    }
+
+    private String generateUniqueFileName(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        String uniqueFileName;
+        do {
+            uniqueFileName = UUID.randomUUID() + "_" + fileName;
+        } while (amazonS3Client.doesObjectExist(bucket, uniqueFileName));
+
+        return uniqueFileName;
+    }
+
     public MediaType getMediaType(MultipartFile file) {
         List<String> IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif");
         List<String> VIDEO_TYPES = Arrays.asList("video/mp4", "video/mpeg", "video/quicktime", "video/x-msvideo");
@@ -71,7 +95,7 @@ public class FileService {
         } else if (VIDEO_TYPES.contains(mimeType)) {
             return MediaType.VIDEO;
         } else {
-            return MediaType.UNKNOWN;
+            throw new CustomGlobalException(CustomStatusCode.UNSUPPORTED_FILE_FORMAT);
         }
     }
 

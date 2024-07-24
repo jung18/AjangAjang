@@ -1,8 +1,6 @@
 package com.ajangajang.backend.board.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,14 +10,14 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
-public class DeliveryType {
+public class Category {
 
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private String type;
+    private String categoryName;
 
-    public DeliveryType(String type) {
-        this.type = type;
+    public Category(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
