@@ -50,14 +50,22 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    public void update(Long id, UpdateReviewDto updateParam) {
+    public void update(Long id, String username, UpdateReviewDto updateParam) {
         Review findReview = reviewRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.REVIEW_NOT_FOUND));
+        // 본인의 리뷰가 아닌 경우 수정 불가
+        if (!username.equals(findReview.getWriter().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
         findReview.setScore(updateParam.getScore());
         findReview.setContent(updateParam.getContent());
     }
 
-    public void delete(Long id) {
-        reviewRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.REVIEW_NOT_FOUND));
+    public void delete(Long id, String username) {
+        Review findReview = reviewRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.REVIEW_NOT_FOUND));
+        // 본인의 리뷰가 아닌 경우 삭제 불가
+        if (!username.equals(findReview.getWriter().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
         reviewRepository.deleteById(id);
     }
 

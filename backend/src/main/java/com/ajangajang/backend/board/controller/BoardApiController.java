@@ -50,15 +50,19 @@ public class BoardApiController {
 
     @PutMapping("/board/{id}")
     public ResponseEntity<?> updateBoard(@PathVariable("id") Long id,
+                            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                             @RequestPart(value = "board", required = false) UpdateBoardDto updateParam,
                             @RequestPart(value = "media", required = false) List<MultipartFile> files) {
-        boardService.update(id, updateParam, files);
+        String username = customOAuth2User.getUsername();
+        boardService.update(id, username, updateParam, files);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/board/{id}")
-    public ResponseEntity<?> deleteBoard(@PathVariable("id") Long id) {
-        boardService.delete(id);
+    public ResponseEntity<?> deleteBoard(@PathVariable("id") Long id,
+                                         @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        String username = customOAuth2User.getUsername();
+        boardService.delete(id, username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

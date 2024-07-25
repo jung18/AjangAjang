@@ -45,14 +45,18 @@ public class ReviewController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReview(@PathVariable("id") Long id,
+                                          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                           @RequestBody UpdateReviewDto updateParam) {
-        reviewService.update(id, updateParam);
+        String username = customOAuth2User.getUsername();
+        reviewService.update(id, username, updateParam);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReview(@PathVariable("id") Long id) {
-        reviewService.delete(id);
+    public ResponseEntity<?> deleteReview(@PathVariable("id") Long id,
+                                          @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        String username = customOAuth2User.getUsername();
+        reviewService.delete(id, username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

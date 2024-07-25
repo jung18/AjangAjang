@@ -21,7 +21,8 @@ public enum CustomStatusCode {
     SELF_LIKE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신의 게시글은 선택할 수 없음"),
 
     FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패"),
-    UNSUPPORTED_FILE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 파일 형식");
+    UNSUPPORTED_FILE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 파일 형식"),
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "변경 권한이 없음");
 
     private final HttpStatus statusCode;
     private final String message;
