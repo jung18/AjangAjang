@@ -32,10 +32,7 @@ public class BoardService {
     private final FileService fileService;
 
     public Long save(String username, CreateBoardDto dto, List<MultipartFile> files) {
-        User writer = userRepository.findByUsername(username);
-        if (writer == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
         Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
         DeliveryType savedDeliveryType = deliveryTypeRepository.save(new DeliveryType(dto.getDeliveryType()));

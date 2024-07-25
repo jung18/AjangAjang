@@ -67,19 +67,13 @@ public class UserService {
     }
 
     public List<BoardListDto> findMyLikes(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         List<Board> boards = boardLikeRepository.findMyLikes(user.getId());
         return boardService.getBoardListDtos(boards);
     }
 
     public List<BoardListDto> findMyBoards(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return boardRepository.findAllByUserId(user.getId()).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
                         board.getDeliveryType().getType(), board.getCategory().getCategoryName(),

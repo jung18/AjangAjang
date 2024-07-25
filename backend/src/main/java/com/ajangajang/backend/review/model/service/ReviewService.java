@@ -28,10 +28,7 @@ public class ReviewService {
     private final BoardRepository boardRepository;
 
     public Long save(String username, CreateReviewDto dto) {
-        User writer = userRepository.findByUsername(username);
-        if (writer == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         Review review = new Review(dto.getScore(), dto.getContent());
         review.setBoard(board);
