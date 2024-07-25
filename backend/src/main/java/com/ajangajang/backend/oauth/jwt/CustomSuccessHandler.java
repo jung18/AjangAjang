@@ -44,6 +44,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
             response.sendRedirect("http://localhost:3000/sign-up");
+        } else if (customUserDetails.getRole().equals("ROLE_USER")) {
+            response.sendRedirect("http://localhost:3000/board");
         } else {
             response.sendRedirect("http://localhost:3000/");
         }
