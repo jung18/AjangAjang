@@ -8,8 +8,8 @@ import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.board.model.service.FileService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
-import com.ajangajang.backend.user.model.dto.SignUpDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
+import com.ajangajang.backend.user.model.dto.UserInputDto;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,62 +32,37 @@ public class UserService {
     private final FileService fileService;
     private final BoardService boardService;
 
-    public User signUp(String username, SignUpDto signUpDto) {
-
-        User user = userRepository.findByUsername(username);
-        user.setNickname(signUpDto.getNickname());
-        user.setPhone(signUpDto.getPhone());
-        user.setKidAge(signUpDto.getKidAge());
-        user.setKidGender(signUpDto.getKidGender());
+    public void signUp(String username, UserInputDto userInputDto) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        user.setNickname(userInputDto.getNickname());
+        user.setPhone(userInputDto.getPhone());
         user.setRole("ROLE_USER");
-
-        try {
-            return userRepository.save(user);
-        } catch (Exception e) {
-            return null;
-        }
+        userRepository.save(user);
     }
 
     public String saveProfileImage(MultipartFile profile, String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         String profileUrl = fileService.uploadProfileImage(profile);
         user.setProfileImg(profileUrl);
         return profileUrl;
     }
 
     public void updateProfileImage(MultipartFile profile, String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         fileService.delete(user.getProfileImg());
         String profileUrl = fileService.uploadProfileImage(profile);
         user.setProfileImg(profileUrl);
     }
 
     public void deleteProfileImage(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         fileService.delete(user.getProfileImg());
         user.setProfileImg(null);
     }
 
     public UserInfoDto findMyInfo(String username) {
-
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            return null;
-        }
-
-        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getNickname(),
-                user.getPhone(), user.getKidAge(), user.getKidGender(), user.getProfileImg());
-
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg());
         return userInfoDto;
     }
 
@@ -113,29 +88,21 @@ public class UserService {
     }
 
     public UserInfoDto findUserInfo(Long id) {
-
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            return null;
-        }
-
-        UserInfoDto userInfoDto = new UserInfoDto(user.getName(), user.getNickname(),
-                user.getPhone(), user.getKidAge(), user.getKidGender(), user.getProfileImg());
-
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg());
         return userInfoDto;
     }
 
-    public boolean deleteUser(String username) {
+    public void updateMyInfo(String username, UserInputDto userInputDto) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        user.setNickname(userInputDto.getNickname());
+        user.setPhone(userInputDto.getPhone());
+        userRepository.save(user);
+    }
 
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            return false;
-        }
-
+    public void deleteUser(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         userRepository.delete(user);
-        return true;
     }
 
 }

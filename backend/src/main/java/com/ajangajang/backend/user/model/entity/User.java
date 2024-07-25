@@ -35,8 +35,7 @@ public class User {
 
     private String nickname;
     private String phone;
-    private int kidAge;
-    private int kidGender;
+
     private String profileImg;
 
     public void addMyBoard(Board board) {

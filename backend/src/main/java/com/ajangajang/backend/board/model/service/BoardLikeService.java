@@ -22,10 +22,7 @@ public class BoardLikeService {
     private final UserRepository userRepository;
 
     public void likeBoard(String username, Long id) {
-        User findUser = userRepository.findByUsername(username);
-        if (findUser == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         // 본인의 게시글은 찜 불가
         if (findUser.getId().equals(findBoard.getWriter().getId())) {
@@ -43,10 +40,7 @@ public class BoardLikeService {
     }
 
     public void unlikeBoard(String username, Long id) {
-        User findUser = userRepository.findByUsername(username);
-        if (findUser == null) {
-            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
-        }
+        User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         BoardLike findLike = boardLikeRepository.findByBoardIdAndUserId(id, findUser.getId());
         if (findLike == null) {

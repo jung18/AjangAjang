@@ -36,8 +36,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*1000L);
-        response.addCookie(createCookie("Authorization", "Bearer/" + token));
+        String access = jwtUtil.createJwt("access", username, role, 10 * 60 * 1000L);
+        String refresh = jwtUtil.createJwt("refresh", username, role, 24 * 60 * 60 * 1000L);
+        response.addCookie(createCookie("access", "Bearer/" + access));
+        response.addCookie(createCookie("refresh", "Bearer/" + refresh));
 
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
@@ -50,7 +52,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
+        cookie.setMaxAge(24*60*60);
         cookie.setPath("/");
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(true);

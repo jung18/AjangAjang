@@ -1,17 +1,18 @@
 package com.ajangajang.backend.oauth.model.dto;
 
-import lombok.AllArgsConstructor;
-
 import java.util.Map;
 
-@AllArgsConstructor
-public class KakaoResponse implements OAuth2Response {
+public class NaverUserDetails implements OAuth2UserDetails {
 
     private final Map<String, Object> attribute;
 
+    public NaverUserDetails(Map<String, Object> attribute) {
+        this.attribute = (Map<String, Object>) attribute.get("response");
+    }
+
     @Override
     public String getProvider() {
-        return "kakao";
+        return "naver";
     }
 
     @Override
@@ -21,6 +22,6 @@ public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getName() {
-        return (String) ((Map) attribute.get("properties")).get("nickname");
+        return attribute.get("name").toString();
     }
 }
