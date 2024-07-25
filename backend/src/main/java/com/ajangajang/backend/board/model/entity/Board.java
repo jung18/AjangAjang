@@ -53,6 +53,9 @@ public class Board {
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", fetch = LAZY)
+    private List<BoardLike> likedUsers = new ArrayList<>();
+
     public Board(String title, Integer price, String content, Status status) {
         this.title = title;
         this.price = price;
@@ -63,5 +66,10 @@ public class Board {
     public void addMedia(BoardMedia media) {
         media.setBoard(this);
         this.mediaList.add(media);
+    }
+
+    public void addLikedUser(BoardLike like) {
+        like.setBoard(this);
+        this.likedUsers.add(like);
     }
 }
