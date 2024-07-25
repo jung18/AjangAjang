@@ -31,4 +31,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "order by b.updatedAt desc")
     List<Board> findAllByTag(@Param("category") String category);
 
+    @Query("select b from Board b join fetch b.writer w " +
+            "where w.id = :userId order by b.updatedAt desc")
+    List<Board> findAllByUserId(Long userId);
+
 }

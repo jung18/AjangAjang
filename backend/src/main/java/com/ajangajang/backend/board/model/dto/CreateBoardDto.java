@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateBoardDto {
 
-    private Long writerId;
     private String title;
     private Integer price;
     private String content;

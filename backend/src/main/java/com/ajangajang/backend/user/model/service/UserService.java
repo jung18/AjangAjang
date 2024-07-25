@@ -1,5 +1,10 @@
 package com.ajangajang.backend.user.model.service;
 
+import com.ajangajang.backend.board.model.dto.BoardListDto;
+import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.board.model.repository.BoardLikeRepository;
+import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.board.model.service.FileService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
@@ -12,13 +17,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BoardLikeRepository boardLikeRepository;
+    private final BoardRepository boardRepository;
+
     private final FileService fileService;
+    private final BoardService boardService;
 
     public User signUp(String username, SignUpDto signUpDto) {
 
@@ -63,6 +75,7 @@ public class UserService {
         }
         fileService.delete(user.getProfileImg());
         user.setProfileImg(null);
+    }
 
     public UserInfoDto findMyInfo(String username) {
 
@@ -76,6 +89,27 @@ public class UserService {
                 user.getPhone(), user.getKidAge(), user.getKidGender(), user.getProfileImg());
 
         return userInfoDto;
+    }
+
+    public List<BoardListDto> findMyLikes(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
+        List<Board> boards = boardLikeRepository.findMyLikes(user.getId());
+        return boardService.getBoardListDtos(boards);
+    }
+
+    public List<BoardListDto> findMyBoards(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
+        return boardRepository.findAllByUserId(user.getId()).stream()
+                .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
+                        board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
+                        board.getStatus(), board.getLikedUsers().size()))
+                .collect(Collectors.toList());
     }
 
     public UserInfoDto findUserInfo(Long id) {

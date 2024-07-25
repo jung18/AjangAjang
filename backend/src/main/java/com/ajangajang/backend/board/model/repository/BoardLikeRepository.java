@@ -1,14 +1,22 @@
 package com.ajangajang.backend.board.model.repository;
 
+import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.entity.BoardLike;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
 
-    int countLikesByBoardId(Long boardId);
+    boolean existsByBoardIdAndUserId(Long boardId, Long userId);
 
-    boolean existsByBoardIdAndUserName(Long boardId, String userName);
+    BoardLike findByBoardIdAndUserId(Long boardId, Long userId);
 
-    BoardLike findByBoardIdAndUserName(Long boardId, String userName);
+    @Query("select b from Board b " +
+            "join fetch b.likedUsers lu " +
+            "join fetch lu.user u " +
+            "where u.id = :userId order by b.updatedAt")
+    List<Board> findMyLikes(Long userId);
 
 }
