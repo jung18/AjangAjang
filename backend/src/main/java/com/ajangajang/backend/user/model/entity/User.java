@@ -1,6 +1,7 @@
 package com.ajangajang.backend.user.model.entity;
 
 import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.board.model.entity.BoardLike;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,9 @@ public class User {
     @OneToMany(mappedBy = "writer", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<Board> myBoards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = LAZY)
+    private List<BoardLike> myLikes = new ArrayList<>();
+
     private String name;
     private String role;
 
@@ -34,4 +38,14 @@ public class User {
     private int kidAge;
     private int kidGender;
     private String profileImg;
+
+    public void addMyBoard(Board board) {
+        board.setWriter(this);
+        this.myBoards.add(board);
+    }
+
+    public void addMyLike(BoardLike like) {
+        like.setUser(this);
+        this.myLikes.add(like);
+    }
 }

@@ -25,23 +25,25 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
-    private final BoardLikeRepository boardLikeRepository;
     private final CategoryRepository categoryRepository;
     private final DeliveryTypeRepository deliveryTypeRepository;
     private final UserRepository userRepository;
 
     private final FileService fileService;
 
-    public Long save(CreateBoardDto dto, List<MultipartFile> files) {
-        User writer = userRepository.findById(dto.getWriterId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+    public Long save(String username, CreateBoardDto dto, List<MultipartFile> files) {
+        User writer = userRepository.findByUsername(username);
+        if (writer == null) {
+            throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
+        }
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
         Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
         DeliveryType savedDeliveryType = deliveryTypeRepository.save(new DeliveryType(dto.getDeliveryType()));
 
         board.setCategory(savedCategory);
         board.setDeliveryType(savedDeliveryType);
-        board.setWriter(writer);
         setBoardMedia(files, board); // file upload, media save
+        writer.addMyBoard(board);
 
         return boardRepository.save(board).getId();
     }
@@ -56,12 +58,11 @@ public class BoardService {
 
         User findWriter = findBoard.getWriter();
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
-        int likeCount = boardLikeRepository.countLikesByBoardId(id);
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
                             findBoard.getContent(), findBoard.getDeliveryType().getType(),
                             findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
-                            mediaDtoList, likeCount, findBoard.getCreatedAt(), findBoard.getUpdatedAt());
+                            mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAll() {
@@ -115,6 +116,14 @@ public class BoardService {
         return getBoardListDtos(boards);
     }
 
+    public List<BoardListDto> findAllByUserId(Long userId) {
+        return boardRepository.findAllByUserId(userId).stream()
+                .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
+                        board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
+                        board.getStatus(), board.getLikedUsers().size()))
+                .collect(Collectors.toList());
+    }
+
     private void setBoardMedia(List<MultipartFile> files, Board board) {
         if (files != null && !files.isEmpty()) {
             // Url + fileName, mediaType
@@ -139,16 +148,15 @@ public class BoardService {
         }
     }
 
-    private List<BoardListDto> getBoardListDtos(List<Board> boards) {
+    public List<BoardListDto> getBoardListDtos(List<Board> boards) {
         List<BoardListDto> result = new ArrayList<>();
         for (Board board : boards) {
             User writer = board.getWriter();
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
-            int likeCount = boardLikeRepository.countLikesByBoardId(board.getId());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
                     board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                    board.getStatus(), likeCount));
+                    board.getStatus(), board.getLikedUsers().size()));
         }
         return result;
     }

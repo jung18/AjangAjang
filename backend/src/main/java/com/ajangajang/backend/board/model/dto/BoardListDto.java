@@ -19,4 +19,13 @@ public class BoardListDto {
     private Status status;
     private int likeCount;
 
+    public BoardListDto(Long boardId, String title, int price, String deliveryType, String category, Status status, int likeCount) {
+        this.boardId = boardId;
+        this.title = title;
+        this.price = price;
+        this.deliveryType = deliveryType;
+        this.category = category;
+        this.status = status;
+        this.likeCount = likeCount;
+    }
 }

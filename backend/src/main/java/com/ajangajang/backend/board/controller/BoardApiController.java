@@ -28,10 +28,11 @@ public class BoardApiController {
     private final BoardLikeService boardLikeService;
 
     @PostMapping("/board")
-    public ResponseEntity<?> saveBoard(
-                            @RequestPart("board") CreateBoardDto createBoardDto,
-                            @RequestPart(value = "media", required = false) List<MultipartFile> files) {
-        Long boardId = boardService.save(createBoardDto, files);
+    public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                       @RequestPart("board") CreateBoardDto createBoardDto,
+                                       @RequestPart(value = "media", required = false) List<MultipartFile> files) {
+        String username = customOAuth2User.getUsername();
+        Long boardId = boardService.save(username, createBoardDto, files);
         return ResponseEntity.ok(Map.of("boardId", boardId));
     }
 
@@ -70,6 +71,12 @@ public class BoardApiController {
     @GetMapping("/board/filter")
     public ResponseEntity<?> searchFilter(@RequestParam(value = "tag") String tag) {
         List<BoardListDto> result = boardService.filterByTag(tag);
+        return ResponseEntity.ok(Map.of("data", result));
+    }
+
+    @GetMapping("/user/{id}/boards")
+    public ResponseEntity<?> getUserBoards(@PathVariable("id") Long id) {
+        List<BoardListDto> result = boardService.findAllByUserId(id);
         return ResponseEntity.ok(Map.of("data", result));
     }
 

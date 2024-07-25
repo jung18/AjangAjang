@@ -10,8 +10,10 @@ import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BoardLikeService {
 
@@ -25,14 +27,18 @@ public class BoardLikeService {
             throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
         }
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
-
-        if (boardLikeRepository.existsByBoardIdAndUserName(id, username)) {
+        // 본인의 게시글은 찜 불가
+        if (findUser.getId().equals(findBoard.getWriter().getId())) {
+            throw new CustomGlobalException(CustomStatusCode.SELF_LIKE_NOT_ALLOWED);
+        }
+        // 중복 찜 불가
+        if (boardLikeRepository.existsByBoardIdAndUserId(id, findUser.getId())) {
             throw new CustomGlobalException(CustomStatusCode.ALREADY_LIKED);
         }
 
         BoardLike boardLike = new BoardLike();
-        boardLike.setBoard(findBoard);
-        boardLike.setUser(findUser);
+        findUser.addMyLike(boardLike);
+        findBoard.addLikedUser(boardLike);
         boardLikeRepository.save(boardLike);
     }
 
@@ -42,7 +48,7 @@ public class BoardLikeService {
             throw new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND);
         }
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
-        BoardLike findLike = boardLikeRepository.findByBoardIdAndUserName(id, username);
+        BoardLike findLike = boardLikeRepository.findByBoardIdAndUserId(id, findUser.getId());
         if (findLike == null) {
             throw new CustomGlobalException(CustomStatusCode.LIKE_NOT_FOUND);
         }

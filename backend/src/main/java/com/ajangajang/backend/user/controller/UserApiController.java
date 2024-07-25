@@ -1,5 +1,6 @@
 package com.ajangajang.backend.user.controller;
 
+import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.user.model.dto.SignUpDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
@@ -10,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
-
-import org.springframework.validation.BindingResult;
 
 @Slf4j
 @RestController
@@ -60,6 +61,20 @@ public class UserApiController {
         }
 
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
+    }
+
+    @GetMapping("/my/likes")
+    public ResponseEntity<?> getMyLikes(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        String username = customOAuth2User.getUsername();
+        List<BoardListDto> result = userService.findMyLikes(username);
+        return ResponseEntity.ok(Map.of("data", result));
+    }
+
+    @GetMapping("/my/boards")
+    public ResponseEntity<?> getMyBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        String username = customOAuth2User.getUsername();
+        List<BoardListDto> result = userService.findMyBoards(username);
+        return ResponseEntity.ok(Map.of("data", result));
     }
 
     @GetMapping("/{id}")
