@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ReissueController {
 
     private final JwtUtil jwtUtil;
@@ -20,49 +22,41 @@ public class ReissueController {
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
-        // get refresh token
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
+        // request에서 Authorization-refresh 헤더를 찾음
+        String refreshToken = request.getHeader("Authorization-refresh");
 
-            if (cookie.getName().equals("refresh")) {
+        // Authorization-refresh 헤더 검증
+        if (refreshToken == null || !refreshToken.startsWith("Bearer/")) {
+            log.info("token null");
 
-                refresh = cookie.getValue();
-            }
+            return new ResponseEntity<>("refresh token null", HttpStatus.UNAUTHORIZED);
         }
 
-        if (refresh == null) {
-
-            // response status code
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
-        }
+        // Bearer 부분 제거 후 순수 토큰만 획득
+        String token = refreshToken.split("/")[1];
 
         // expired check
         try {
-            jwtUtil.isExpired(refresh);
+            jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-
-            // response status code
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("refresh token expired", HttpStatus.UNAUTHORIZED);
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
+        String category = jwtUtil.getCategory(token);
 
         if (!category.equals("refresh")) {
-
-            // response status code
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.UNAUTHORIZED);
         }
 
-        String username = jwtUtil.getUsername(refresh);
-        String role = jwtUtil.getRole(refresh);
+        String username = jwtUtil.getUsername(token);
+        String role = jwtUtil.getRole(token);
 
-        // make new JWT
+        // 새로운 토큰 발급
         String newAccess = jwtUtil.createJwt("access", username, role, 10 * 60 * 1000L);
 
-        // response
-        response.setHeader("access", newAccess);
+        // 토큰을 헤더에 담아서 응답
+        response.setHeader("Authorization", "Bearer/" + newAccess);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
