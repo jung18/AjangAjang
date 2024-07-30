@@ -80,7 +80,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/sign-up").hasRole("GUEST")
-                        .anyRequest().hasRole("USER"));
+                        .anyRequest().permitAll());
 
         // 세션 stateless 설정
         httpSecurity
