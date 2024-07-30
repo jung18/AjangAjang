@@ -26,6 +26,11 @@ public class FileService {
     private String bucket;
     
     public String uploadProfileImage(MultipartFile file) {
+        // 이미지만 허용
+        MediaType mediaType = getMediaType(file);
+        if (mediaType == MediaType.VIDEO) {
+            throw new CustomGlobalException(CustomStatusCode.UNSUPPORTED_FILE_FORMAT);
+        }
         String url;
         try {
             url = uploadAndGetUrl(file);
@@ -39,7 +44,8 @@ public class FileService {
         Map<String, MediaType> fileUrls = new HashMap<>();
         try {
             for (MultipartFile file : files) {
-                fileUrls.put(uploadAndGetUrl(file), getMediaType(file));
+                MediaType mediaType = getMediaType(file); // 지원하지 않는 파일인지 확인
+                fileUrls.put(uploadAndGetUrl(file), mediaType);
             }
         } catch (IOException e) {
             throw new CustomGlobalException(CustomStatusCode.FILE_UPLOAD_FAIL);

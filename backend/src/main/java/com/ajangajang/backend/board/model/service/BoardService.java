@@ -67,7 +67,7 @@ public class BoardService {
         return getBoardListDtos(boards);
     }
 
-    public void update(Long id, UpdateBoardDto updateParam, List<MultipartFile> files) {
+    public void update(Long id, String username, UpdateBoardDto updateParam, List<MultipartFile> files) {
         if (updateParam == null && files == null) {
             throw new CustomGlobalException(CustomStatusCode.EMPTY_UPDATE_DATA);
         }
@@ -75,7 +75,10 @@ public class BoardService {
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         Category findCategory = categoryRepository.findById(findBoard.getCategory().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CATEGORY_NOT_FOUND));
         DeliveryType findDeliveryType = deliveryTypeRepository.findById(findBoard.getDeliveryType().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.DELIVERY_NOT_FOUND));
-
+        // 본인의 게시글이 아닌 경우 수정 불가
+        if (!username.equals(findBoard.getWriter().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
         // 내용 업데이트
         if (updateParam != null) {
             findCategory.setCategoryName(updateParam.getCategory());
@@ -94,11 +97,13 @@ public class BoardService {
         setBoardMedia(files, findBoard);
     }
 
-    public void delete(Long id) {
-        List<String> fileUrls = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND))
-                .getMediaList().stream()
-                .map(media -> media.getMediaUrl())
-                .collect(Collectors.toList());
+    public void delete(Long id, String username) {
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
+        // 본인의 게시글이 아닌 경우 삭제 불가
+        if (!username.equals(findBoard.getWriter().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
+        List<String> fileUrls = findBoard.getMediaList().stream().map(BoardMedia::getMediaUrl).collect(Collectors.toList());
         fileService.deleteFiles(fileUrls);
         boardRepository.deleteById(id);
     }
