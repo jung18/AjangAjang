@@ -27,15 +27,14 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // request에서 Authorization 헤더를 찾음
-        String accessToken = request.getHeader("access");
+        String accessToken = request.getHeader("Authorization");
 
         // Authorization 헤더 검증
         if (accessToken == null || !accessToken.startsWith("Bearer/")) {
             log.info("token null");
             filterChain.doFilter(request, response);
 
-            // 조건이 해당되면 메소드 종료 (필수)
-            return;
+            return; // 조건이 해당되면 메소드 종료 (필수)
         }
 
         // Bearer 부분 제거 후 순수 토큰만 획득
@@ -45,26 +44,20 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-
-            //response body
             PrintWriter writer = response.getWriter();
             writer.print("access token expired");
 
-            //response status code
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         // 토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(token);
-
         if (!category.equals("access")) {
 
-            //response body
             PrintWriter writer = response.getWriter();
             writer.print("invalid access token");
 
-            //response status code
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

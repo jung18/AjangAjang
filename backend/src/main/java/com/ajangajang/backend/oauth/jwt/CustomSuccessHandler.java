@@ -38,12 +38,16 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String access = jwtUtil.createJwt("access", username, role, 10 * 60 * 1000L);
         String refresh = jwtUtil.createJwt("refresh", username, role, 24 * 60 * 60 * 1000L);
-        response.addCookie(createCookie("access", "Bearer/" + access));
-        response.addCookie(createCookie("refresh", "Bearer/" + refresh));
+        response.addCookie(createCookie("Authorization", "Bearer/" + access));
+        response.addCookie(createCookie("Authorization-refresh", "Bearer/" + refresh));
+
+        log.info(customUserDetails.getRole());
 
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
             response.sendRedirect("http://localhost:3000/sign-up");
+        } else if (customUserDetails.getRole().equals("ROLE_USER")) {
+            response.sendRedirect("http://localhost:3000/board");
         } else {
             response.sendRedirect("http://localhost:3000/");
         }

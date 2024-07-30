@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -45,8 +46,7 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization", "Authorization-refresh"));
 
                         return configuration;
                     }
@@ -78,7 +78,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/test", "/reissue").permitAll()
+                        .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/sign-up").hasRole("GUEST")
                         .anyRequest().hasRole("USER"));
 
