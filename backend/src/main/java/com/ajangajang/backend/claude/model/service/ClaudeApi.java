@@ -4,6 +4,9 @@ import com.ajangajang.backend.claude.dto.PromptConditionDto;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClaudeApi {
@@ -49,13 +53,16 @@ public class ClaudeApi {
             );
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody();
+                JSONObject jsonObject = new JSONObject(response.getBody());
+                JSONArray contentArray = jsonObject.getJSONArray("content");
+                JSONObject contentObject = contentArray.getJSONObject(0);
+                return contentObject.getString("text");
             } else {
                 throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("{}", e.getMessage());
             throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
         }
     }
