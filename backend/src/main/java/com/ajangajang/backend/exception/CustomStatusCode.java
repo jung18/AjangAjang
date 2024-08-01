@@ -24,7 +24,9 @@ public enum CustomStatusCode {
     API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Claude API 호출 실패"),
 
     UNSUPPORTED_FILE_FORMAT(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 파일 형식"),
-    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "변경 권한이 없음");
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "변경 권한이 없음"),
+
+    SMS_CERTIFICATION_FAIL(HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다.");
 
     private final HttpStatus statusCode;
     private final String message;
