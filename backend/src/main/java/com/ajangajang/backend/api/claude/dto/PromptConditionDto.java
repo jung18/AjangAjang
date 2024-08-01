@@ -1,4 +1,4 @@
-package com.ajangajang.backend.claude.dto;
+package com.ajangajang.backend.api.claude.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

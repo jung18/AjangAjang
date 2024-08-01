@@ -1,6 +1,6 @@
-package com.ajangajang.backend.claude.model.service;
+package com.ajangajang.backend.api.claude.model.service;
 
-import com.ajangajang.backend.claude.dto.PromptConditionDto;
+import com.ajangajang.backend.api.claude.dto.PromptConditionDto;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import lombok.RequiredArgsConstructor;
