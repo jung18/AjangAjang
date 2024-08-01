@@ -1,0 +1,16 @@
+.div-wrapper {
+  height: 100vh;
+  align-items: center;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: relative;
+}
+
+.div-wrapper .prj-logo {
+  margin-top: 100px;
+  width: 200px; /* 로고의 크기를 조절 */
+  object-fit: cover;
+  position: relative;
+}

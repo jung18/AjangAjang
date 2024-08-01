@@ -1,44 +1,44 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import cameraImage from '../../assets/camera.png'; // 경로 수정
+import apiClient from '../../api/apiClient'; // 경로 수정
 
-const BoardWrite: React.FC = () => {
+const BoardWrite = () => {
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('유모차');
   const [status, setStatus] = useState('SOLD_OUT'); // status 상태 추가
   const [deliveryType, setDeliveryType] = useState('DIRECT'); // deliveryType 상태 추가
-  const [image, setImage] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [image, setImage] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceChange = (e) => {
     setPrice(e.target.value);
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleContentChange = (e) => {
     setContent(e.target.value);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStatusChange = (e) => {
     setStatus(e.target.value);
   };
 
-  const handleDeliveryTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeliveryTypeChange = (e) => {
     setDeliveryType(e.target.value);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
     }
@@ -48,53 +48,31 @@ const BoardWrite: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  const getAuthorizationToken = () => {
-    const name = "Authorization=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(';');
-    for (let i = 0; i < cookieArray.length; i++) {
-      let cookie = cookieArray[i];
-      while (cookie.charAt(0) === ' ') {
-        cookie = cookie.substring(1);
-      }
-      if (cookie.indexOf(name) === 0) {
-        const token = cookie.substring(name.length, cookie.length);
-        // Bearer 접두사가 포함되어 있는지 확인하고, 필요하면 추가합니다.
-        return token;
-      }
-    }
-    return "";
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const board = new FormData();
-    board.append('title', title);
-    board.append('price', price);
-    board.append('content', content);
-    board.append('status', status);
-    board.append('deliveryType', deliveryType);
-    board.append('category', category);
+    const createBoardDto = {
+      title,
+      price: parseInt(price),
+      content,
+      status,
+      deliveryType,
+      category,
+      writerId: 1 // 임시로 writerId 설정, 실제 사용 시에는 적절한 값을 설정해야 함
+    };
+
+    const formData = new FormData();
+    formData.append('board', new Blob([JSON.stringify(createBoardDto)], { type: 'application/json' }));
     if (image) {
-      board.append('image', image);
+      formData.append('media', image);
     }
 
-    const token = getAuthorizationToken();
-    const url = 'http://localhost:8080/api/board';
-
-    console.log('Authorization Token:', token); // 토큰 출력
-    console.log('Request URL:', url); // URL 출력
+    const url = '/api/board';
 
     try {
-      const response = await axios.post(url, board, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': token, // Bearer 접두사 포함된 토큰
-        },
-      });
+      const response = await apiClient.post(url, formData);
       console.log('Response:', response.data);
-      navigate('/board/all'); // 전송이 완료되면 리다이렉션
+      navigate('/board'); // 전송이 완료되면 리다이렉션
     } catch (error) {
       console.error('Error submitting the form', error);
     }
