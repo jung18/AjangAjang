@@ -1,0 +1,32 @@
+.icon-button {
+    background-color: transparent;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5px 0;
+    position: relative;
+    width: 55px;
+    border-style: none;
+}
+
+.icon-button .icon-image {
+    width: 45px;
+}
+
+.icon-button .icon-text.active {
+    color: #FF0030;
+}
+
+.icon-button .icon-text {
+    color: #FF9bae;
+    font-family: 'GmarketSansMedium', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: -0.8px;
+    line-height: normal;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    width: fit-content;
+}
