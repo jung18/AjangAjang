@@ -24,17 +24,18 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.logo {
+.login-button .logo {
   width: 20px;
   height: 20px;
   margin-right: 10px;
 }
 
-.button-text {
+.login-button .button-text {
   margin-left: 7px;
   color: rgb(46, 46, 46);
   font-size: 15px;
   font-weight: 700;
+  font-family: 'GmarketSansMedium', sans-serif;
 }
 
 .login-button.naver {
