@@ -1,6 +1,6 @@
 package com.ajangajang.backend.api.kakaomap.controller;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Address;
+import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.api.kakaomap.model.service.KakaoMapApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class KakaoMapApiController {
     @GetMapping("/api/location/nearby") // 주소로 인접지역 조회하기
     public ResponseEntity<?> getNearbyAddresses(@RequestParam String code,
                                             @RequestParam String type) {
-        List<Address> result = kakaoMapApiService.getNearbyAddresses(code, type);
+        List<Regions> result = kakaoMapApiService.getNearbyAddresses(code, type);
         return ResponseEntity.ok(Map.of("data", result));
     }
 

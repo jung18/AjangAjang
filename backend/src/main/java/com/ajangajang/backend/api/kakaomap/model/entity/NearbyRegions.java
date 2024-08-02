@@ -15,10 +15,10 @@ public class NearbyRegions {
 
     @ManyToOne
     @JoinColumn(name = "current_id")
-    private Address current;
+    private Regions current;
     @ManyToOne
     @JoinColumn(name = "nearby_id")
-    private Address nearby;
+    private Regions nearby;
 
     @Enumerated(EnumType.STRING)
     private NearType nearType;

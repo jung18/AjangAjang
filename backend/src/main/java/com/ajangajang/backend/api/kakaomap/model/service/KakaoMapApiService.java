@@ -1,6 +1,6 @@
 package com.ajangajang.backend.api.kakaomap.model.service;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Address;
+import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.api.kakaomap.model.repository.AddressRepository;
 import com.ajangajang.backend.api.kakaomap.model.repository.NearbyRegionsRepository;
 import com.ajangajang.backend.exception.CustomGlobalException;
@@ -96,8 +96,8 @@ public class KakaoMapApiService {
                              double longitude, double latitude, String addressCode) {
         boolean isExist = addressRepository.existsByAddressCode(addressCode);
         if (!isExist) {
-            Address address = new Address(sido, sigg, emd, longitude, latitude, addressCode);
-            addressRepository.save(address);
+            Regions regions = new Regions(sido, sigg, emd, longitude, latitude, addressCode);
+            addressRepository.save(regions);
         }
     }
 
@@ -134,13 +134,13 @@ public class KakaoMapApiService {
         }
     }
 
-    public List<Address> getNearbyAddresses(String addressCode, String type) {
-        Address findAddress = addressRepository.findByAddressCode(addressCode)
+    public List<Regions> getNearbyAddresses(String addressCode, String type) {
+        Regions findRegions = addressRepository.findByAddressCode(addressCode)
                 .orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
         return switch (type) {
-            case "FAR" -> regionsRepository.findFarById(findAddress.getId());
-            case "MEDIUM" -> regionsRepository.findMediumById(findAddress.getId());
-            case "CLOSE" -> regionsRepository.findCloseById(findAddress.getId());
+            case "FAR" -> regionsRepository.findFarById(findRegions.getId());
+            case "MEDIUM" -> regionsRepository.findMediumById(findRegions.getId());
+            case "CLOSE" -> regionsRepository.findCloseById(findRegions.getId());
             default -> throw new CustomGlobalException(CustomStatusCode.INVALID_NEAR_TYPE);
         };
     }

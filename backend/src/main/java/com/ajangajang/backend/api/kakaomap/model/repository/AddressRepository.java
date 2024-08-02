@@ -1,6 +1,6 @@
 package com.ajangajang.backend.api.kakaomap.model.repository;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Address;
+import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface AddressRepository extends JpaRepository<Address, Long> {
+public interface AddressRepository extends JpaRepository<Regions, Long> {
 
-    @Query("select COUNT(a) > 0 from Address a where a.addressCode = :addressCode")
+    @Query("select COUNT(a) > 0 from Regions a where a.addressCode = :addressCode")
     boolean existsByAddressCode(@Param("addressCode") String addressCode);
 
     @Modifying
@@ -44,6 +44,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
             "                     + sin( radians(a1.latitude) ) * sin( radians(a2.latitude) ) ) ) <= 15", nativeQuery = true)
     void saveNearbyRegion();
 
-    Optional<Address> findByAddressCode(@Param("addressCode") String addressCode);
+    Optional<Regions> findByAddressCode(@Param("addressCode") String addressCode);
 
 }

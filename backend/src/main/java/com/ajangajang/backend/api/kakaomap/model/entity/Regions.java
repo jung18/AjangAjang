@@ -13,7 +13,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Address {
+public class Regions {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -26,7 +26,7 @@ public class Address {
     private double latitude; // 위도
     private String addressCode; // 법정코드
 
-    public Address(String sido, String sigg, String emd, double longitude, double latitude, String addressCode) {
+    public Regions(String sido, String sigg, String emd, double longitude, double latitude, String addressCode) {
         this.sido = sido;
         this.sigg = sigg;
         this.emd = emd;

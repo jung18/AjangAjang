@@ -1,6 +1,6 @@
 package com.ajangajang.backend.board.model.entity;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Address;
+import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -53,7 +53,7 @@ public class Board {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Address address;
+    private Regions regions;
 
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
