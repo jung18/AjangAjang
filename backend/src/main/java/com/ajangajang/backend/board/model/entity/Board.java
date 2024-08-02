@@ -1,6 +1,7 @@
 package com.ajangajang.backend.board.model.entity;
 
 import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
+import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -39,10 +40,10 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "delivery_type_id")
     private DeliveryType deliveryType;
     // 유저 (작성자)
@@ -53,7 +54,7 @@ public class Board {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Regions regions;
+    private Address address;
 
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
