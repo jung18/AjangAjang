@@ -1,5 +1,6 @@
 package com.ajangajang.backend.board.model.entity;
 
+import com.ajangajang.backend.api.kakaomap.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 
 @Entity
@@ -49,6 +50,10 @@ public class Board {
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User writer;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
