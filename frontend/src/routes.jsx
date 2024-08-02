@@ -1,22 +1,26 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+
+import useTokenStore from "./store/useTokenStore.js"
+
 import Board from './pages/board/Board';
 import Login from './pages/login/Login';
-import SignUp from './pages/signup/SignUp'; // 경로 수정
-import BoardWrite from './pages/boardwriter/BoardWrite'; // 경로 수정
-// import PageLayout from './layout/PageLayout';
-// import BoardDetail from './pages/BoardDetail';
+import Search from './pages/search/Search';
 
-const RoutesComponent = () => {
+import PageLayout from './layouts/PageLayout';
+
+const AppRoutes = () => {
+  const accessToken = useTokenStore((state) => state.accessToken);
+
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/board" element={<Board />} />
-      <Route path="/board/write" element={<BoardWrite />} />
-      {/* <Route path="/board/:boardId" element={<PageLayout page={<BoardDetail />} />} /> */}
+      <Route path="/" element={accessToken ? <Navigate to="/direct" replace /> : <Login />} />
+      <Route path="/direct" element={<PageLayout page={<Board salseType={"direct"} />} pageType={"board"} />} />
+      <Route path="/parcel" element={<PageLayout page={<Board salseType={"parcel"} />} pageType={"board"} />}/>
+      <Route path="/search" element={<PageLayout page={<Search />} pageType={"search"}/>}/>
+      <Route path="/test" element={<PageLayout page={<Search />} pageType={"search"}/>}/>
     </Routes>
   );
 };
 
-export default RoutesComponent;
+export default AppRoutes;
