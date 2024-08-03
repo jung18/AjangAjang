@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface AddressRepository extends JpaRepository<Regions, Long> {
+public interface RegionsRepository extends JpaRepository<Regions, Long> {
 
     @Query("select COUNT(a) > 0 from Regions a where a.addressCode = :addressCode")
     boolean existsByAddressCode(@Param("addressCode") String addressCode);
@@ -36,7 +36,7 @@ public interface AddressRepository extends JpaRepository<Regions, Long> {
             "               THEN 'FAR' " +
             "           ELSE NULL " +
             "       END AS distance_category " +
-            "FROM address a1, address a2 " +
+            "FROM regions a1, regions a2 " +
             "WHERE a1.id <> a2.id " +
             "  AND ( 6371 * acos( cos( radians(a1.latitude) ) " +
             "                     * cos( radians(a2.latitude) ) " +
