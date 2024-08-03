@@ -34,7 +34,7 @@ public class KakaoMapApiController {
     @GetMapping("/api/location/nearby") // 주소로 인접지역 조회하기
     public ResponseEntity<?> getNearbyRegions(@RequestParam String code,
                                             @RequestParam String type) {
-        List<Regions> result = kakaoApiService.getNearbyRegions(code, type);
+        List<String> result = kakaoApiService.getNearbyAddressCodes(code, type);
         return ResponseEntity.ok(Map.of("data", result));
     }
 

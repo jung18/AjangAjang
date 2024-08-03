@@ -109,7 +109,7 @@ public class KakaoApiService {
         return documents.getString("code");
     }
 
-    public List<Regions> getNearbyRegions(String addressCode, String type) {
+    public List<String> getNearbyAddressCodes(String addressCode, String type) {
         Regions findRegions = regionsRepository.findByAddressCode(addressCode)
                 .orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
         return switch (type) {

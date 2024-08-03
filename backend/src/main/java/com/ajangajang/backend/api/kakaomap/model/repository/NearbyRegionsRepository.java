@@ -10,22 +10,22 @@ import java.util.List;
 
 public interface NearbyRegionsRepository extends JpaRepository<NearbyRegions, Long> {
 
-    @Query("SELECT nr.nearby FROM NearbyRegions nr " +
+    @Query("SELECT nr.nearby.addressCode FROM NearbyRegions nr " +
             "WHERE nr.current.id = :currentId " +
             "AND nr.nearType in (com.ajangajang.backend.api.kakaomap.model.entity.NearType.CLOSE, " +
                                 "com.ajangajang.backend.api.kakaomap.model.entity.NearType.MEDIUM, " +
                                 "com.ajangajang.backend.api.kakaomap.model.entity.NearType.FAR)")
-    List<Regions> findFarById(@Param("currentId") Long currentId);
+    List<String> findFarById(@Param("currentId") Long currentId);
 
-    @Query("SELECT nr.nearby FROM NearbyRegions nr " +
+    @Query("SELECT nr.nearby.addressCode FROM NearbyRegions nr " +
             "WHERE nr.current.id = :currentId " +
             "AND nr.nearType in (com.ajangajang.backend.api.kakaomap.model.entity.NearType.CLOSE, " +
                                 "com.ajangajang.backend.api.kakaomap.model.entity.NearType.MEDIUM)")
-    List<Regions> findMediumById(@Param("currentId") Long currentId);
+    List<String> findMediumById(@Param("currentId") Long currentId);
 
-    @Query("SELECT nr.nearby FROM NearbyRegions nr " +
+    @Query("SELECT nr.nearby.addressCode FROM NearbyRegions nr " +
             "WHERE nr.current.id = :currentId " +
             "AND nr.nearType = 'CLOSE'")
-    List<Regions> findCloseById(@Param("currentId") Long currentId);
+    List<String> findCloseById(@Param("currentId") Long currentId);
 
 }
