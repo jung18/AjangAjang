@@ -1,0 +1,92 @@
+.board-card {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-card .board-img {
+  height: 150px;
+  width: 150px;
+}
+
+.board-card .board-img > img {
+  height: 150px;
+  object-fit: cover;
+  width: 150px;
+  border-radius: 10px;
+}
+
+.board-card .info {
+  color: #00000073;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.board-card .info .location {
+  height: 14px;
+  align-items: center;
+}
+
+.board-card .info .category {
+  border-radius: 2px;
+  margin-left: 8px;
+  height: 14px;
+  align-items: center;
+  background-color: #feedb1;
+}
+
+.board-card .title {
+  font-size: 17px;
+}
+
+.board-card .second-info {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.board-card .second-info .price {
+  display: flex;
+  align-items: flex-end;
+  font-size: 12px;
+  height: 18px;
+}
+
+.board-card .second-info .like-chat {
+  font-size: 11px;
+  height: 18px;
+  color: #ffca00;
+  display: flex;
+}
+
+.board-card .second-info .like-chat .like {
+  display: flex;
+  align-items: center;
+}
+
+.board-card .second-info .like-chat .like > img {
+  height: 15px;
+}
+
+.board-card .second-info .like-chat .like > div {
+  height: 18px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.board-card .second-info .like-chat .chat {
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.board-card .second-info .like-chat .chat > img {
+  height: 15px;
+}
+
+.board-card .second-info .like-chat .chat > div {
+  height: 18px;
+  display: flex;
+  align-items: flex-end;
+}

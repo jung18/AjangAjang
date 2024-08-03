@@ -1,0 +1,7 @@
+.board-page {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    font-family: 'GmarketSansMedium', sans-serif;;
+}
