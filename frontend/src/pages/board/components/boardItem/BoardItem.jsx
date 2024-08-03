@@ -3,13 +3,13 @@ import React from "react";
 import LikeIcon from "../../../../assets/icons/like.png";
 import ChatIcon from "../../../../assets/icons/chat.png";
 
-import "./BoardItem.css"
+import "./BoardItem.css";
 
 function BoardItem({ board }) {
   //지역 정보 넘겨줘
   //채팅 수 넘겨줘
   console.log(board);
-  const formattedPrice = new Intl.NumberFormat('en-US').format(board.price);
+  const formattedPrice = new Intl.NumberFormat("en-US").format(board.price);
 
   return (
     <div className="board-card">
