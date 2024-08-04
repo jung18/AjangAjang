@@ -5,13 +5,14 @@ FROM node:20 AS build
 WORKDIR /app
 
 # package.json과 package-lock.json을 복사하여 의존성을 설치합니다.
-COPY package*.json ./
+# 프론트엔드 파일이 frontend 디렉토리 아래에 있을 경우 경로 수정
+COPY frontend/package*.json ./
 
 # 필요한 모든 의존성을 설치합니다.
 RUN npm install
 
 # 애플리케이션 소스 코드를 복사합니다.
-COPY . .
+COPY frontend .
 
 # 애플리케이션을 빌드합니다.
 RUN npm run build
@@ -20,4 +21,6 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"] 
+
+
