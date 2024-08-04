@@ -29,7 +29,7 @@ public class ClaudeApi {
 
     private final RestTemplate restTemplate;
 
-    public String callClaudeApi(String tone, PromptConditionDto condition) {
+    public Map<String, String> callClaudeApi(String tone, PromptConditionDto condition) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-api-key", apiKey);
@@ -56,7 +56,12 @@ public class ClaudeApi {
                 JSONObject jsonObject = new JSONObject(response.getBody());
                 JSONArray contentArray = jsonObject.getJSONArray("content");
                 JSONObject contentObject = contentArray.getJSONObject(0);
-                return contentObject.getString("text");
+                String text = contentObject.getString("text");
+
+                String[] lines = text.split("\\n\\n", 2); // 빈 줄을 기준으로 분리
+                String title = lines[0];
+                String content = lines.length > 1 ? lines[1] : "";
+                return Map.of("title", title, "content", content);
             } else {
                 throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
             }
@@ -71,7 +76,8 @@ public class ClaudeApi {
 
         return "당신은 중고 육아용품을 판매하려는 사람입니다. 아래의 키워드들을 포함하고, " +
                 "물건 정보에 모델명이나 네고 가능같은 과한 부가정보 붙이지 않고, " + tone + "으로, " +
-                "판매글을 작성해주세요.\n" +
+                "판매글의 제목과 내용을 작성해주세요.\n " +
+                "작성 형식은 제목을 한줄로 작성하고 한줄의 간격을 띄운 뒤 아래에 내용을 작성해주세요.\n" +
                 "판매하려는 물건: " + condition.getItem() + "\n" +
                 "판매가격: " + condition.getPrice() + "\n" +
                 "사용기간: " + condition.getUsagePeriod() + "\n" +
