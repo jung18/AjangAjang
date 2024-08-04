@@ -1,6 +1,7 @@
 package com.ajangajang.backend.review.model.entity;
 
 import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.trade.model.entity.Trade;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -34,10 +35,10 @@ public class Review {
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User writer;
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "board_id")
-    private Board board;
+
+    @OneToOne
+    @JoinColumn(name = "trade_id")
+    private Trade trade;
 
     public Review(int score, String content) {
         this.score = score;
