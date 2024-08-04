@@ -5,7 +5,6 @@ FROM node:20 AS build
 WORKDIR /app
 
 # package.json과 package-lock.json을 복사하여 의존성을 설치합니다.
-# 프론트엔드 파일이 frontend 디렉토리 아래에 있을 경우 경로 수정
 COPY frontend/package*.json ./
 
 # 필요한 모든 의존성을 설치합니다.
@@ -17,6 +16,11 @@ COPY frontend .
 # 애플리케이션을 빌드합니다.
 RUN npm run build
 
+# 빌드된 정적 파일을 /app/build로 복사
+COPY --from=build /app/build /app/build
+
+# server.js 파일을 복사합니다.
+COPY server.js .
+
 # 애플리케이션을 실행합니다.
-# 서버 파일이 src/server.js에 있는 경우 경로를 수정하세요.
-CMD ["node", "src/server.js"]
+CMD ["node", "server.js"]
