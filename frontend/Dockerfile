@@ -17,10 +17,6 @@ COPY frontend .
 # 애플리케이션을 빌드합니다.
 RUN npm run build
 
-# Nginx를 사용하여 빌드된 정적 파일을 서빙합니다.
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"] 
-
-
+# 애플리케이션을 실행합니다.
+# 서버 파일이 src/server.js에 있는 경우 경로를 수정하세요.
+CMD ["node", "src/server.js"]
