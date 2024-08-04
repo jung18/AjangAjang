@@ -23,9 +23,9 @@ FROM node:20-alpine
 WORKDIR /app
 
 # build 스테이지에서 빌드된 파일들을 복사합니다.
-COPY --from=build /app/build /app/build
+COPY --from=build /app/build /app/frontend/build
 
-# 서버 파일을 복사합니다.
+# server.js 파일을 복사합니다.
 COPY server.js .
 
 # 애플리케이션을 실행합니다.
