@@ -16,10 +16,16 @@ COPY frontend .
 # 애플리케이션을 빌드합니다.
 RUN npm run build
 
-# 빌드된 정적 파일을 /app/build로 복사
+# 두 번째 스테이지: 실제 실행 환경
+FROM node:20-alpine
+
+# 작업 디렉토리를 /app으로 설정합니다.
+WORKDIR /app
+
+# build 스테이지에서 빌드된 파일들을 복사합니다.
 COPY --from=build /app/build /app/build
 
-# server.js 파일을 복사합니다.
+# 서버 파일을 복사합니다.
 COPY server.js .
 
 # 애플리케이션을 실행합니다.
