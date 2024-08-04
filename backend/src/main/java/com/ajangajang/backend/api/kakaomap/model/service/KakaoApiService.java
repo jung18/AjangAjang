@@ -5,6 +5,7 @@ import com.ajangajang.backend.api.kakaomap.model.repository.NearbyRegionsReposit
 import com.ajangajang.backend.api.kakaomap.model.repository.RegionsRepository;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
+import com.ajangajang.backend.trade.model.dto.RecommendDto;
 import com.ajangajang.backend.user.model.dto.AddressDto;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.repository.AddressRepository;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,7 +36,6 @@ public class KakaoApiService {
     private final RestTemplate restTemplate;
     private final RegionsRepository regionsRepository;
     private final NearbyRegionsRepository nearbyRegionsRepository;
-    private final AddressRepository addressRepository;
 
     public ResponseEntity<String> callApiAndGetResponse(String apiUrl) {
         HttpHeaders headers = new HttpHeaders();
@@ -71,7 +72,7 @@ public class KakaoApiService {
 
         } catch (Exception e) {
             log.info(e.getMessage());
-            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+            throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
         }
     }
 
@@ -118,6 +119,34 @@ public class KakaoApiService {
             case "CLOSE" -> nearbyRegionsRepository.findCloseById(findRegions.getId());
             default -> throw new CustomGlobalException(CustomStatusCode.INVALID_NEAR_TYPE);
         };
+    }
+
+    public List<RecommendDto> findRecommendLocation(double longitude, double latitude) {
+        String[] codes = {"BK9", "PO3"};
+        List<RecommendDto> result = new ArrayList<>();
+
+        for (String code : codes) {
+            String apiUrl = "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=" +
+                            code + "&x=" + longitude + "&y=" + latitude + "&radius=10000";
+            ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
+
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                JSONArray jsonArray = jsonObject.getJSONArray("documents");
+                for (Object o : jsonArray) {
+                    JSONObject jsonObj = (JSONObject) o;
+                    String fullAddress = jsonObj.getString("address_name");
+                    String placeName = jsonObj.getString("place_name");
+                    double x = Double.parseDouble(jsonObj.getString("x"));
+                    double y = Double.parseDouble(jsonObj.getString("y"));
+                    result.add(new RecommendDto(fullAddress, placeName, x, y));
+                }
+            } catch (Exception e) {
+                log.info(e.getMessage());
+                throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
+            }
+        }
+        return result;
     }
 
 }

@@ -10,6 +10,7 @@ public class CreateTradeDto {
 
     private Long boardId;
     private Long sellerId;
+    private RecommendType recommendType; // 추천받을 위치 기준
     private double longitude; // 판매자 경도
     private double latitude; // 판매자 위도
 

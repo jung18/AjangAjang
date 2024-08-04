@@ -2,6 +2,7 @@ package com.ajangajang.backend.trade.controller;
 
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.trade.model.dto.CreateTradeDto;
+import com.ajangajang.backend.trade.model.dto.SaveTradeResult;
 import com.ajangajang.backend.trade.model.dto.TradeDto;
 import com.ajangajang.backend.trade.model.service.TradeService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,8 @@ public class TradeApiController {
     public ResponseEntity<?> saveTrade(@RequestBody CreateTradeDto createTradeDto,
                                        @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        Long tradeId = tradeService.saveTrade(username, createTradeDto);
-        return ResponseEntity.ok(Map.of("tradeId", tradeId));
+        SaveTradeResult result = tradeService.saveTrade(username, createTradeDto);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
