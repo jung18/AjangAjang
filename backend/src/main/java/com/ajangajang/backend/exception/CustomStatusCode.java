@@ -17,6 +17,7 @@ public enum CustomStatusCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰"),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주소"),
     NEARTYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거리 타입"),
+    TRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거래내역"),
 
     EMPTY_UPDATE_DATA(HttpStatus.BAD_REQUEST, "업데이트할 데이터 없음"),
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요한 게시글"),
