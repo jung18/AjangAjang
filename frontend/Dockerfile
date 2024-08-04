@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=build /app/build /app/frontend/build
 
 # server.js 파일을 복사합니다.
-COPY server.js .
+COPY frontend/server.js .
 
 # 애플리케이션을 실행합니다.
 CMD ["node", "server.js"]
