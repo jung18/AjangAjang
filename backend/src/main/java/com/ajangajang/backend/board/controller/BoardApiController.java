@@ -43,8 +43,10 @@ public class BoardApiController {
     }
 
     @GetMapping("/board/all")
-    public ResponseEntity<?> getAllBoards() {
-        List<BoardListDto> result = boardService.findAll();
+    public ResponseEntity<?> getAllBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                          @RequestParam String type) {
+        String username = customOAuth2User.getUsername();
+        List<BoardListDto> result = boardService.findAllInRange(username, type);
         return ResponseEntity.ok(Map.of("data", result));
     }
 

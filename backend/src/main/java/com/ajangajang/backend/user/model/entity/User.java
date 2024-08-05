@@ -30,6 +30,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = LAZY)
     private List<BoardLike> myLikes = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "main_address_id")
+    private Address mainAddress;
+
     private String name;
     private String role;
 
@@ -47,4 +51,5 @@ public class User {
         like.setUser(this);
         this.myLikes.add(like);
     }
+
 }
