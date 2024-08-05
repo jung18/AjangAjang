@@ -62,7 +62,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg());
+        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
         return userInfoDto;
     }
 

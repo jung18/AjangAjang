@@ -2,7 +2,9 @@ package com.ajangajang.backend.user.controller;
 
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.user.model.dto.AddressDto;
+import com.ajangajang.backend.user.model.dto.AddressNameDto;
 import com.ajangajang.backend.user.model.dto.CoordinateDto;
+import com.ajangajang.backend.user.model.dto.MainAddressDto;
 import com.ajangajang.backend.user.model.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,9 @@ public class AddressApiController {
 
     @PostMapping("/name")
     public ResponseEntity<?> saveAddresses(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                           @RequestBody String address) {
+                                           @RequestBody AddressNameDto address) {
         String username = customOAuth2User.getUsername();
-        AddressDto result = userAddressService.saveAddressInfo(username, address);
+        AddressDto result = userAddressService.saveAddressInfo(username, address.getAddressName());
         return ResponseEntity.ok(result);
     }
 
@@ -55,9 +57,9 @@ public class AddressApiController {
 
     @PostMapping("/main")
     public ResponseEntity<?> saveMainAddress(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                             @RequestBody Long id) {
+                                             @RequestBody MainAddressDto dto) {
         String username = customOAuth2User.getUsername();
-        Long mainAddressId = userAddressService.saveMainAddress(username, id);
+        Long mainAddressId = userAddressService.saveMainAddress(username, dto);
         return new ResponseEntity<>(Map.of("id", mainAddressId), HttpStatus.OK);
     }
 

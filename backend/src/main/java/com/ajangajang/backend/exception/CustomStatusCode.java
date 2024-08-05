@@ -1,5 +1,6 @@
 package com.ajangajang.backend.exception;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public enum CustomStatusCode {
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요한 게시글"),
     SELF_LIKE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신의 게시글은 선택할 수 없음"),
     INVALID_NEAR_TYPE(HttpStatus.BAD_REQUEST, "잘못된 거리 타입"),
+    DUPLICATE_ADDRESS(HttpStatus.BAD_REQUEST, "이미 존재하는 주소"),
 
     FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패"),
     API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "API 호출 실패"),

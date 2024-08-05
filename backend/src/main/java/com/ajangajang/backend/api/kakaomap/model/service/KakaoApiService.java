@@ -55,7 +55,7 @@ public class KakaoApiService {
         ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
 
         try {
-            JSONObject jsonObject = new JSONObject(response);
+            JSONObject jsonObject = new JSONObject(response.getBody());
             JSONArray jsonArray = jsonObject.getJSONArray("documents");
             JSONObject documents = jsonArray.getJSONObject(0);
 
@@ -81,7 +81,7 @@ public class KakaoApiService {
         ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
 
         try {
-            JSONObject jsonObject = new JSONObject(response);
+            JSONObject jsonObject = new JSONObject(response.getBody());
             JSONArray jsonArray = jsonObject.getJSONArray("documents");
             JSONObject documents = jsonArray.getJSONObject(0);
             JSONObject addressInfo = documents.getJSONObject("address");
@@ -104,7 +104,7 @@ public class KakaoApiService {
         String apiUrl = "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=" + longitude + "&y=" + latitude;
         ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
 
-        JSONObject jsonObject = new JSONObject(response);
+        JSONObject jsonObject = new JSONObject(response.getBody());
         JSONArray jsonArray = jsonObject.getJSONArray("documents");
         JSONObject documents = jsonArray.getJSONObject(0);
         return documents.getString("code");
@@ -131,7 +131,7 @@ public class KakaoApiService {
             ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
 
             try {
-                JSONObject jsonObject = new JSONObject(response);
+                JSONObject jsonObject = new JSONObject(response.getBody());
                 JSONArray jsonArray = jsonObject.getJSONArray("documents");
                 for (Object o : jsonArray) {
                     JSONObject jsonObj = (JSONObject) o;
