@@ -27,19 +27,19 @@ const Tabbar = () => {
 
   useEffect(() => {
     switch (currentPage) {
-      case "location":
+      case "/direct":
         navigate("/direct");
         break;
-      case "box":
+      case "/parcel":
         navigate("/parcel");
         break;
-      case "post":
+      case "/post":
         navigate("/post");
         break;
-      case "sent":
+      case "/chat":
         navigate("/chat");
         break;
-      case "user":
+      case "/user":
         navigate("/user");
         break;
       default:
@@ -59,40 +59,40 @@ const Tabbar = () => {
           inactiveIcon={locationIcon}
           label="직접거래"
           showText={true}
-          isActive={currentPage === "location"}
-          click={() => setActiveTab("location")}
+          isActive={currentPage.startsWith("/direct")}
+          click={() => setActiveTab("/direct")}
         />
         <IconButton className="icon-btn"
           activeIcon={ActiveBoxIcon}
           inactiveIcon={boxIcon}
           label="택배거래"
           showText={true}
-          isActive={currentPage === "box"}
-          click={() => setActiveTab("box")}
+          isActive={currentPage.startsWith("/parcel")}
+          click={() => setActiveTab("/parcel")}
         />
         <IconButton className="icon-btn"
           activeIcon={ActivePostIcon}
           inactiveIcon={postIcon}
           label="글 작성"
           showText={true}
-          isActive={currentPage=== "post"}
-          click={() => setActiveTab("post")}
+          isActive={currentPage.startsWith("/post")}
+          click={() => setActiveTab("/post")}
         />
         <IconButton className="icon-btn"
           activeIcon={ActiveSentIcon}
           inactiveIcon={sentIcon}
           label="채팅하기"
           showText={true}
-          isActive={currentPage === "sent"}
-          click={() => setActiveTab("sent")}
+          isActive={currentPage.startsWith("/chat")}
+          click={() => setActiveTab("/chat")}
         />
         <IconButton className="icon-btn"
           activeIcon={ActiveUserIcon}
           inactiveIcon={userIcon}
           label="내 정보"
           showText={true}
-          isActive={currentPage === "user"}
-          click={() => setActiveTab("user")}
+          isActive={currentPage.startsWith("/user")}
+          click={() => setActiveTab("/user")}
         />
       </div>
     </div>

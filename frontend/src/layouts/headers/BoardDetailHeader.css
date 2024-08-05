@@ -1,0 +1,83 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  margin-top: 0;
+  background-color: #ff8796;
+  box-shadow: 0px 4px 2px -1px #00000033;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header .back-btn {
+  background-color: transparent;
+  border-style: none;
+  position: absolute;
+  left: 15px;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .back-btn .icon {
+  height: 25px;
+  width: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+header .menu {
+  position: absolute;
+  right: 15px;
+  height: 30px;
+  width: 30px;
+}
+
+header .menu .menu-btn {
+  background-color: transparent;
+  border-style: none;
+  position: fixed;
+  right: 15px;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .menu .menu-option {
+  position: fixed;
+  top: 50px;
+  right: 5px;
+  width: 100px;
+  height: 70px;
+  background-color: white;
+  opacity: var(--sds-size-stroke-border);
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.15));
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  font-family: "GmarketSansMedium", sans-serif;
+  color: #ff8796;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+header .menu .menu-btn .icon {
+  height: 25px;
+  width: 25px;
+  padding: 0;
+  margin: 0;
+}
