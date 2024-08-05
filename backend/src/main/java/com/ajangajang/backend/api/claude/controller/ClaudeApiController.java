@@ -18,9 +18,8 @@ public class ClaudeApiController {
     private final ClaudeApi claudeApi;
 
     @PostMapping("/api/claude")
-    public ResponseEntity<?> getBoardContent(@RequestParam("tone") String tone,
-                                             @RequestBody PromptConditionDto condition) {
-        Map<String, String> result = claudeApi.callClaudeApi(tone, condition);
+    public ResponseEntity<?> getBoardContent(@RequestBody PromptConditionDto condition) {
+        Map<String, String> result = claudeApi.callClaudeApi(condition);
         return ResponseEntity.ok(result);
     }
 

@@ -8,7 +8,7 @@ import lombok.Getter;
 public class PromptConditionDto {
 
     private String item;
-    private int price;
+    private String price;
     private String usagePeriod;
     private String itemCondition;
     private String tone;

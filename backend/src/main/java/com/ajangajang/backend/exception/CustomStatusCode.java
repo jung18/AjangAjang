@@ -1,6 +1,5 @@
 package com.ajangajang.backend.exception;
 
-import co.elastic.clients.elasticsearch.nodes.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
