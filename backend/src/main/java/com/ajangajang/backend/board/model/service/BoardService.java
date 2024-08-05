@@ -1,5 +1,6 @@
 package com.ajangajang.backend.board.model.service;
 
+import com.ajangajang.backend.api.kakaomap.model.service.KakaoApiService;
 import com.ajangajang.backend.board.model.dto.*;
 import com.ajangajang.backend.board.model.entity.*;
 import com.ajangajang.backend.board.model.repository.*;
@@ -30,6 +31,7 @@ public class BoardService {
     private final UserRepository userRepository;
 
     private final FileService fileService;
+    private final KakaoApiService kakaoApiService;
 
     public Long save(String username, CreateBoardDto dto, List<MultipartFile> files) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -62,8 +64,10 @@ public class BoardService {
                             mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
-    public List<BoardListDto> findAll() {
-        List<Board> boards = boardRepository.findAllWithWriter();
+    public List<BoardListDto> findAllInRange(String username, String type) {
+        User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        List<String> nearbyAddressCodes = kakaoApiService.getNearbyAddressCodes(findUser.getMainAddress().getAddressCode(), type);
+        List<Board> boards = boardRepository.findAllInRange(nearbyAddressCodes);
         return getBoardListDtos(boards);
     }
 

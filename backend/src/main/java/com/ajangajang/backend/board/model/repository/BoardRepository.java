@@ -12,8 +12,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b " +
             "join fetch b.writer " +
             "join fetch b.category " +
-            "join fetch b.deliveryType order by b.updatedAt desc")
-    List<Board> findAllWithWriter();
+            "join fetch b.deliveryType " +
+            "join fetch b.address a " +
+            "where a.addressCode in :codes order by b.updatedAt desc")
+    List<Board> findAllInRange(List<String> codes);
 
     @Query("select b from Board b " +
             "join fetch b.writer " +

@@ -1,7 +1,7 @@
-package com.ajangajang.backend.claude.controller;
+package com.ajangajang.backend.api.claude.controller;
 
-import com.ajangajang.backend.claude.dto.PromptConditionDto;
-import com.ajangajang.backend.claude.model.service.ClaudeApi;
+import com.ajangajang.backend.api.claude.model.service.ClaudeApi;
+import com.ajangajang.backend.api.claude.dto.PromptConditionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +20,8 @@ public class ClaudeApiController {
     @PostMapping("/api/claude")
     public ResponseEntity<?> getBoardContent(@RequestParam("tone") String tone,
                                              @RequestBody PromptConditionDto condition) {
-        String result = claudeApi.callClaudeApi(tone, condition);
-        return ResponseEntity.ok(Map.of("content", result));
+        Map<String, String> result = claudeApi.callClaudeApi(tone, condition);
+        return ResponseEntity.ok(result);
     }
 
 }

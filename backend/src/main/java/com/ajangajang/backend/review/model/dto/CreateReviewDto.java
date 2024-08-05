@@ -8,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateReviewDto {
 
-    private Long boardId;
+    private Long tradeId;
     private int score;
     private String content;
 
