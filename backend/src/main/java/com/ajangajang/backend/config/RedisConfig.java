@@ -1,4 +1,4 @@
-package com.ajangajang.backend.sms.config;
+package com.ajangajang.backend.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

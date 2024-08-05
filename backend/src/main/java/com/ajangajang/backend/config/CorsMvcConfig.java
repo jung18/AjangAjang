@@ -1,4 +1,4 @@
-package com.ajangajang.backend.oauth.config;
+package com.ajangajang.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -12,6 +12,6 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         registry.addMapping("/**")
                 .exposedHeaders("Set-Cookie")
-                .allowedOrigins("http://localhost:3000");
+                .allowedOrigins("http://i11b210.p.ssafy.io");
     }
 }

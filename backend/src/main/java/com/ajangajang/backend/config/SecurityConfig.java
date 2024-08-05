@@ -1,4 +1,4 @@
-package com.ajangajang.backend.oauth.config;
+package com.ajangajang.backend.config;
 
 import com.ajangajang.backend.oauth.jwt.CustomSuccessHandler;
 import com.ajangajang.backend.oauth.jwt.JwtFilter;
@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOrigins(Collections.singletonList("http://i11b210.p.ssafy.io"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
