@@ -1,49 +1,62 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import useTokenStore from '../../store/useTokenStore'; // 경로 수정
+import React, { useEffect, useState } from "react";
+import { fetchBoardList } from "../../api/boardService";
 
-const Board = () => {
-  const setAccessToken = useTokenStore((state) => state.setAccessToken);
-  const setRefreshToken = useTokenStore((state) => state.setRefreshToken);
-  const accessToken = useTokenStore((state) => state.accessToken);
-  const refreshToken = useTokenStore((state) => state.refreshToken);
+import BoardList from "./components/boardList/BoardList";
+import SelectBox from "../../components/SelectBox";
+
+import "./Board.css";
+
+const Board = ({salseType}) => {
+  const [boards, setBoards] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [maxHeight, setMaxHeight] = useState(0);
 
   useEffect(() => {
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
+    const getBoards = async () => {
+      try {
+        const boardList = await fetchBoardList();
+        setBoards(boardList);
+      } catch (error) {
+        console.error("Failed to fetch boards", error);
+      } finally {
+        setIsLoading(false); // 데이터 로드가 끝나면 로딩 상태를 false로 설정
+      }
     };
 
-    const accessTokenFromCookie = getCookie('Authorization');
-    const refreshTokenFromCookie = getCookie('Authorization-refresh');
-    
-    if (accessTokenFromCookie && !accessToken) {
-      setAccessToken(accessTokenFromCookie.split('Bearer/')[1]);
-    }
-    if (refreshTokenFromCookie && !refreshToken) {
-      setRefreshToken(refreshTokenFromCookie.split('Bearer/')[1]);
-    }
+    const calculateMaxHeight = () => {
+      const totalHeight = window.innerHeight;
+      setMaxHeight(totalHeight - 170);
+    };
 
-    // 쿠키 삭제
-    if (accessTokenFromCookie || refreshTokenFromCookie) {
-      document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'Authorization-refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    }
+    getBoards();
+    calculateMaxHeight();
+    window.addEventListener("resize", calculateMaxHeight);
 
-    console.log('Access Token from Cookie:', accessTokenFromCookie);
-    console.log('Refresh Token from Cookie:', refreshTokenFromCookie);
-  }, [setAccessToken, setRefreshToken, accessToken, refreshToken]);
+    return () => {
+      window.removeEventListener("resize", calculateMaxHeight);
+    };
+  }, []);
 
-  useEffect(() => {
-    console.log('Access Token:', accessToken);
-    console.log('Refresh Token:', refreshToken);
-  }, [accessToken, refreshToken]);
+  if (isLoading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+  }
 
+  //optionList에 사용자 주소 목록 넣어줘야함
   return (
-    <div>
-      <h1>Board</h1>
-      <Link to="/board/write">Write a new post dd</Link>
+    <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
+      <div className="user-option">
+        <SelectBox
+          optionList={[
+            "대전시 유성구 덕명동",
+            "대전시 유성구 계산동",
+          ]}
+        />
+        <label className="recommand">
+          자동 추천
+          <input type="checkbox" />
+        </label>
+      </div>
+      <BoardList boards={boards.data} sType={salseType} />
     </div>
   );
 };

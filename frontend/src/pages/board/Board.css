@@ -1,0 +1,38 @@
+.board-page {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  overflow-y: auto;
+}
+
+.board-page .user-option {
+  height: 50px;
+  width: -webkit-fill-available;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ff879e;
+  margin-top: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  background-color: white;
+  z-index: 1000; /* 배경색 추가 */
+}
+
+.board-page .user-option .recommand {
+  display: flex;
+  align-items: center;
+  color: #ff879e;
+}
+
+.board-page .user-option .recommand input {
+  border-color: #ff879e;
+  accent-color: #ffca00;
+  width: 17px;
+  height: 17px;
+}
