@@ -11,5 +11,8 @@ public class PromptConditionDto {
     private int price;
     private String usagePeriod;
     private String itemCondition;
+    private String tone;
+    private String age;
+    private String gender;
 
 }

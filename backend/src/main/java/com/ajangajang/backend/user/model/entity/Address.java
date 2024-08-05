@@ -29,7 +29,7 @@ public class Address {
         this.sido = sido;
         this.sigg = sigg;
         this.emd = emd;
-        this.fullAddress = this.fullAddress;
+        this.fullAddress = fullAddress;
         this.longitude = longitude;
         this.latitude = latitude;
         this.addressCode = addressCode;

@@ -4,6 +4,8 @@ import com.ajangajang.backend.api.kakaomap.model.service.KakaoApiService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.AddressDto;
+import com.ajangajang.backend.user.model.dto.AddressNameDto;
+import com.ajangajang.backend.user.model.dto.MainAddressDto;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.entity.UserAddress;
@@ -13,6 +15,7 @@ import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserAddressService {
 
@@ -47,6 +51,11 @@ public class UserAddressService {
             findUser.setMainAddress(address);
         }
 
+        if (userAddressRepository.findByUserIdAndAddressId(findUser.getId(), address.getId()) != null) {
+            // 이미 추가한 주소면 중복 추가 불가
+            throw new CustomGlobalException(CustomStatusCode.DUPLICATE_ADDRESS);
+        }
+
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
         return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
@@ -70,6 +79,12 @@ public class UserAddressService {
         if (findUser.getMainAddress() == null) {
             findUser.setMainAddress(address);
         }
+
+        if (userAddressRepository.findByUserIdAndAddressId(findUser.getId(), address.getId()) != null) {
+            // 이미 추가한 주소면 중복 추가 불가
+            throw new CustomGlobalException(CustomStatusCode.DUPLICATE_ADDRESS);
+        }
+
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
         return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
@@ -78,7 +93,7 @@ public class UserAddressService {
 
     public List<AddressDto> findMyAddresses(String username) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return userAddressRepository.findMyAddresses(findUser.getId()).stream()
+        return addressRepository.findMyAddresses(findUser.getId()).stream()
                 .map(address -> new AddressDto(address.getId(), address.getSido(), address.getSigg(),
                                             address.getEmd(), address.getFullAddress()))
                 .collect(Collectors.toList());
@@ -86,13 +101,16 @@ public class UserAddressService {
 
     public void deleteAddress(String username, Long id) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        userAddressRepository.findByUserIdAndAddressId(findUser.getId(), id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
-        userAddressRepository.deleteByUserIdAndAddressId(findUser.getId(), id);
+        UserAddress findUserAddress = userAddressRepository.findByUserIdAndAddressId(findUser.getId(), id);
+        if (findUserAddress == null) {
+            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+        }
+        userAddressRepository.delete(findUserAddress);
     }
 
-    public Long saveMainAddress(String username, Long id) {
+    public Long saveMainAddress(String username, MainAddressDto dto) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        Address findAddress = addressRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
+        Address findAddress = addressRepository.findById(dto.getMainAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
         findUser.setMainAddress(findAddress);
         return findUser.getMainAddress().getId();
     }

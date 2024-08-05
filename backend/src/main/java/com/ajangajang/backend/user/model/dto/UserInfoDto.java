@@ -11,5 +11,10 @@ public class UserInfoDto {
 
     private String nickname;
     private String profileImg;
+    private Long mainAddressId;
 
+    public UserInfoDto(String nickname, String profileImg) {
+        this.nickname = nickname;
+        this.profileImg = profileImg;
+    }
 }
