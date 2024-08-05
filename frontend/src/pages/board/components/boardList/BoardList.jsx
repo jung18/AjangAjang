@@ -2,13 +2,13 @@ import React from "react";
 
 import BoardItem from "../boardItem/BoardItem";
 
-import "./BoardList.css"
+import "./BoardList.css";
 
-function BoardList({ boards }) {
+function BoardList({ boards, sType }) {
   return (
     <div className="board-list">
       {boards.map((board, index) => (
-        <BoardItem key={index} board={board} />
+        <BoardItem key={index} board={board} salse={sType} />
       ))}
     </div>
   );

@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import usePageStore from "../../../../store/currentPageStore";
 
 import LikeIcon from "../../../../assets/icons/like.png";
 import ChatIcon from "../../../../assets/icons/chat.png";
 
 import "./BoardItem.css";
 
-function BoardItem({ board }) {
+function BoardItem({ board, salse }) {
+  const navigate = useNavigate();
+  const setCurrentPage = usePageStore((state) => state.setCurrentPage);
+
   //지역 정보 넘겨줘
   //채팅 수 넘겨줘
   console.log(board);
   const formattedPrice = new Intl.NumberFormat("en-US").format(board.price);
 
+  const handleClick = () => {
+    if (salse === "direct") {
+      setCurrentPage("direct-detail");
+      navigate(`/direct/${board.boardId}`)
+    } else {
+      setCurrentPage("parcel-detail");
+      navigate(`/parcel/${board.boardId}`);
+    }
+  };
+
   return (
-    <div className="board-card">
+    <div className="board-card" onClick={handleClick}>
       <div className="board-img">
         <img alt="test" src="https://picsum.photos/200" />
       </div>
