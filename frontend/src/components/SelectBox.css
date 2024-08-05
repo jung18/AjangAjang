@@ -1,0 +1,48 @@
+.select {
+  display: flex;
+  flex-direction: column;
+}
+
+.select .select-box {
+  position: fixed;
+  top: 73px;
+  font-size: 17px;
+  color: #ff879e;
+  padding-right: 25px;
+  font-family: "GmarketSansMedium", sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.select-box img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.select .select-box .location option {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ff879e;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.select .option-box {
+  position: fixed;
+  top: 95px;
+  background-color: white;
+  opacity: var(--sds-size-stroke-border);
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.15));
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.select .option-box .option-content {
+  margin: 10px 0;
+}
+
+.select .option-box .option-content > div {
+  margin: 0 10px;
+}
