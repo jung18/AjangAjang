@@ -1,5 +1,10 @@
 package com.ajangajang.backend.elasticsearch.model.service;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import com.ajangajang.backend.api.kakaomap.model.entity.NearType;
 import com.ajangajang.backend.board.model.dto.SearchBoardDto;
 import com.ajangajang.backend.board.model.dto.SearchResultDto;
 import com.ajangajang.backend.board.model.entity.Board;
@@ -15,13 +20,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ajangajang.backend.api.kakaomap.model.entity.NearType.*;
 
 @Service
 @Transactional
@@ -35,22 +45,22 @@ public class BoardSearchService {
     private NaverApiService naverApiService;
 
     // 지역 필터링만
-    public List<Long> getNearbyBoardIds(String addressCode, String nearType) {
+    public List<Long> getNearbyBoardIds(String addressCode, NearType nearType) {
         List<String> codes = getNearbyCodes(addressCode, nearType);
         return boardSearchRepository.findByAddressCodeIn(codes).stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
     }
 
-    public List<String> getNearbyCodes(String addressCode, String nearType) {
+    public List<String> getNearbyCodes(String addressCode, NearType nearType) {
         AddressDocument addressDocument = addressSearchRepository.findById(addressCode)
                 .orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
         List<String> codes = new ArrayList<>();
-        if ("CLOSE".equals(nearType)) {
+        if (CLOSE.equals(nearType)) {
             codes.addAll(addressDocument.getCloseCodes());
-        } else if ("MEDIUM".equals(nearType)) {
+        } else if (MEDIUM.equals(nearType)) {
             codes.addAll(addressDocument.getCloseCodes());
             codes.addAll(addressDocument.getMediumCodes());
-        } else if ("FAR".equals(nearType)) {
+        } else if (FAR.equals(nearType)) {
             codes.addAll(addressDocument.getCloseCodes());
             codes.addAll(addressDocument.getMediumCodes());
             codes.addAll(addressDocument.getFarCodes());
@@ -93,16 +103,45 @@ public class BoardSearchService {
         String title = searchBoardDto.getTitle();
         String category = searchBoardDto.getCategory();
         String addressCode = searchBoardDto.getAddressCode();
+        NearType nearType = searchBoardDto.getNearType();
         int page = searchBoardDto.getPage();
         int size = searchBoardDto.getSize();
 
+        List<String> codes = getNearbyCodes(addressCode, nearType);
+
+        // 기본 bool 쿼리 빌더
+        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool()
+                .filter(QueryBuilders.terms(t -> t.field("addressCode")
+                        .terms(v -> v.value(codes.stream()
+                                .map(FieldValue::of)
+                                .collect(Collectors.toList())))));
+
+        // title이 존재하는 경우 match 쿼리 추가
+        if (title != null && !title.isEmpty()) {
+            boolQueryBuilder.must(QueryBuilders.match(m -> m.field("title")
+                    .query(title).operator(co.elastic.clients.elasticsearch._types.query_dsl.Operator.And)));
+        }
+
+        // category가 존재하는 경우 term 쿼리 추가
+        if (category != null && !category.isEmpty()) {
+            boolQueryBuilder.must(QueryBuilders.term(t -> t.field("category").value(category)));
+        }
+
+        // 쿼리 생성
+        Query searchQuery = boolQueryBuilder.build()._toQuery();
         Pageable pageable = PageRequest.of(page, size);
-        Page<BoardDocument> boardDocuments = boardSearchRepository.findByTitleAndCategoryAndAddressCode(title, category, addressCode, pageable);
-        List<Long> boardIds = boardDocuments.stream()
-                .map(BoardDocument::getBoardId)
-                .collect(Collectors.toList());
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(searchQuery)
+                .withPageable(pageable)
+                .build();
+        // 검색
+        SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
+        List<Long> boardIds = response.getSearchHits().stream()
+                .map(SearchHit::getContent).toList().stream()
+                .map(BoardDocument::getBoardId).collect(Collectors.toList());
         List<Board> boards = boardRepository.findAllById(boardIds);
-        return new PageImpl<>(boards, pageable, boardDocuments.getTotalElements());
+        return new PageImpl<>(boards, pageable, response.getTotalHits());
     }
 
 }

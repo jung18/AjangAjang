@@ -121,16 +121,6 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
-    public List<BoardListDto> searchByQuery(String query) {
-        List<Board> boards = boardRepository.findAllByQuery(query);
-        return getBoardListDtos(boards);
-    }
-
-    public List<BoardListDto> filterByTag(String tag) {
-        List<Board> boards = boardRepository.findAllByTag(tag);
-        return getBoardListDtos(boards);
-    }
-
     public List<BoardListDto> findAllByUserId(Long userId) {
         return boardRepository.findAllByUserId(userId).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
