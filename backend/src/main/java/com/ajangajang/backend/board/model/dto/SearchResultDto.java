@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 @Getter
 @Setter
 public class SearchResultDto {
-    private Page<Board> searchResult;
+    private Page<BoardListDto> searchResult;
     private String originalTitle;
     private String suggestedTitle;
     private boolean changed;

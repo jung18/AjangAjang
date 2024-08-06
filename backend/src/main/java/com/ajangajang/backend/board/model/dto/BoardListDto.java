@@ -18,8 +18,9 @@ public class BoardListDto {
     private String category;
     private Status status;
     private int likeCount;
+    private int viewCount;
 
-    public BoardListDto(Long boardId, String title, int price, String deliveryType, String category, Status status, int likeCount) {
+    public BoardListDto(Long boardId, String title, int price, String deliveryType, String category, Status status, int likeCount, int viewCount) {
         this.boardId = boardId;
         this.title = title;
         this.price = price;
@@ -27,5 +28,6 @@ public class BoardListDto {
         this.category = category;
         this.status = status;
         this.likeCount = likeCount;
+        this.viewCount = viewCount;
     }
 }

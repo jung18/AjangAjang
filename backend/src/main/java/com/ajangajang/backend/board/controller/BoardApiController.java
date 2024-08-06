@@ -41,6 +41,7 @@ public class BoardApiController {
 
     @GetMapping("/board/{id}")
     public ResponseEntity<?> getBoard(@PathVariable("id") Long id) {
+        boardService.increaseViewCount(id);
         BoardDto result = boardService.findById(id);
         return ResponseEntity.ok(result);
     }

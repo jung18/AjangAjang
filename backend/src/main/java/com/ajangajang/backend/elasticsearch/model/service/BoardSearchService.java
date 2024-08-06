@@ -5,10 +5,12 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.ajangajang.backend.api.kakaomap.model.entity.NearType;
+import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.board.model.dto.SearchBoardDto;
 import com.ajangajang.backend.board.model.dto.SearchResultDto;
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
 import com.ajangajang.backend.elasticsearch.model.document.BoardDocument;
 import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchRepository;
@@ -42,6 +44,7 @@ public class BoardSearchService {
     private final BoardSearchRepository boardSearchRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final BoardRepository boardRepository;
+    private final BoardService boardService;
     private NaverApiService naverApiService;
 
     // 지역 필터링만
@@ -93,13 +96,13 @@ public class BoardSearchService {
             }
         }
 
-        Page<Board> searchResult = search(searchBoardDto);
+        Page<BoardListDto> searchResult = search(searchBoardDto);
         searchResultDto.setSearchResult(searchResult);
 
         return searchResultDto;
     }
 
-    public Page<Board> search(SearchBoardDto searchBoardDto) {
+    public Page<BoardListDto> search(SearchBoardDto searchBoardDto) {
         String title = searchBoardDto.getTitle();
         String category = searchBoardDto.getCategory();
         String addressCode = searchBoardDto.getAddressCode();
@@ -141,7 +144,8 @@ public class BoardSearchService {
                 .map(SearchHit::getContent).toList().stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
         List<Board> boards = boardRepository.findAllById(boardIds);
-        return new PageImpl<>(boards, pageable, response.getTotalHits());
+        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
+        return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
     }
 
 }
