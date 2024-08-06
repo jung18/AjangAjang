@@ -29,7 +29,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final CategoryRepository categoryRepository;
-    private final DeliveryTypeRepository deliveryTypeRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
 
@@ -40,11 +39,9 @@ public class BoardService {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
         Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
-        DeliveryType savedDeliveryType = deliveryTypeRepository.save(new DeliveryType(dto.getDeliveryType()));
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
 
         board.setCategory(savedCategory);
-        board.setDeliveryType(savedDeliveryType);
         board.setAddress(address);
         setBoardMedia(files, board); // file upload, media save
         writer.addMyBoard(board);
@@ -64,9 +61,9 @@ public class BoardService {
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
-                            findBoard.getContent(), findBoard.getDeliveryType().getType(),
-                            findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
-                            mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getCreatedAt(), findBoard.getUpdatedAt());
+                            findBoard.getContent(), findBoard.getCategory().getCategoryName(),
+                            findBoard.getStatus(), mediaDtoList, findBoard.getLikedUsers().size(),
+                            findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAllInRange(String username, String type) {
@@ -83,7 +80,6 @@ public class BoardService {
         // 엔티티 조회
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         Category findCategory = categoryRepository.findById(findBoard.getCategory().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CATEGORY_NOT_FOUND));
-        DeliveryType findDeliveryType = deliveryTypeRepository.findById(findBoard.getDeliveryType().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.DELIVERY_NOT_FOUND));
         // 본인의 게시글이 아닌 경우 수정 불가
         if (!username.equals(findBoard.getWriter().getUsername())) {
             throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
@@ -91,14 +87,12 @@ public class BoardService {
         // 내용 업데이트
         if (updateParam != null) {
             findCategory.setCategoryName(updateParam.getCategory());
-            findDeliveryType.setType(updateParam.getDeliveryType());
 
             findBoard.setTitle(updateParam.getTitle());
             findBoard.setPrice(updateParam.getPrice());
             findBoard.setContent(updateParam.getContent());
             findBoard.setCategory(findCategory);
             findBoard.setStatus(updateParam.getStatus());
-            findBoard.setDeliveryType(findDeliveryType);
 
             Address findAddress = addressRepository.findById(updateParam.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
             findBoard.setAddress(findAddress);
@@ -124,8 +118,7 @@ public class BoardService {
     public List<BoardListDto> findAllByUserId(Long userId) {
         return boardRepository.findAllByUserId(userId).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                        board.getStatus(), board.getLikedUsers().size()))
+                        board.getCategory().getCategoryName(), board.getStatus(), board.getLikedUsers().size()))
                 .collect(Collectors.toList());
     }
 
@@ -160,8 +153,7 @@ public class BoardService {
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
-                    board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                    board.getStatus(), board.getLikedUsers().size()));
+                    board.getCategory().getCategoryName(), board.getStatus(), board.getLikedUsers().size()));
         }
         return result;
     }

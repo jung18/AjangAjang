@@ -5,10 +5,12 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.ajangajang.backend.api.kakaomap.model.entity.NearType;
+import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.board.model.dto.SearchBoardDto;
 import com.ajangajang.backend.board.model.dto.SearchResultDto;
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
 import com.ajangajang.backend.elasticsearch.model.document.BoardDocument;
 import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchRepository;
@@ -18,14 +20,15 @@ import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.ajangajang.backend.api.kakaomap.model.entity.NearType.*;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -46,6 +50,7 @@ public class BoardSearchService {
     private final UserRepository userRepository;
 
     private final NaverApiService naverApiService;
+    private final BoardService boardService;
     private final ElasticsearchOperations elasticsearchOperations;
 
     // 지역 필터링만
@@ -110,13 +115,13 @@ public class BoardSearchService {
             }
         }
 
-        Page<Board> searchResult = search(addressCode, searchBoardDto);
+        Page<BoardListDto> searchResult = search(addressCode, searchBoardDto);
         searchResultDto.setSearchResult(searchResult);
 
         return searchResultDto;
     }
 
-    public Page<Board> search(String addressCode, SearchBoardDto searchBoardDto) {
+    public Page<BoardListDto> search(String addressCode, SearchBoardDto searchBoardDto) {
         String title = searchBoardDto.getTitle();
         String category = searchBoardDto.getCategory();
         NearType nearType = searchBoardDto.getNearType();
@@ -150,14 +155,15 @@ public class BoardSearchService {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(searchQuery)
                 .withPageable(pageable)
+                .withSourceFilter(new FetchSourceFilter(new String[]{"boardId"}, null))
                 .build();
         // 검색
         SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
         List<Long> boardIds = response.getSearchHits().stream()
-                .map(SearchHit::getContent).toList().stream()
-                .map(BoardDocument::getBoardId).collect(Collectors.toList());
-        List<Board> boards = boardRepository.findAllById(boardIds);
-        return new PageImpl<>(boards, pageable, response.getTotalHits());
+                .map(hit -> hit.getContent().getBoardId()).toList();
+        List<Board> boards = boardRepository.findByIdIn(boardIds);
+        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
+        return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
     }
 
 }

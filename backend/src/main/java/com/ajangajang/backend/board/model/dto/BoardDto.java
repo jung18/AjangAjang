@@ -19,7 +19,6 @@ public class BoardDto {
     private String title;
     private int price;
     private String content;
-    private String deliveryType;
     private String category;
     private Status status;
     private List<BoardMediaDto> mediaList = new ArrayList<>();
