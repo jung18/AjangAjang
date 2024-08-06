@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from './routes'
+import AppRoutes from "./routes";
 import "./assets/styles/App.css";
+
+import { SearchHistoryProvider } from "./contexts/SearchHistoryContext";
 
 function App() {
   const [user, setUser] = useState([]);
@@ -16,13 +18,14 @@ function App() {
         console.log(error.message);
       }
     }*/
-
   }, []);
 
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <SearchHistoryProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </SearchHistoryProvider>
   );
 }
 
