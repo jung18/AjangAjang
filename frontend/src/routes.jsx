@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
-import SignUp from './pages/signup/SignUp';
+import SignUp from "./pages/signup/SignUp";
 import Board from "./pages/board/Board";
 import Login from "./pages/login/Login";
 import BoardWriter from "./pages/boardwriter/BoardWriter";
 import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
+import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
@@ -45,7 +46,7 @@ const AppRoutes = () => {
       />
       <Route
         path="/post"
-        element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
+        element={<PageLayout page={<BoardWriter />} pageType={"post"} />}
       />
       <Route
         path="/search"
@@ -71,9 +72,7 @@ const AppRoutes = () => {
       />
       <Route
         path="/post/template"
-        element={
-          <PageLayout />
-        }
+        element={<PageLayout page={<BoardTemplate />} pageType={"template"} />}
       />
     </Routes>
   );
