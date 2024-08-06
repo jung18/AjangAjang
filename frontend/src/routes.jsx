@@ -44,10 +44,15 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
+       <Route
         path="/post"
-        element={<PageLayout page={<BoardWriter />} pageType={"post"} />}
-      />
+        element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
+      >
+        <Route
+          path="template"
+          element={<PageLayout page={<BoardTemplate />} pageType={"search"} />}
+        />
+      </Route>
       <Route
         path="/search"
         element={<PageLayout page={<Search />} pageType={"search"} />}
