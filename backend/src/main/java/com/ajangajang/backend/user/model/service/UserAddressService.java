@@ -6,6 +6,7 @@ import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.AddressDto;
 import com.ajangajang.backend.user.model.dto.AddressNameDto;
 import com.ajangajang.backend.user.model.dto.MainAddressDto;
+import com.ajangajang.backend.user.model.dto.SearchRangeDto;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.entity.UserAddress;
@@ -59,7 +60,7 @@ public class UserAddressService {
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
         return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
-                            address.getFullAddress());
+                                address.getFullAddress(), address.getNearType());
     }
 
     public AddressDto saveAddressInfo(String username, double longitude, double latitude) {
@@ -88,14 +89,14 @@ public class UserAddressService {
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
         return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
-                            address.getFullAddress());
+                                address.getFullAddress(), address.getNearType());
     }
 
     public List<AddressDto> findMyAddresses(String username) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return addressRepository.findMyAddresses(findUser.getId()).stream()
                 .map(address -> new AddressDto(address.getId(), address.getSido(), address.getSigg(),
-                                            address.getEmd(), address.getFullAddress()))
+                                            address.getEmd(), address.getFullAddress(), address.getNearType()))
                 .collect(Collectors.toList());
     }
 
@@ -113,6 +114,13 @@ public class UserAddressService {
         Address findAddress = addressRepository.findById(dto.getMainAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
         findUser.setMainAddress(findAddress);
         return findUser.getMainAddress().getId();
+    }
+
+    public String updateNearType(String username, SearchRangeDto dto) {
+        User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        Address mainAddress = findUser.getMainAddress();
+        mainAddress.setNearType(dto.getNearType());
+        return mainAddress.getNearType().toString();
     }
 
 }
