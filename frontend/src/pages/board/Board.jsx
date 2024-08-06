@@ -19,10 +19,10 @@ const Board = () => {
     const refreshTokenFromCookie = getCookie('Authorization-refresh');
     
     if (accessTokenFromCookie && !accessToken) {
-      setAccessToken(accessTokenFromCookie.split('Bearer/')[1]);
+      setAccessToken(accessTokenFromCookie);
     }
     if (refreshTokenFromCookie && !refreshToken) {
-      setRefreshToken(refreshTokenFromCookie.split('Bearer/')[1]);
+      setRefreshToken(refreshTokenFromCookie);
     }
 
     // 쿠키 삭제
@@ -33,6 +33,7 @@ const Board = () => {
 
     console.log('Access Token from Cookie:', accessTokenFromCookie);
     console.log('Refresh Token from Cookie:', refreshTokenFromCookie);
+    console.log("여기까지 붙어있음")
   }, [setAccessToken, setRefreshToken, accessToken, refreshToken]);
 
   useEffect(() => {
