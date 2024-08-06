@@ -54,7 +54,7 @@ const SignUp = () => {
     };
 
     const token = getAuthorizationToken();
-    const url = 'http://localhost:8080/sign-up'; // 서버 URL
+    const url = 'https://i11b210.p.ssafy.io:4443/sign-up'; // 서버 URL
 
     console.log('Authorization Token:', token); // 토큰 출력
     console.log('Request URL:', url); // URL 출력
