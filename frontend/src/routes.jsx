@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
-import SignUp from "./pages/signup/SignUp"
+import SignUp from './pages/signup/SignUp';
 import Board from "./pages/board/Board";
 import Login from "./pages/login/Login";
 import BoardWriter from "./pages/boardwriter/BoardWriter";
@@ -24,7 +24,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/sign-up" element={<SignUp />} />
       <Route
         path="/direct"
         element={
