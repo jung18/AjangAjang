@@ -16,5 +16,6 @@ public class CreateBoardDto {
     private String deliveryType;
     private String category;
     private Status status;
+    private Long addressId;
 
 }

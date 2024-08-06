@@ -37,4 +37,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "where w.id = :userId order by b.updatedAt desc")
     List<Board> findAllByUserId(Long userId);
 
+    List<Board> findByIdIn(List<Long> ids);
+
 }
