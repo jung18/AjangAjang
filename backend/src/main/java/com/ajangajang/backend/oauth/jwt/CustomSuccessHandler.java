@@ -47,7 +47,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
             response.sendRedirect("http://localhost:3000/sign-up");
         } else if (customUserDetails.getRole().equals("ROLE_USER")) {
-            response.sendRedirect("http://localhost:3000/board");
+            response.sendRedirect("http://localhost:3000/");
         } else {
             response.sendRedirect("http://localhost:3000/");
         }
