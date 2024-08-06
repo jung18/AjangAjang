@@ -95,7 +95,7 @@ const SignUp = () => {
       clearAllCookies();
 
       alert('회원가입이 완료되었습니다.');
-      navigate('/board'); // 회원가입 완료 후 메인 페이지로 이동
+      navigate('/direct'); // 회원가입 완료 후 메인 페이지로 이동
     } catch (error) {
       console.error('Error submitting the form', error.response ? error.response.data : error.message);
     }

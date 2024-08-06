@@ -49,7 +49,7 @@ const BoardWrite = () => {
   };
 
   const handleCancel = () => {
-    navigate('/post'); // 보드 페이지로 이동
+    navigate('/direct'); // 보드 페이지로 이동
   };
   
   const handelTemplate = () => {
@@ -98,7 +98,7 @@ const BoardWrite = () => {
         }
       });
       console.log('Response:', response.data);
-      navigate('/post'); // 전송이 완료되면 리다이렉션
+      navigate('/direct'); // 전송이 완료되면 리다이렉션
     } catch (error) {
       console.error('Error submitting the form', error);
     }
