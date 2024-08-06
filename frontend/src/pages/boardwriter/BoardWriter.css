@@ -1,0 +1,141 @@
+.board-write-container {
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px; /* 최대 너비를 조정 */
+  margin: 50px auto; /* 페이지 상단과의 간격을 추가 */
+  text-align: center; /* 중앙 정렬 */
+}
+
+.header {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between; /* 요소들을 양 끝으로 배치 */
+  margin-bottom: 20px; /* 아래쪽 간격 추가 */
+}
+
+.cancel-button,
+.submit-button {
+  background-color: transparent;
+  border: none;
+  color: #ff879e;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.template-button {
+  background-color: #ff879e;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 15px; /* 아래쪽 간격 추가 */
+}
+
+.input-field {
+  flex-grow: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  margin: 10px 0; /* 위아래 간격 추가 */
+  margin-right: 10px; /* 필드 사이 간격 추가 */
+}
+
+.category-select,
+.region-select {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.region-label {
+  font-size: 14px;
+  color: #ff879e;
+  margin-right: 10px; /* 라벨 오른쪽 간격 추가 */
+}
+
+.camera-section {
+  display: flex;
+  align-items: center;
+  margin-top: 20px; /* 위쪽 간격 추가 */
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  flex-wrap: wrap;
+}
+
+.camera-icon,
+.video-icon {
+  cursor: pointer;
+  text-align: center;
+  margin: 10px; /* 아이콘 간 간격 */
+}
+
+.camera-image,
+.video-image {
+  width: 70px; /* 이미지 크기 조절 */
+  height: 70px;
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap; /* 이미지를 여러 줄로 배치 */
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  gap: 10px; /* 이미지 간 간격 */
+}
+
+.image-container {
+  position: relative;
+  border: 2px solid #ff879e; /* 테두리 추가 */
+  border-radius: 5px; /* 둥근 테두리 */
+  display: flex; /* 이미지 컨테이너를 한 줄로 배치 */
+  align-items: center;
+  justify-content: center;
+  background-color: white; /* 배경색 추가 */
+  width: 70px; /* 컨테이너 너비 조절 */
+  height: 70px; /* 컨테이너 높이 조절 */
+  overflow: hidden; /* 이미지가 컨테이너를 벗어나지 않도록 함 */
+}
+
+.image-thumbnail {
+  max-width: 100%; /* 이미지 최대 너비 설정 */
+  max-height: 100%; /* 이미지 최대 높이 설정 */
+  object-fit: cover; /* 이미지 비율 유지하며 맞추기 */
+  border-radius: 5px;
+}
+
+.delete-icon {
+  position: absolute;
+  top: -5px; /* 이미지 컨테이너의 상단 오른쪽에 배치 */
+  right: -5px; /* 이미지 컨테이너의 상단 오른쪽에 배치 */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.textarea-field {
+  width: 95%; /* 전체 너비 사용 */
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  height: 150px; /* 높이 증가 */
+  resize: none;
+  margin: 15px 0; /* 위아래 간격 추가 */
+}
+
+@media (max-width: 480px) {
+  .input-field,
+  .category-select,
+  .region-select,
+  .textarea-field {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

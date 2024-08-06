@@ -1,0 +1,127 @@
+.container {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px; /* 최대 너비를 조정 */
+    margin: 0 auto; /* 화면 중앙에 배치 */
+    border-radius: 10px; /* 모서리 둥글게 */
+}
+
+.section {
+    background-color: #ffffff;
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box; /* 패딩 포함한 크기 조정 */
+}
+
+.title {
+    font-size: 18px;
+    color: #ff6f61;
+    margin-bottom: 10px;
+    text-align: left; /* 텍스트를 왼쪽 정렬 */
+}
+
+.formGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.inputField, .selectField {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px;
+    border: 1px solid #ff6f61;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    box-sizing: border-box; /* 패딩 포함한 크기 조정 */
+}
+
+.radioGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    justify-content: flex-start;
+}
+
+.radioGroup span {
+    margin-right: 10px;
+}
+
+.radioGroup label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: row;
+}
+
+.result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    border: 1px solid #ffd700;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.resultBox {
+    color: #ff6f61;
+    font-size: 16px;
+    text-align: center; /* 텍스트를 중앙 정렬 */
+}
+
+.createButton {
+    background-color: #ff6f61;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0 5px; /* 버튼 간 간격 추가 */
+}
+
+.createButton:hover {
+    background-color: #ff4f41;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center; /* 버튼들을 중앙 정렬 */
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+        margin: 10px; /* 모바일에서의 외부 여백 조정 */
+    }
+
+    .inputField, .selectField {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .radioGroup {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .createButton {
+        width: 100%;
+    }
+
+    .section {
+        padding: 10px; /* 모바일에서 섹션 내부 여백 조정 */
+    }
+}

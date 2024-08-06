@@ -124,6 +124,7 @@ const SignUp = () => {
             style={{ width: '100%', marginBottom: '20px', padding: '10px', fontSize: '16px' }}
           />
         </div>
+        
         <button type="submit" style={{ padding: '10px 20px', fontSize: '16px' }}>
           Sign Up
         </button>
