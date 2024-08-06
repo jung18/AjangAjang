@@ -8,6 +8,7 @@ import useStore from "../../store/store";
 import LikeIcon from "../../assets/icons/like-inactive.png";
 import LikeActiveIcon from "../../assets/icons/like-active.png";
 import VideoIcon from "../../assets/icons/video.png";
+import CloseIcon from "../../assets/icons/close.png";
 
 import "./BoardDetetail.css";
 
@@ -18,6 +19,9 @@ function BoardDetail() {
   const likedBoards = useStore((state) => state.likedBoards);
   const toggleLike = useStore((state) => state.toggleLike);
   const [formattedPrice, setFormattedPrice] = useState(0);
+
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
 
   useEffect(() => {
     // 데이터를 가져오는 비동기 함수
@@ -52,14 +56,22 @@ function BoardDetail() {
   const isLiked = likedBoards[id] || false;
 
   const videoBtnClickHandler = () => {
-    alert("영상 재생");
-    //재생할 영상 없으면 modal 창 : 영상이 존재하지 않습니다.
-    //혹은 버튼 disabled -> 회색
-    //영상 재생 창
-    //width 100vh
-    //heigh 100vh
-    //close btn 상단 위
-    //하단 재생바
+    // 예시로 사용한 비디오 URL, 실제로는 API에서 가져온다거나 하는 방법으로 설정
+    const url =
+      boardDetail.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4"; // videoUrl은 백엔드에서 받아온 비디오 URL
+
+    if (!url) {
+      alert("영상이 존재하지 않습니다.");
+      return;
+    }
+
+    setVideoUrl(url);
+    setIsVideoPlaying(true);
+  };
+
+  const handleChatButtonClick = () => {
+    // 채팅 기능 구현
+    alert("채팅 시작");
   };
 
   return (
@@ -90,7 +102,9 @@ function BoardDetail() {
             </div>
           </div>
         </div>
-        <button className="chat-btn">채팅</button>
+        <button className="chat-btn" onClick={handleChatButtonClick}>
+          채팅
+        </button>
       </div>
       <div className="post-content">
         <div className="post-content-info">
@@ -103,48 +117,31 @@ function BoardDetail() {
           </div>
           <div className="post-price">{formattedPrice}원</div>
         </div>
-        <div className="post-main-content">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum
-          dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-          velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-          occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-          mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-          irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-          fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-          sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-          ea commodo consequat. Duis aute irure dolor in reprehenderit in
-          voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-          sint occaecat cupidatat non proident, sunt in culpa qui officia
-          deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-          proident, sunt in culpa qui officia deserunt mollit anim id est
-          laborum.
-        </div>
+        <div className="post-main-content">{boardDetail.content}</div>
         <div className="post-last-info">
           <span>관심 {boardDetail.likeCount}</span>
           <span>채팅 수</span>
           <span>조회 수</span>
         </div>
       </div>
+
+      {/* 비디오 재생 모달 */}
+      {isVideoPlaying && (
+        <div className="video-modal">
+          <button
+            className="close-btn"
+            onClick={() => setIsVideoPlaying(false)}
+          >
+            <img alt="close icon" src={CloseIcon} />
+          </button>
+          <div className="video-container">
+            <video controls autoPlay width="100%">
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

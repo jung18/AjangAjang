@@ -36,3 +36,10 @@
   width: 17px;
   height: 17px;
 }
+
+.board-page .not-found-content {
+  margin-top: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
