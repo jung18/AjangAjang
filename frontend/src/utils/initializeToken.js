@@ -17,10 +17,10 @@ const initializeToken = () => {
   const refreshToken = getCookie('Authorization-refresh');
 
   if (accessToken) {
-    setAccessToken(accessToken.split('Bearer/')[1]);
+    setAccessToken(accessToken);
   }
   if (refreshToken) {
-    setRefreshToken(refreshToken.split('Bearer/')[1]);
+    setRefreshToken(refreshToken);
   }
 };
 

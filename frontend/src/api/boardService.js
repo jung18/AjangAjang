@@ -8,7 +8,7 @@ export const fetchBoardList = async () => {
     const response = await fetch("http://localhost:8080/api/board/all", {
       method: "GET",
       headers: {
-        "Authorization": `Bearer/${accessToken}`
+        "Authorization": `${accessToken}`
       },
       credentials: 'include'
     });

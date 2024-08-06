@@ -9,7 +9,7 @@ export const fetchBoardDetail = async (id) => {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer/${accessToken}`
+        "Authorization": `${accessToken}`
       },
       credentials: 'include'
     });

@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 import Board from "./pages/board/Board";
 import Login from "./pages/login/Login";
-import BoardWrite from "./pages/boardwriter/BoardWriter";
+import BoardWriter from "./pages/boardwriter/BoardWriter";
 import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 
@@ -43,7 +43,7 @@ const AppRoutes = () => {
       />
       <Route
         path="/post"
-        element={<PageLayout page={<BoardWrite />} pageType={"search"} />}
+        element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
       />
       <Route
         path="/search"
