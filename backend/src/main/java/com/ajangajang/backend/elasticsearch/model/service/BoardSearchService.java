@@ -81,6 +81,7 @@ public class BoardSearchService {
         } else {
             throw new CustomGlobalException(CustomStatusCode.NEARTYPE_NOT_FOUND);
         }
+        codes.add(addressCode); // 현재 지역도 포함
         return codes;
     }
 
