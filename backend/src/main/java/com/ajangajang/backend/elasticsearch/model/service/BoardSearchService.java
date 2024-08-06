@@ -1,6 +1,7 @@
 package com.ajangajang.backend.elasticsearch.model.service;
 
 import com.ajangajang.backend.board.model.dto.SearchBoardDto;
+import com.ajangajang.backend.board.model.dto.SearchResultDto;
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
 import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
@@ -31,6 +32,7 @@ public class BoardSearchService {
     private final BoardSearchRepository boardSearchRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final BoardRepository boardRepository;
+    private NaverApiService naverApiService;
 
     // 지역 필터링만
     public List<Long> getNearbyBoardIds(String addressCode, String nearType) {
@@ -64,6 +66,27 @@ public class BoardSearchService {
 
     public void delete(Long id) {
         boardSearchRepository.deleteById(id);
+    }
+
+    public SearchResultDto getSearchResultDto(SearchBoardDto searchBoardDto) {
+
+        SearchResultDto searchResultDto = new SearchResultDto();
+
+        if (!searchBoardDto.isRetry()) {
+            String query = searchBoardDto.getTitle();
+            String suggestion = naverApiService.checkQuery(query);
+            if (!suggestion.isEmpty()) {
+                searchBoardDto.setTitle(suggestion);
+                searchResultDto.setOriginalTitle(query);
+                searchResultDto.setSuggestedTitle(suggestion);
+                searchResultDto.setChanged(true);
+            }
+        }
+
+        Page<Board> searchResult = search(searchBoardDto);
+        searchResultDto.setSearchResult(searchResult);
+
+        return searchResultDto;
     }
 
     public Page<Board> search(SearchBoardDto searchBoardDto) {

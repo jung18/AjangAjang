@@ -4,12 +4,11 @@ import com.ajangajang.backend.board.model.dto.*;
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.service.BoardLikeService;
 import com.ajangajang.backend.board.model.service.BoardService;
-import com.ajangajang.backend.elasticsearch.model.document.BoardDocument;
 import com.ajangajang.backend.elasticsearch.model.service.BoardSearchService;
+import com.ajangajang.backend.elasticsearch.model.service.NaverApiService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,17 +74,11 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/board/search")
+    @PostMapping("/board/search")
     public ResponseEntity<?> searchBoard(@RequestBody SearchBoardDto searchBoardDto) {
-        Page<Board> searchResult = boardSearchService.search(searchBoardDto);
-        return ResponseEntity.ok(Map.of("data", searchResult));
+        SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(searchBoardDto);
+        return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
-
-//    @GetMapping("/board/filter")
-//    public ResponseEntity<?> searchFilter(@RequestParam(value = "tag") String tag) {
-//        List<BoardListDto> result = boardService.filterByTag(tag);
-//        return ResponseEntity.ok(Map.of("data", result));
-//    }
 
     @GetMapping("/user/{id}/boards")
     public ResponseEntity<?> getUserBoards(@PathVariable("id") Long id) {

@@ -11,4 +11,5 @@ public class SearchBoardDto {
     private String addressCode;
     private int page;
     private int size;
+    private boolean retry;
 }
