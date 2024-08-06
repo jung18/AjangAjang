@@ -29,7 +29,7 @@ public class ClaudeApi {
 
     private final RestTemplate restTemplate;
 
-    public Map<String, String> callClaudeApi(String tone, PromptConditionDto condition) {
+    public Map<String, String> callClaudeApi(PromptConditionDto condition) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-api-key", apiKey);
@@ -39,7 +39,7 @@ public class ClaudeApi {
         body.put("model", "claude-3-sonnet-20240229");
         body.put("max_tokens", 1000);
         body.put("messages", Collections.singletonList(
-                Map.of("role", "user", "content", getPromptInput(tone, condition))
+                Map.of("role", "user", "content", getPromptInput(condition))
         ));
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
@@ -72,12 +72,15 @@ public class ClaudeApi {
         }
     }
 
-    private static String getPromptInput(String tone, PromptConditionDto condition) {
+    private static String getPromptInput(PromptConditionDto condition) {
 
-        return "당신은 중고 육아용품을 판매하려는 사람입니다. 아래의 키워드들을 포함하고, " +
-                "물건 정보에 모델명이나 네고 가능같은 과한 부가정보 붙이지 않고, " + tone + "으로, " +
+        return "당신은 중고 육아용품을 판매하려는 사람입니다. " +
+                "당신의 아기 정보는 " +
+                "아기의 나이: " + condition.getAge() + "\n" +
+                "아기의 성별: " + condition.getGender() + "입니다.\n " +
+                "아래의 키워드들을 포함하고, 물건 정보에 모델명이나 네고 가능같은 과한 부가정보 붙이지 않고, " + condition.getTone() + "으로, " +
                 "판매글의 제목과 내용을 작성해주세요.\n " +
-                "작성 형식은 제목을 한줄로 작성하고 한줄의 간격을 띄운 뒤 아래에 내용을 작성해주세요.\n" +
+                "작성 형식은 첫 줄에 제목을 한줄로 작성하고 한줄의 간격을 띄운 뒤 그 아래에 내용을 작성해주세요.\n" +
                 "판매하려는 물건: " + condition.getItem() + "\n" +
                 "판매가격: " + condition.getPrice() + "\n" +
                 "사용기간: " + condition.getUsagePeriod() + "\n" +
