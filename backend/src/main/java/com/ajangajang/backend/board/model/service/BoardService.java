@@ -7,7 +7,9 @@ import com.ajangajang.backend.board.model.repository.*;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
+import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
+import com.ajangajang.backend.user.model.repository.AddressRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,22 +31,25 @@ public class BoardService {
     private final CategoryRepository categoryRepository;
     private final DeliveryTypeRepository deliveryTypeRepository;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
 
     private final FileService fileService;
     private final KakaoApiService kakaoApiService;
 
-    public Long save(String username, CreateBoardDto dto, List<MultipartFile> files) {
+    public Board save(String username, CreateBoardDto dto, List<MultipartFile> files) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
         Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
         DeliveryType savedDeliveryType = deliveryTypeRepository.save(new DeliveryType(dto.getDeliveryType()));
+        Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
 
         board.setCategory(savedCategory);
         board.setDeliveryType(savedDeliveryType);
+        board.setAddress(address);
         setBoardMedia(files, board); // file upload, media save
         writer.addMyBoard(board);
 
-        return boardRepository.save(board).getId();
+        return boardRepository.save(board);
     }
 
     public BoardDto findById(Long id) {
@@ -94,6 +99,10 @@ public class BoardService {
             findBoard.setCategory(findCategory);
             findBoard.setStatus(updateParam.getStatus());
             findBoard.setDeliveryType(findDeliveryType);
+
+            Address findAddress = addressRepository.findById(updateParam.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
+            findBoard.setAddress(findAddress);
+
             // 파일 삭제
             deleteFiles(updateParam.getDeleteFileIds());
         }
@@ -110,16 +119,6 @@ public class BoardService {
         List<String> fileUrls = findBoard.getMediaList().stream().map(BoardMedia::getMediaUrl).collect(Collectors.toList());
         fileService.deleteFiles(fileUrls);
         boardRepository.deleteById(id);
-    }
-
-    public List<BoardListDto> searchByQuery(String query) {
-        List<Board> boards = boardRepository.findAllByQuery(query);
-        return getBoardListDtos(boards);
-    }
-
-    public List<BoardListDto> filterByTag(String tag) {
-        List<Board> boards = boardRepository.findAllByTag(tag);
-        return getBoardListDtos(boards);
     }
 
     public List<BoardListDto> findAllByUserId(Long userId) {
@@ -165,6 +164,10 @@ public class BoardService {
                     board.getStatus(), board.getLikedUsers().size()));
         }
         return result;
+    }
+
+    public Board findBoardById(Long id) {
+        return boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
     }
 
 }

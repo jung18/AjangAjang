@@ -21,6 +21,7 @@ public class UpdateBoardDto {
     private String deliveryType;
     private String category;
     private Status status;
+    private Long addressId;
 
     private List<Long> deleteFileIds = new ArrayList<>();
 
