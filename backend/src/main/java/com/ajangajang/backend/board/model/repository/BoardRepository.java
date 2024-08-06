@@ -2,6 +2,7 @@ package com.ajangajang.backend.board.model.repository;
 
 import com.ajangajang.backend.board.model.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,4 +24,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByIdIn(List<Long> ids);
 
+    @Modifying
+    @Query("UPDATE Board b SET b.viewCount = b.viewCount + 1 WHERE b.id = :boardId")
+    void increaseViewCount(Long boardId);
 }

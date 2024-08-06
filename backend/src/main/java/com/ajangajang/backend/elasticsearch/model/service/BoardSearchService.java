@@ -5,10 +5,12 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import com.ajangajang.backend.api.kakaomap.model.entity.NearType;
+import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.board.model.dto.SearchBoardDto;
 import com.ajangajang.backend.board.model.dto.SearchResultDto;
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
+import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
 import com.ajangajang.backend.elasticsearch.model.document.BoardDocument;
 import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchRepository;
@@ -157,7 +159,8 @@ public class BoardSearchService {
                 .map(SearchHit::getContent).toList().stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
         List<Board> boards = boardRepository.findAllById(boardIds);
-        return new PageImpl<>(boards, pageable, response.getTotalHits());
+        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
+        return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
     }
 
 }

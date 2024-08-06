@@ -40,6 +40,8 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private int viewCount;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

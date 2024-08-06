@@ -66,7 +66,8 @@ public class BoardService {
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
                             findBoard.getContent(), findBoard.getDeliveryType().getType(),
                             findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
-                            mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getCreatedAt(), findBoard.getUpdatedAt());
+                            mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getViewCount(),
+                            findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
     public List<BoardListDto> findAllInRange(String username, String type) {
@@ -125,7 +126,7 @@ public class BoardService {
         return boardRepository.findAllByUserId(userId).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
                         board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                        board.getStatus(), board.getLikedUsers().size()))
+                        board.getStatus(), board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
@@ -161,13 +162,17 @@ public class BoardService {
                     writer.getProfileImg());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
                     board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                    board.getStatus(), board.getLikedUsers().size()));
+                    board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
         }
         return result;
     }
 
     public Board findBoardById(Long id) {
         return boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
+    }
+
+    public void increaseViewCount(Long boardId) {
+        boardRepository.increaseViewCount(boardId);
     }
 
 }
