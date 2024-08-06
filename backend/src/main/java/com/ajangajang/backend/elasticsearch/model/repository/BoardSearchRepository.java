@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface BoardSearchRepository extends ElasticsearchRepository<BoardDocument, Long> {
 
-    List<BoardDocument> findByAddressCodeIn(List<String> addressCodes);
+    Page<BoardDocument> findByAddressCodeIn(List<String> addressCodes, Pageable pageable);
 }

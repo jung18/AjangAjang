@@ -9,6 +9,7 @@ import com.ajangajang.backend.elasticsearch.model.service.NaverApiService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,12 +47,12 @@ public class BoardApiController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/board/all")
+    @PostMapping("/board/all")
     public ResponseEntity<?> getAllBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                          @RequestParam String type) {
+                                          @RequestBody SearchBoardDto searchBoardDto) {
         String username = customOAuth2User.getUsername();
-        List<BoardListDto> result = boardService.findAllInRange(username, type);
-        return ResponseEntity.ok(Map.of("data", result));
+        Page<Board> result = boardSearchService.getNearbyBoards(username, searchBoardDto);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/board/{id}")
@@ -76,8 +77,10 @@ public class BoardApiController {
     }
 
     @PostMapping("/board/search")
-    public ResponseEntity<?> searchBoard(@RequestBody SearchBoardDto searchBoardDto) {
-        SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(searchBoardDto);
+    public ResponseEntity<?> searchBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                         @RequestBody SearchBoardDto searchBoardDto) {
+        String username = customOAuth2User.getUsername();
+        SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(username, searchBoardDto);
         return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
 
