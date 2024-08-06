@@ -6,7 +6,7 @@ import SelectBox from "../../components/SelectBox";
 
 import "./Board.css";
 
-const Board = ({salseType}) => {
+const Board = ({ salseType }) => {
   const [boards, setBoards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
@@ -46,17 +46,19 @@ const Board = ({salseType}) => {
     <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
       <div className="user-option">
         <SelectBox
-          optionList={[
-            "대전시 유성구 덕명동",
-            "대전시 유성구 계산동",
-          ]}
+          optionList={["대전시 유성구 덕명동", "대전시 유성구 계산동"]}
         />
         <label className="recommand">
           자동 추천
           <input type="checkbox" />
         </label>
       </div>
-      <BoardList boards={boards.data} sType={salseType} />
+
+      {!boards.data || boards.data.length === 0 ? (
+        <div className="not-found-content">게시글이 존재하지 않습니다.</div>
+      ) : (
+        <BoardList boards={boards.data} sType={salseType} />
+      )}
     </div>
   );
 };
