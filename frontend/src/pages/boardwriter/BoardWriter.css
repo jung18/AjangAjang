@@ -1,16 +1,20 @@
 .board-write-container {
-  padding: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  margin: 15px 0;
   border-radius: 8px;
   max-width: 600px; /* 최대 너비를 조정 */
-  margin: 50px auto; /* 페이지 상단과의 간격을 추가 */
   text-align: center; /* 중앙 정렬 */
 }
 
 .header {
-  margin-top: 10px;
+  margin: 10px 15px 20px;
   display: flex;
   justify-content: space-between; /* 요소들을 양 끝으로 배치 */
-  margin-bottom: 20px; /* 아래쪽 간격 추가 */
 }
 
 .cancel-button,
@@ -35,7 +39,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 15px; /* 아래쪽 간격 추가 */
+  margin: 0 15px 15px; /* 아래쪽 간격 추가 */
 }
 
 .input-field {
@@ -65,7 +69,7 @@
 .camera-section {
   display: flex;
   align-items: center;
-  margin-top: 20px; /* 위쪽 간격 추가 */
+  margin: 20px 15px 0; /* 위쪽 간격 추가 */
   justify-content: flex-start; /* 왼쪽 정렬 */
   flex-wrap: wrap;
 }
@@ -120,14 +124,14 @@
 }
 
 .textarea-field {
-  width: 95%; /* 전체 너비 사용 */
+  width: -webkit-fill-available; /* 전체 너비 사용 */
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   padding: 10px;
   font-size: 14px;
   height: 150px; /* 높이 증가 */
   resize: none;
-  margin: 15px 0; /* 위아래 간격 추가 */
+  margin: 15px 15px; /* 위아래 간격 추가 */
 }
 
 @media (max-width: 480px) {
