@@ -3,6 +3,7 @@ package com.ajangajang.backend.sms.controller;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.sms.model.dto.SmsCertificationDto;
 import com.ajangajang.backend.sms.model.service.SmsCertificationService;
+import com.ajangajang.backend.user.model.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class SmsCertificationController {
 
     private final SmsCertificationService smsCertificationService;
+    private final UserService userService;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendSms(@Valid @RequestBody SmsCertificationDto smsCertificationDto,
@@ -35,6 +37,10 @@ public class SmsCertificationController {
                 errors.put(error.getField(), error.getDefaultMessage());
             }
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
+        if (userService.isPhoneRegistered(smsCertificationDto.getPhone())) {
+            return new ResponseEntity<>("이미 등록된 전화번호입니다.", HttpStatus.BAD_REQUEST);
         }
 
         try {
