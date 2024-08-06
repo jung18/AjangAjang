@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class KakaoMapApiController {
+public class KakaoMapApiController { // 초기 지역데이터 설정용
 
     private final RegionDataService regionDataService;
     private final KakaoApiService kakaoApiService;
@@ -36,6 +36,12 @@ public class KakaoMapApiController {
                                             @RequestParam String type) {
         List<String> result = kakaoApiService.getNearbyAddressCodes(code, type);
         return ResponseEntity.ok(Map.of("data", result));
+    }
+
+    @GetMapping("/api/elastic/address")
+    public ResponseEntity<?> saveElasticRegions() {
+        regionDataService.saveRegionsES();
+        return ResponseEntity.ok("ok");
     }
 
 }
