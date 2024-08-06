@@ -49,11 +49,11 @@ const BoardWrite = () => {
   };
 
   const handleCancel = () => {
-    navigate('/board'); // 보드 페이지로 이동
+    navigate('/post'); // 보드 페이지로 이동
   };
   
   const handelTemplate = () => {
-    navigate('/board/template'); // 템플릿 이동
+    navigate('/post/template'); // 템플릿 이동
   }
 
   const isFormValid = () => {
@@ -98,7 +98,7 @@ const BoardWrite = () => {
         }
       });
       console.log('Response:', response.data);
-      navigate('/board'); // 전송이 완료되면 리다이렉션
+      navigate('/post'); // 전송이 완료되면 리다이렉션
     } catch (error) {
       console.error('Error submitting the form', error);
     }
