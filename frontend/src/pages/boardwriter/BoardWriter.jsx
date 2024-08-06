@@ -5,6 +5,7 @@ import videoImage from '../../assets/video.png';
 import deleteIcon from '../../assets/delete.png'; // 삭제 아이콘 추가
 import apiClient from '../../api/apiClient';
 import './BoardWriter.css'; // CSS 파일 import
+import usePageStore from '../../store/currentPageStore';
 
 const BoardWrite = () => {
   const [title, setTitle] = useState('');
@@ -17,6 +18,7 @@ const BoardWrite = () => {
   const [images, setImages] = useState([]); // 이미지 상태를 배열로 변경
   const fileInputRef = useRef(null);
   const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
+  const setCurrentPage = usePageStore((state) => state.setCurrentPage);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -47,12 +49,9 @@ const BoardWrite = () => {
   const handleIconClick = () => {
     fileInputRef.current?.click();
   };
-
-  const handleCancel = () => {
-    navigate('/direct'); // 보드 페이지로 이동
-  };
   
   const handelTemplate = () => {
+    setCurrentPage('post/template');
     navigate('/post/template'); // 템플릿 이동
   }
 
@@ -109,7 +108,6 @@ const BoardWrite = () => {
       <div className="header">
         <button type="button" className="template-button" onClick={handelTemplate}>템플릿</button>
         <div>
-          <button type="button" className="cancel-button" onClick={handleCancel}>취소</button>
           <button type="submit" className="submit-button" disabled={!isFormValid()}>완료</button>
         </div>
       </div>
