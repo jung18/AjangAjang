@@ -5,3 +5,51 @@
   width: 100%;
   font-family: "GmarketSansMedium", sans-serif;
 }
+
+.search-page .search-bar {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.search-page .search-bar input {
+  margin: 0 15px;
+  width: 100%;
+  outline: none;
+  font-family: "GmarketSansMedium", sans-serif;
+  font-size: 16px;
+  border: 2px solid #ff8796;
+  padding: 13px 15px 10px;
+  border-radius: 15px;
+}
+
+.search-page .category-tab {
+  margin: 20px 15px;
+  display: flex;
+}
+
+.search-page .category-tab .tab-item {
+  font-size: 13px;
+  margin-right: 15px;
+  padding: 10px 20px;
+  border-radius: 15px;
+  background-color: #fef391;
+  color: rgb(147, 147, 147);
+}
+
+.search-page .category-tab .active {
+  background-color: #ffca00;
+  color: rgb(56, 56, 56);
+}
+
+.search-page .recent-search-header {
+  margin: 30px 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.search-page .recent-search-header .search-header-title {
+  color: #ff8796;
+  font-size: 19px;
+}
