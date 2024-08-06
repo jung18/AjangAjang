@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 import Board from "./pages/board/Board";
 import Login from "./pages/login/Login";
-import BoardWrite from "./pages/boardwriter/BoardWrite";
+import BoardWrite from "./pages/boardwriter/BoardWriter";
 import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 

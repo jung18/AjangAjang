@@ -1,5 +1,6 @@
 import BoardHeader from "./headers/BoardHeader";
 import BoardDetailHeader from "./headers/BoardDetailHeader";
+import SearchHeader from "./headers/SearchHeader";
 
 import Tabbar from "./Tabbar";
 import "../assets/styles/App.css"
@@ -15,6 +16,9 @@ const PageLayout = ({ page, pageType }) => {
       headerComponent = <BoardDetailHeader />;
       break;
     // 다른 페이지 타입에 따라 다른 헤더 컴포넌트 추가 가능
+    case "search":
+      headerComponent = <SearchHeader />;
+      break;
     default:
       break;
   }
