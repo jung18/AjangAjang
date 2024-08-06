@@ -25,7 +25,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/sign-up" element={<SignUp />} />
       <Route
         path="/direct"
         element={
@@ -44,10 +44,15 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
+       <Route
         path="/post"
-        element={<PageLayout page={<BoardWriter />} pageType={"post"} />}
-      />
+        element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
+      >
+        <Route
+          path="template"
+          element={<PageLayout page={<BoardTemplate />} pageType={"search"} />}
+        />
+      </Route>
       <Route
         path="/search"
         element={<PageLayout page={<Search />} pageType={"search"} />}
