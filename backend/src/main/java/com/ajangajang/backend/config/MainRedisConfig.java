@@ -8,7 +8,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
-public class RedisConfig {
+public class MainRedisConfig {
 
     @Value("${spring.data.redis.host}")
     private String host;
@@ -17,15 +17,14 @@ public class RedisConfig {
     private int port;
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
+    public RedisConnectionFactory mainRedisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);
     }
 
     @Bean
     public StringRedisTemplate stringRedisTemplate() {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
-        stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
-
+        stringRedisTemplate.setConnectionFactory(mainRedisConnectionFactory());
         return stringRedisTemplate;
     }
 }
