@@ -55,9 +55,13 @@ public class BoardSearchService {
     private final ElasticsearchOperations elasticsearchOperations;
 
     // 지역 필터링만
-    public Page<Board> getNearbyBoards(String username, SearchBoardDto searchBoardDto) {
+    public Page<BoardListDto> getNearbyBoards(String username, SearchBoardDto searchBoardDto) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Address mainAddress = findUser.getMainAddress();
+        // 메인 주소 없으면 안됨
+        if (mainAddress == null) {
+            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+        }
 
         List<String> codes = getNearbyCodes(mainAddress.getAddressCode(), mainAddress.getNearType());
 
@@ -67,9 +71,10 @@ public class BoardSearchService {
 
         List<Long> boardIds = boardDocuments.stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
-        List<Board> boards = boardRepository.findAllById(boardIds);
+        List<Board> boards = boardRepository.findByIdIn(boardIds);
+        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
 
-        return new PageImpl<>(boards, pageable, boardDocuments.getTotalElements());
+        return new PageImpl<>(boardListDtos, pageable, boardDocuments.getTotalElements());
     }
 
     public List<String> getNearbyCodes(String addressCode, NearType nearType) {
@@ -103,6 +108,10 @@ public class BoardSearchService {
     public SearchResultDto getSearchResultDto(String username, SearchBoardDto searchBoardDto) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Address mainAddress = findUser.getMainAddress();
+        // 메인주소 없으면 안됨
+        if (mainAddress == null) {
+            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+        }
 
         SearchResultDto searchResultDto = new SearchResultDto();
 
