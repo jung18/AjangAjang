@@ -14,17 +14,15 @@ public class BoardListDto {
     private UserProfileDto writer;
     private String title;
     private int price;
-    private String deliveryType;
     private String category;
     private Status status;
     private int likeCount;
     private int viewCount;
 
-    public BoardListDto(Long boardId, String title, int price, String deliveryType, String category, Status status, int likeCount, int viewCount) {
+    public BoardListDto(Long boardId, String title, int price, String category, Status status, int likeCount, int viewCount) {
         this.boardId = boardId;
         this.title = title;
         this.price = price;
-        this.deliveryType = deliveryType;
         this.category = category;
         this.status = status;
         this.likeCount = likeCount;

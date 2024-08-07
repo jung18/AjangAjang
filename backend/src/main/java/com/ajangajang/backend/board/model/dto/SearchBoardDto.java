@@ -9,7 +9,6 @@ import lombok.Setter;
 public class SearchBoardDto {
     private String title;
     private String category;
-    private NearType nearType;
     private int page;
     private int size;
     private boolean retry;

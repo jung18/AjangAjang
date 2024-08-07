@@ -51,7 +51,7 @@ public class BoardApiController {
     public ResponseEntity<?> getAllBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                           @RequestBody SearchBoardDto searchBoardDto) {
         String username = customOAuth2User.getUsername();
-        Page<Board> result = boardSearchService.getNearbyBoards(username, searchBoardDto);
+        Page<BoardListDto> result = boardSearchService.getNearbyBoards(username, searchBoardDto);
         return ResponseEntity.ok(result);
     }
 

@@ -29,7 +29,7 @@ public class Board {
     private Long id;
 
     private String title;
-    private Integer price;
+    private int price;
     @Column(columnDefinition = "longtext")
     private String content;
     @Column(updatable = false)
@@ -45,9 +45,6 @@ public class Board {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @ManyToOne
-    @JoinColumn(name = "delivery_type_id")
-    private DeliveryType deliveryType;
     // 유저 (작성자)
     @ManyToOne
     @JsonIgnore
@@ -64,7 +61,7 @@ public class Board {
     @OneToMany(mappedBy = "board", fetch = LAZY)
     private List<BoardLike> likedUsers = new ArrayList<>();
 
-    public Board(String title, Integer price, String content, Status status) {
+    public Board(String title, int price, String content, Status status) {
         this.title = title;
         this.price = price;
         this.content = content;

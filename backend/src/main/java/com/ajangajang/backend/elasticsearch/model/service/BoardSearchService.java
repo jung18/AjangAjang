@@ -17,17 +17,19 @@ import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchReposi
 import com.ajangajang.backend.elasticsearch.model.repository.BoardSearchRepository;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
+import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static com.ajangajang.backend.api.kakaomap.model.entity.NearType.*;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,13 +51,19 @@ public class BoardSearchService {
     private final UserRepository userRepository;
 
     private final NaverApiService naverApiService;
+    private final BoardService boardService;
     private final ElasticsearchOperations elasticsearchOperations;
 
     // 지역 필터링만
-    public Page<Board> getNearbyBoards(String username, SearchBoardDto searchBoardDto) {
+    public Page<BoardListDto> getNearbyBoards(String username, SearchBoardDto searchBoardDto) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        String addressCode = findUser.getMainAddress().getAddressCode();
-        List<String> codes = getNearbyCodes(addressCode, searchBoardDto.getNearType());
+        Address mainAddress = findUser.getMainAddress();
+        // 메인 주소 없으면 안됨
+        if (mainAddress == null) {
+            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+        }
+
+        List<String> codes = getNearbyCodes(mainAddress.getAddressCode(), mainAddress.getNearType());
 
         // 페이징
         Pageable pageable = PageRequest.of(searchBoardDto.getPage(), searchBoardDto.getSize());
@@ -62,9 +71,10 @@ public class BoardSearchService {
 
         List<Long> boardIds = boardDocuments.stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
-        List<Board> boards = boardRepository.findAllById(boardIds);
+        List<Board> boards = boardRepository.findByIdIn(boardIds);
+        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
 
-        return new PageImpl<>(boards, pageable, boardDocuments.getTotalElements());
+        return new PageImpl<>(boardListDtos, pageable, boardDocuments.getTotalElements());
     }
 
     public List<String> getNearbyCodes(String addressCode, NearType nearType) {
@@ -97,7 +107,11 @@ public class BoardSearchService {
 
     public SearchResultDto getSearchResultDto(String username, SearchBoardDto searchBoardDto) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        String addressCode = findUser.getMainAddress().getAddressCode();
+        Address mainAddress = findUser.getMainAddress();
+        // 메인주소 없으면 안됨
+        if (mainAddress == null) {
+            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+        }
 
         SearchResultDto searchResultDto = new SearchResultDto();
 
@@ -112,16 +126,15 @@ public class BoardSearchService {
             }
         }
 
-        Page<Board> searchResult = search(addressCode, searchBoardDto);
+        Page<BoardListDto> searchResult = search(mainAddress.getAddressCode(), mainAddress.getNearType(), searchBoardDto);
         searchResultDto.setSearchResult(searchResult);
 
         return searchResultDto;
     }
 
-    public Page<Board> search(String addressCode, SearchBoardDto searchBoardDto) {
+    public Page<BoardListDto> search(String addressCode, NearType nearType, SearchBoardDto searchBoardDto) {
         String title = searchBoardDto.getTitle();
         String category = searchBoardDto.getCategory();
-        NearType nearType = searchBoardDto.getNearType();
         int page = searchBoardDto.getPage();
         int size = searchBoardDto.getSize();
 
@@ -152,13 +165,13 @@ public class BoardSearchService {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(searchQuery)
                 .withPageable(pageable)
+                .withSourceFilter(new FetchSourceFilter(new String[]{"boardId"}, null))
                 .build();
         // 검색
         SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
         List<Long> boardIds = response.getSearchHits().stream()
-                .map(SearchHit::getContent).toList().stream()
-                .map(BoardDocument::getBoardId).collect(Collectors.toList());
-        List<Board> boards = boardRepository.findAllById(boardIds);
+                .map(hit -> hit.getContent().getBoardId()).toList();
+        List<Board> boards = boardRepository.findByIdIn(boardIds);
         List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
         return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
     }
