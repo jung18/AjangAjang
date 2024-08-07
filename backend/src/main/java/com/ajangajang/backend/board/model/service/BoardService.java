@@ -61,8 +61,8 @@ public class BoardService {
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
-                            findBoard.getContent(), findBoard.getCategory().getCategoryName(),
-                            findBoard.getStatus(), mediaDtoList, findBoard.getLikedUsers().size(),
+                            findBoard.getContent(), findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
+                            mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getViewCount(),
                             findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
@@ -118,7 +118,8 @@ public class BoardService {
     public List<BoardListDto> findAllByUserId(Long userId) {
         return boardRepository.findAllByUserId(userId).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getCategory().getCategoryName(), board.getStatus(), board.getLikedUsers().size()))
+                        board.getCategory().getCategoryName(),
+                        board.getStatus(), board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
@@ -153,13 +154,18 @@ public class BoardService {
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
-                    board.getCategory().getCategoryName(), board.getStatus(), board.getLikedUsers().size()));
+                    board.getCategory().getCategoryName(),
+                    board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
         }
         return result;
     }
 
     public Board findBoardById(Long id) {
         return boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
+    }
+
+    public void increaseViewCount(Long boardId) {
+        boardRepository.increaseViewCount(boardId);
     }
 
 }

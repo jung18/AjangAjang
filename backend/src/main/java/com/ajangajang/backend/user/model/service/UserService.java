@@ -97,4 +97,8 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public boolean isPhoneRegistered(String phone) {
+        return userRepository.findByPhone(phone).isPresent();
+    }
+
 }
