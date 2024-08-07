@@ -122,6 +122,12 @@ public class UserService {
             throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
         }
 
+        // 대표 아이인 경우 삭제 불가
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        if (user.getMainChildId().equals(childId)) {
+            throw new CustomGlobalException(CustomStatusCode.MAIN_CHILD_DELETE_FAIL);
+        }
+
         childRepository.delete(child);
     }
 
