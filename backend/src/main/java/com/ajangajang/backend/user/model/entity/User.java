@@ -2,6 +2,8 @@ package com.ajangajang.backend.user.model.entity;
 
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.entity.BoardLike;
+import com.ajangajang.backend.chat.entity.ChatMessage;
+import com.ajangajang.backend.chat.entity.UserRoom;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +46,12 @@ public class User {
     private String phone;
 
     private String profileImg;
+
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    private List<UserRoom> userRooms = new ArrayList<>();
 
     public void addMyBoard(Board board) {
         board.setWriter(this);
