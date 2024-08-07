@@ -1,35 +1,38 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './BoardTemplate.module.css'; // CSS 파일 import
 import apiClient from '../../api/apiClient'; // apiClient import
 
 const BoardTemplate = () => {
-    // 상태 관리
     const [productName, setProductName] = useState('');
     const [price, setPrice] = useState('');
-    const [usagePeriod, setUsagePeriod] = useState('');
+    const [useagePeriod, setUseagePeriod] = useState('');
     const [itemCondition, setItemCondition] = useState('');
     const [months, setMonths] = useState('');
     const [gender, setGender] = useState('');
     const [templateResult, setTemplateResult] = useState('');
+    const [templateTitle, setTemplateTitle] = useState('');
     const [tone, setTone] = useState('차분한'); // tone 상태 추가
 
-    // 핸들러 함수
+    const navigate = useNavigate();
+
     const handleProductNameChange = (e) => setProductName(e.target.value);
     const handlePriceChange = (e) => setPrice(e.target.value);
-    const handleUsagePeriodChange = (e) => setUsagePeriod(e.target.value);
+    const handleUsagePeriodChange = (e) => setUseagePeriod(e.target.value);
     const handleItemConditionChange = (e) => setItemCondition(e.target.value);
     const handleMonthsChange = (e) => setMonths(e.target.value);
     const handleGenderChange = (e) => setGender(e.target.value);
     const handleToneChange = (e) => setTone(e.target.value); // tone 핸들러 추가
 
     const handleCreateTemplate = async () => {
-        // 생성 버튼 클릭 시 로직
         const templateData = {
             item: productName,
             price: price,
-            usagePeriod: usagePeriod,
+            useagePeriod: useagePeriod,
             itemCondition: itemCondition,
             tone: tone, // tone 값 설정
+            gender: gender,
+            age: months
         };
         console.log('생성된 템플릿 데이터:', templateData);
         try {
@@ -37,23 +40,21 @@ const BoardTemplate = () => {
                 ...templateData
             });
             console.log('서버 응답:', response.data);
-            setTemplateResult(response.data.content); // 서버에서 받은 결과를 상태에 저장
+            setTemplateTitle(response.data.title);
+            setTemplateResult(response.data.content);
         } catch (error) {
             console.error('Error creating template:', error);
         }
     };
 
     const handleUseTemplate = () => {
-        // 사용 버튼 클릭 시 로직
         const templateData = {
-            item: productName,
+            title: templateTitle,
+            content: templateResult,
             price: price,
-            usagePeriod: usagePeriod,
-            itemCondition: itemCondition,
-            tone: tone, // tone 값 포함
         };
         console.log('사용할 템플릿 데이터:', templateData);
-        // 여기에서 템플릿 데이터를 다른 컴포넌트로 전달하거나 사용할 수 있습니다.
+        navigate('/post', { state: { templateData } });
     };
 
     return (
@@ -71,26 +72,26 @@ const BoardTemplate = () => {
                 </div>
                 <div className={styles.formGroup}>
                     <input
-                        type="text" 
+                        type="text"
                         placeholder="가격"
-                        className={styles.inputField} 
+                        className={styles.inputField}
                         value={price}
                         onChange={handlePriceChange}
                     />
-                    <select className={styles.selectField} value={usagePeriod} onChange={handleUsagePeriodChange}>
+                    <select className={styles.selectField} value={useagePeriod} onChange={handleUsagePeriodChange}>
                         <option value="">사용 기간</option>
                         <option value="1년">1년</option>
                         <option value="2년">2년</option>
                         <option value="3년">3년</option>
-                        <option value="4년">4년</option>  
+                        <option value="4년">4년</option>
                         <option value="5년 이상">5년 이상</option>
                     </select>
                 </div>
                 <div className={styles.formGroup}>
                     <input
-                        type="text" 
+                        type="text"
                         placeholder="상태"
-                        className={styles.inputField} 
+                        className={styles.inputField}
                         value={itemCondition}
                         onChange={handleItemConditionChange}
                     />
@@ -163,7 +164,8 @@ const BoardTemplate = () => {
                 <div className={styles.title}>생성 결과</div>
                 <div className={styles.result}>
                     <div className={styles.resultBox}>
-                        {templateResult ? templateResult : '템플릿 생성 결과가 보여집니다.'}
+                        {templateTitle ? <div className={styles.title}>{templateTitle}</div> : ""}
+                        {templateResult ? <div className={styles.resultText}>{templateResult}</div> : '템플릿 생성 결과가 보여집니다.'}
                     </div>
                 </div>
                 <div className={styles.buttonContainer}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import usePageStore from "../../../../store/currentPageStore";
 
@@ -7,23 +7,18 @@ import ChatIcon from "../../../../assets/icons/chat.png";
 
 import "./BoardItem.css";
 
-function BoardItem({ board, salse }) {
+function BoardItem({ board }) {
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
 
-  //지역 정보 넘겨줘
-  //채팅 수 넘겨줘
+  // 지역 정보 넘겨줘
+  // 채팅 수 넘겨줘
   console.log(board);
   const formattedPrice = new Intl.NumberFormat("en-US").format(board.price);
 
   const handleClick = () => {
-    if (salse === "direct") {
-      setCurrentPage("direct-detail");
-      navigate(`/direct/${board.boardId}`)
-    } else {
-      setCurrentPage("parcel-detail");
-      navigate(`/parcel/${board.boardId}`);
-    }
+    setCurrentPage("board-detail"); // 페이지 이름을 일반적인 이름으로 변경
+    navigate(`/board/${board.boardId}`); // 단일 경로로 변경
   };
 
   return (

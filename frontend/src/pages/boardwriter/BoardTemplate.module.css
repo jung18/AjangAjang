@@ -74,17 +74,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 150px;
   border: 1px solid #ffd700;
   border-radius: 10px;
   margin-bottom: 10px;
+  padding: 10px; /* 패딩 추가로 내부 여백 확보 */
+  width:94%; /* 부모 요소의 너비를 100%로 설정 */
 }
 
 .resultBox {
   color: #ff6f61;
   font-size: 16px;
   text-align: center; /* 텍스트를 중앙 정렬 */
+  white-space: pre-line; /* 줄 바꿈을 반영 */
+  word-wrap: break-word; /* 긴 단어를 줄 바꿈 */
+  overflow-wrap: break-word; /* 긴 단어를 줄 바꿈 */
+  overflow: hidden; /* 넘치는 내용을 숨김 */
+  padding: 10px;
+  box-sizing: border-box; /* 패딩을 포함한 크기 계산 */
+  max-width: 100%; /* 최대 너비를 100%로 설정 */
+  height: auto; /* 높이를 내용에 맞게 자동 조정 */
+  width: 100%; /* 너비를 100%로 설정 */
 }
+
+.resultText {
+  display: block; /* div 요소를 블록으로 표시 */
+  text-align: left; /* 텍스트를 왼쪽 정렬 (필요에 따라 변경 가능) */
+  width: 100%; /* 너비를 100%로 설정 */
+  word-break: break-word; /* 단어 단위로 줄 바꿈 */
+  white-space: pre-wrap; /* 줄 바꿈과 공백을 그대로 반영 */
+  height: auto; /* 높이를 내용에 맞게 자동 조정 */
+}
+
 
 .createButton {
   background-color: #ff6f61;

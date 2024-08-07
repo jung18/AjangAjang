@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import cameraImage from '../../assets/camera.png';
 import videoImage from '../../assets/video.png';
 import deleteIcon from '../../assets/delete.png'; // 삭제 아이콘 추가
@@ -14,11 +14,22 @@ const BoardWrite = () => {
   const [category, setCategory] = useState('');
   const [region, setRegion] = useState('');
   const [status, setStatus] = useState('SOLD_OUT'); // status 상태 추가
-  const [deliveryType, setDeliveryType] = useState('DIRECT'); // deliveryType 상태 추가
+  const [addressId, setAddressId] = useState('1'); // deliveryType 상태 추가
   const [images, setImages] = useState([]); // 이미지 상태를 배열로 변경
   const fileInputRef = useRef(null);
   const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
+  const location = useLocation(); // 상태를 받기 위해 useLocation 사용
+
+
+  useEffect(() => {
+    if (location.state?.templateData) {
+      const { title, content, price } = location.state.templateData;
+      setTitle(title || '');
+      setContent(content || '');
+      setPrice(price || '');
+    }
+  }, [location.state]);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -50,10 +61,10 @@ const BoardWrite = () => {
     fileInputRef.current?.click();
   };
   
-  const handelTemplate = () => {
+  const handleTemplate = () => {
     setCurrentPage('post/template');
     navigate('/post/template'); // 템플릿 이동
-  }
+  };
 
   const isFormValid = () => {
     return title.trim() !== '' && price.trim() !== '' && content.trim() !== '';
@@ -78,8 +89,9 @@ const BoardWrite = () => {
       category,
       region,
       status,
-      deliveryType,
-      writerId: 1
+      // deliveryType,
+      writerId: 1,
+      addressId,
     };
 
     const formData = new FormData();
@@ -106,7 +118,7 @@ const BoardWrite = () => {
   return (
     <form onSubmit={handleSubmit} className="board-write-container">
       <div className="header">
-        <button type="button" className="template-button" onClick={handelTemplate}>템플릿</button>
+        <button type="button" className="template-button" onClick={handleTemplate}>템플릿</button>
         <div>
           <button type="submit" className="submit-button" disabled={!isFormValid()}>완료</button>
         </div>

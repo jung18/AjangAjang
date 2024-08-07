@@ -7,7 +7,7 @@ import SelectBox from "../../components/SelectBox";
 
 import "./Board.css";
 
-const Board = ({ salseType }) => {
+const Board = () => {
   const [boards, setBoards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
@@ -21,7 +21,7 @@ const Board = ({ salseType }) => {
     const getBoards = async () => {
       try {
         const boardList = await fetchBoardList();
-        setBoards(boardList);
+        setBoards(boardList.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
       } catch (error) {
         console.error("Failed to fetch boards", error);
       } finally {
@@ -72,7 +72,7 @@ const Board = ({ salseType }) => {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
 
-  //optionList에 사용자 주소 목록 넣어줘야함
+  // optionList에 사용자 주소 목록 넣어줘야함
   return (
     <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
       <div className="user-option">
@@ -85,10 +85,10 @@ const Board = ({ salseType }) => {
         </label>
       </div>
 
-      {!boards.data || boards.data.length === 0 ? (
+      {!boards || boards.length === 0 ? (
         <div className="not-found-content">게시글이 존재하지 않습니다.</div>
       ) : (
-        <BoardList boards={boards.data} sType={salseType} />
+        <BoardList boards={boards} />
       )}
     </div>
   );
