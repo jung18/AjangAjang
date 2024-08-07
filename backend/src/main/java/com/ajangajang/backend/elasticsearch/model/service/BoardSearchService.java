@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ajangajang.backend.api.kakaomap.model.entity.NearType.*;
 
@@ -67,7 +68,7 @@ public class BoardSearchService {
 
         // 페이징
         Pageable pageable = PageRequest.of(searchBoardDto.getPage(), searchBoardDto.getSize());
-        Page<BoardDocument> boardDocuments = boardSearchRepository.findByAddressCodeIn(codes, pageable);
+        Page<BoardDocument> boardDocuments = boardSearchRepository.findByAddressCodeInAndStatusIn(codes, List.of("FOR_SALE", "RESERVED"), pageable);
 
         List<Long> boardIds = boardDocuments.stream()
                 .map(BoardDocument::getBoardId).collect(Collectors.toList());
@@ -144,6 +145,10 @@ public class BoardSearchService {
         BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool()
                 .filter(QueryBuilders.terms(t -> t.field("addressCode")
                         .terms(v -> v.value(codes.stream()
+                                .map(FieldValue::of)
+                                .collect(Collectors.toList())))))
+                .filter(QueryBuilders.terms(t -> t.field("status")
+                        .terms(v -> v.value(Stream.of("FOR_SALE", "RESERVED")
                                 .map(FieldValue::of)
                                 .collect(Collectors.toList())))));
 
