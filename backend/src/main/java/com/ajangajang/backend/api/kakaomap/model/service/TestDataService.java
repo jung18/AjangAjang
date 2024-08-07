@@ -44,7 +44,7 @@ public class TestDataService {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         try {
             // Load the JSON file from the resources/static directory
-            ClassPathResource resource = new ClassPathResource("static/board_requests.json");
+            ClassPathResource resource = new ClassPathResource("static/board_request.json");
 
             // Read the file content into a String
             String jsonContent = new String(Files.readAllBytes(Paths.get(resource.getURI())));
@@ -69,7 +69,7 @@ public class TestDataService {
         int price = jsonObject.getInt("price");
         String content = jsonObject.getString("content");
         String category = jsonObject.getString("category");
-        Status status = Status.FOR_SALE;
+        Status status = Status.fromString(jsonObject.getString("status"));
         Long addressId = jsonObject.getLong("addressId");
         CreateBoardDto dto = new CreateBoardDto(title, price, content, category, status, addressId);
         Regions findRegion = regionsRepository.findById(addressId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
