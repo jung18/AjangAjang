@@ -1,5 +1,6 @@
 package com.ajangajang.backend.user.model.entity;
 
+import com.ajangajang.backend.board.model.entity.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +24,13 @@ public class Child {
 
     private LocalDate birthDate;
 
-    private String gender;
+    private Gender gender;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Child(String name, LocalDate birthDate, String gender, User user) {
+    public Child(String name, LocalDate birthDate, Gender gender, User user) {
         this.name = name;
         this.birthDate = birthDate;
         this.gender = gender;

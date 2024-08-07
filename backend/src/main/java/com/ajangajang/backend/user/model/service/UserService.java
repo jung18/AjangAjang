@@ -2,6 +2,7 @@ package com.ajangajang.backend.user.model.service;
 
 import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.board.model.entity.Gender;
 import com.ajangajang.backend.board.model.repository.BoardLikeRepository;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
 import com.ajangajang.backend.board.model.service.BoardService;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,7 +112,10 @@ public class UserService {
     public void addChild(String username, ChildInputDto childInputDto) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         LocalDate birthDate = LocalDate.of(childInputDto.getYear(), childInputDto.getMonth(), childInputDto.getDay());
-        Child child = new Child(childInputDto.getName(), birthDate, childInputDto.getGender(), user);
+        if (birthDate.isAfter(LocalDate.now(ZoneId.of("Asia/Seoul")))) {
+            throw new CustomGlobalException(CustomStatusCode.INVALID_BIRTHDATE);
+        }
+        Child child = new Child(childInputDto.getName(), birthDate, Gender.valueOf(childInputDto.getGender()), user);
         childRepository.save(child);
     }
 
@@ -135,7 +140,7 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         List<Child> children = user.getChildren();
         return children.stream()
-                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender()))
+                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender().name()))
                 .collect(Collectors.toList());
     }
 
