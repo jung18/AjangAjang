@@ -9,17 +9,19 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class BoardMedia {
 
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JsonIgnore
     @JoinColumn(name = "board_id")
     private Board board;
@@ -28,6 +30,7 @@ public class BoardMedia {
     private MediaType mediaType;
 
     private String mediaUrl;
+
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -36,4 +39,5 @@ public class BoardMedia {
         this.mediaType = mediaType;
         this.mediaUrl = mediaUrl;
     }
+
 }

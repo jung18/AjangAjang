@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -24,19 +25,22 @@ public class Review {
     private Long id;
 
     private int score;
+
     private String content;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User writer;
 
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "trade_id")
     private Trade trade;
 

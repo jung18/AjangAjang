@@ -26,16 +26,16 @@ public class User {
     @Column(unique = true)
     private String username; // 식별 아이디
 
-    @OneToMany(mappedBy = "writer", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "writer", cascade = REMOVE, orphanRemoval = true)
     private List<Board> myBoards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = LAZY)
+    @OneToMany(mappedBy = "user")
     private List<BoardLike> myLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
     private List<Kid> kids = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "main_address_id")
     private Address mainAddress;
 
@@ -47,10 +47,10 @@ public class User {
 
     private String profileImg;
 
-    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
     private List<UserRoom> userRooms = new ArrayList<>();
 
     public void addMyBoard(Board board) {

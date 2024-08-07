@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 @Setter
@@ -23,7 +25,7 @@ public class Kid {
 
     private String gender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
