@@ -3,6 +3,8 @@ package com.ajangajang.backend.api.kakaomap.model.service;
 import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.api.kakaomap.model.repository.RegionsRepository;
 import com.ajangajang.backend.api.kakaomap.model.repository.NearbyRegionsRepository;
+import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
+import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchRepository;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class RegionDataService {
 
     private final RegionsRepository regionsRepository;
     private final KakaoApiService kakaoApiService;
+    private final NearbyRegionsRepository nearbyRegionsRepository;
+    private final AddressSearchRepository addressSearchRepository;
 
     public void callApiByCSV() {
         String filePath = "C:/Users/SSAFY/Documents/location_data.csv";
@@ -89,6 +93,16 @@ public class RegionDataService {
 
     public void saveNearbyRegions() {
         regionsRepository.saveNearbyRegion();
+    }
+
+    public void saveRegionsES() {
+        List<Regions> allRegions = regionsRepository.findAll();
+        for (Regions region : allRegions) {
+            List<String> closeById = nearbyRegionsRepository.findCloseById(region.getId());
+            List<String> mediumById = nearbyRegionsRepository.findMediumById(region.getId());
+            List<String> farById = nearbyRegionsRepository.findFarById(region.getId());
+            addressSearchRepository.save(AddressDocument.from(region, closeById, mediumById, farById));
+        }
     }
 
 }

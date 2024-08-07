@@ -62,8 +62,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
-        return userInfoDto;
+        return new UserInfoDto(user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
     }
 
     public List<BoardListDto> findMyLikes(String username) {
@@ -76,15 +75,14 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return boardRepository.findAllByUserId(user.getId()).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getDeliveryType().getType(), board.getCategory().getCategoryName(),
-                        board.getStatus(), board.getLikedUsers().size()))
+                        board.getCategory().getCategoryName(), board.getStatus(),
+                        board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
     public UserInfoDto findUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        UserInfoDto userInfoDto = new UserInfoDto(user.getNickname(), user.getProfileImg());
-        return userInfoDto;
+        return new UserInfoDto(user.getNickname(), user.getProfileImg());
     }
 
     public void updateMyInfo(String username, UserInputDto userInputDto) {
@@ -97,6 +95,10 @@ public class UserService {
     public void deleteUser(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         userRepository.delete(user);
+    }
+
+    public boolean isPhoneRegistered(String phone) {
+        return userRepository.findByPhone(phone).isPresent();
     }
 
 }

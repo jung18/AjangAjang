@@ -1,10 +1,7 @@
 package com.ajangajang.backend.user.controller;
 
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
-import com.ajangajang.backend.user.model.dto.AddressDto;
-import com.ajangajang.backend.user.model.dto.AddressNameDto;
-import com.ajangajang.backend.user.model.dto.CoordinateDto;
-import com.ajangajang.backend.user.model.dto.MainAddressDto;
+import com.ajangajang.backend.user.model.dto.*;
 import com.ajangajang.backend.user.model.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +58,14 @@ public class AddressApiController {
         String username = customOAuth2User.getUsername();
         Long mainAddressId = userAddressService.saveMainAddress(username, dto);
         return new ResponseEntity<>(Map.of("id", mainAddressId), HttpStatus.OK);
+    }
+
+    @PostMapping("/main/range")
+    public ResponseEntity<?> updateNearType(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                            @RequestBody SearchRangeDto searchRangeDto) {
+        String username = customOAuth2User.getUsername();
+        String nearType = userAddressService.updateNearType(username, searchRangeDto);
+        return new ResponseEntity<>(Map.of("nearType", nearType), HttpStatus.OK);
     }
 
 }

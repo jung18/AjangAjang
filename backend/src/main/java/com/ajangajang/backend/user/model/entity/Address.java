@@ -1,8 +1,7 @@
 package com.ajangajang.backend.user.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.ajangajang.backend.api.kakaomap.model.entity.NearType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +23,9 @@ public class Address {
     private double longitude; // 경도
     private double latitude; // 위도
     private String addressCode; // 법정코드
+
+    @Enumerated(EnumType.STRING)
+    private NearType nearType = NearType.MEDIUM; // 해당 주소기준 조회 범위, 기본값 10km
 
     public Address(String sido, String sigg, String emd, String fullAddress, double longitude, double latitude, String addressCode) {
         this.sido = sido;

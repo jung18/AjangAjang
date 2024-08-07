@@ -16,19 +16,18 @@ import java.util.List;
 public class UpdateBoardDto {
 
     private String title;
-    private Integer price;
+    private int price;
     private String content;
-    private String deliveryType;
     private String category;
     private Status status;
+    private Long addressId;
 
     private List<Long> deleteFileIds = new ArrayList<>();
 
-    public UpdateBoardDto(String title, Integer price, String content, String deliveryType, String category, Status status) {
+    public UpdateBoardDto(String title, int price, String content, String category, Status status) {
         this.title = title;
         this.price = price;
         this.content = content;
-        this.deliveryType = deliveryType;
         this.category = category;
         this.status = status;
     }
