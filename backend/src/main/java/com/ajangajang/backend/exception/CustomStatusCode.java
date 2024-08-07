@@ -12,6 +12,7 @@ public enum CustomStatusCode {
     MEDIA_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 미디어"),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저"),
+    KID_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 아이"),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요한 적 없는 게시글"),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰"),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주소"),

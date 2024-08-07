@@ -8,15 +8,20 @@ import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.board.model.service.FileService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
+import com.ajangajang.backend.user.model.dto.KidInputDto;
+import com.ajangajang.backend.user.model.dto.KidListDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
 import com.ajangajang.backend.user.model.dto.UserInputDto;
+import com.ajangajang.backend.user.model.entity.Kid;
 import com.ajangajang.backend.user.model.entity.User;
+import com.ajangajang.backend.user.model.repository.KidRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +36,7 @@ public class UserService {
 
     private final FileService fileService;
     private final BoardService boardService;
+    private final KidRepository kidRepository;
 
     public void signUp(String username, UserInputDto userInputDto) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -76,7 +82,7 @@ public class UserService {
         return boardRepository.findAllByUserId(user.getId()).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
                         board.getCategory().getCategoryName(), board.getStatus(),
-                        board.getLikedUsers().size()))
+                        board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
@@ -99,6 +105,32 @@ public class UserService {
 
     public boolean isPhoneRegistered(String phone) {
         return userRepository.findByPhone(phone).isPresent();
+    }
+
+    public void addKid(String username, KidInputDto kidInputDto) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        LocalDate birthDate = LocalDate.of(kidInputDto.getYear(), kidInputDto.getMonth(), kidInputDto.getDay());
+        Kid kid = new Kid(kidInputDto.getName(), birthDate, kidInputDto.getGender(), user);
+        kidRepository.save(kid);
+    }
+
+    public void deleteKid(String username, Long kidId) {
+        Kid kid = kidRepository.findById(kidId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.KID_NOT_FOUND));
+
+        // 본인의 아이가 아닌 경우 삭제 불가
+        if (!username.equals(kid.getUser().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
+
+        kidRepository.delete(kid);
+    }
+
+    public List<KidListDto> findMyKids(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        List<Kid> kids = user.getKids();
+        return kids.stream()
+                .map(kid -> new KidListDto(kid.getId(), kid.getName(), kid.getBirthDate(), kid.getGender()))
+                .collect(Collectors.toList());
     }
 
 }

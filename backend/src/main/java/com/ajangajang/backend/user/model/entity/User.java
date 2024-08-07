@@ -30,6 +30,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = LAZY)
     private List<BoardLike> myLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    private List<Kid> kids = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "main_address_id")
     private Address mainAddress;
