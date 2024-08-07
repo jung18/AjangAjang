@@ -30,7 +30,7 @@ const AppRoutes = () => {
         path="/direct"
         element={
           <PageLayout
-            page={<Board salseType={"direct"} />}
+            page={<Board />}
             pageType={"board"}
           />
         }
@@ -39,7 +39,7 @@ const AppRoutes = () => {
         path="/parcel"
         element={
           <PageLayout
-            page={<Board salseType={"parcel"} />}
+            page={<Board />}
             pageType={"board"}
           />
         }
@@ -48,10 +48,6 @@ const AppRoutes = () => {
         path="/post"
         element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
       >
-        <Route
-          path="template"
-          element={<PageLayout page={<BoardTemplate />} pageType={"search"} />}
-        />
       </Route>
       <Route
         path="/search"
@@ -61,7 +57,7 @@ const AppRoutes = () => {
         path="/direct/:id"
         element={
           <PageLayout
-            page={<BoardDetail salseType={"direct"} />}
+            page={<BoardDetail />}
             pageType={"boardDetail"}
           />
         }
@@ -70,7 +66,7 @@ const AppRoutes = () => {
         path="/parcel/:id"
         element={
           <PageLayout
-            page={<BoardDetail salseType={"parcel"} />}
+            page={<BoardDetail />}
             pageType={"boardDetail"}
           />
         }
@@ -78,6 +74,15 @@ const AppRoutes = () => {
       <Route
         path="/post/template"
         element={<PageLayout page={<BoardTemplate />} pageType={"template"} />}
+      />
+      <Route
+        path="/board/:id"
+        element={
+          <PageLayout
+            page={<BoardDetail />}
+            pageType={"boardDetail"}
+          />
+        }
       />
     </Routes>
   );
