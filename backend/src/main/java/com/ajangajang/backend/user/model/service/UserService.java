@@ -76,7 +76,7 @@ public class UserService {
         return boardRepository.findAllByUserId(user.getId()).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
                         board.getCategory().getCategoryName(), board.getStatus(),
-                        board.getLikedUsers().size()))
+                        board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
