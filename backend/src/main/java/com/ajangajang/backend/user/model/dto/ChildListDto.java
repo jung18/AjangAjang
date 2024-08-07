@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KidListDto {
+public class ChildListDto {
 
     private Long id;
     private String name;

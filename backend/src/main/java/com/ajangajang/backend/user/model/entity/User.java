@@ -26,6 +26,18 @@ public class User {
     @Column(unique = true)
     private String username; // 식별 아이디
 
+    private String name;
+
+    private String role;
+
+    private String nickname;
+
+    private String phone;
+
+    private String profileImg;
+
+    private Long mainChildId;
+
     @OneToMany(mappedBy = "writer", cascade = REMOVE, orphanRemoval = true)
     private List<Board> myBoards = new ArrayList<>();
 
@@ -33,19 +45,11 @@ public class User {
     private List<BoardLike> myLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
-    private List<Kid> kids = new ArrayList<>();
+    private List<Child> children = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "main_address_id")
     private Address mainAddress;
-
-    private String name;
-    private String role;
-
-    private String nickname;
-    private String phone;
-
-    private String profileImg;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
     private List<ChatMessage> chatMessages = new ArrayList<>();

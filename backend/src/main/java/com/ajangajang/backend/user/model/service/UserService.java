@@ -8,13 +8,13 @@ import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.board.model.service.FileService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
-import com.ajangajang.backend.user.model.dto.KidInputDto;
-import com.ajangajang.backend.user.model.dto.KidListDto;
+import com.ajangajang.backend.user.model.dto.ChildInputDto;
+import com.ajangajang.backend.user.model.dto.ChildListDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
 import com.ajangajang.backend.user.model.dto.UserInputDto;
-import com.ajangajang.backend.user.model.entity.Kid;
+import com.ajangajang.backend.user.model.entity.Child;
 import com.ajangajang.backend.user.model.entity.User;
-import com.ajangajang.backend.user.model.repository.KidRepository;
+import com.ajangajang.backend.user.model.repository.ChildRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class UserService {
 
     private final FileService fileService;
     private final BoardService boardService;
-    private final KidRepository kidRepository;
+    private final ChildRepository childRepository;
 
     public void signUp(String username, UserInputDto userInputDto) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -107,30 +107,42 @@ public class UserService {
         return userRepository.findByPhone(phone).isPresent();
     }
 
-    public void addKid(String username, KidInputDto kidInputDto) {
+    public void addChild(String username, ChildInputDto childInputDto) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        LocalDate birthDate = LocalDate.of(kidInputDto.getYear(), kidInputDto.getMonth(), kidInputDto.getDay());
-        Kid kid = new Kid(kidInputDto.getName(), birthDate, kidInputDto.getGender(), user);
-        kidRepository.save(kid);
+        LocalDate birthDate = LocalDate.of(childInputDto.getYear(), childInputDto.getMonth(), childInputDto.getDay());
+        Child child = new Child(childInputDto.getName(), birthDate, childInputDto.getGender(), user);
+        childRepository.save(child);
     }
 
-    public void deleteKid(String username, Long kidId) {
-        Kid kid = kidRepository.findById(kidId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.KID_NOT_FOUND));
+    public void deleteChild(String username, Long childId) {
+        Child child = childRepository.findById(childId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CHILD_NOT_FOUND));
 
         // 본인의 아이가 아닌 경우 삭제 불가
-        if (!username.equals(kid.getUser().getUsername())) {
+        if (!username.equals(child.getUser().getUsername())) {
             throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
         }
 
-        kidRepository.delete(kid);
+        childRepository.delete(child);
     }
 
-    public List<KidListDto> findMyKids(String username) {
+    public List<ChildListDto> findMyChildren(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        List<Kid> kids = user.getKids();
-        return kids.stream()
-                .map(kid -> new KidListDto(kid.getId(), kid.getName(), kid.getBirthDate(), kid.getGender()))
+        List<Child> children = user.getChildren();
+        return children.stream()
+                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender()))
                 .collect(Collectors.toList());
+    }
+
+    public void changeMainChild(String username, Long childId) {
+        Child child = childRepository.findById(childId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CHILD_NOT_FOUND));
+
+        // 본인의 아이가 아닌 경우 변경 불가
+        if (!username.equals(child.getUser().getUsername())) {
+            throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
+        }
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        user.setMainChildId(childId);
     }
 
 }

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class KidInputDto {
+public class ChildInputDto {
 
     private String name;
     private int year;

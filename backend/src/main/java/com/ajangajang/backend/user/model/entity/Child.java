@@ -13,7 +13,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Kid {
+public class Child {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class Kid {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Kid(String name, LocalDate birthDate, String gender, User user) {
+    public Child(String name, LocalDate birthDate, String gender, User user) {
         this.name = name;
         this.birthDate = birthDate;
         this.gender = gender;

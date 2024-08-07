@@ -2,18 +2,16 @@ package com.ajangajang.backend.user.controller;
 
 import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
-import com.ajangajang.backend.user.model.dto.KidInputDto;
-import com.ajangajang.backend.user.model.dto.KidListDto;
+import com.ajangajang.backend.user.model.dto.ChildInputDto;
+import com.ajangajang.backend.user.model.dto.ChildListDto;
 import com.ajangajang.backend.user.model.dto.UserInfoDto;
 import com.ajangajang.backend.user.model.dto.UserInputDto;
 import com.ajangajang.backend.user.model.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,26 +91,34 @@ public class UserApiController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/kid")
+    @PostMapping("/child")
     public ResponseEntity<?> addKid(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                    @RequestBody KidInputDto kidInputDto) {
+                                    @RequestBody ChildInputDto childInputDto) {
         String username = customOAuth2User.getUsername();
-        userService.addKid(username, kidInputDto);
+        userService.addChild(username, childInputDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/kid/{kidId}")
+    @DeleteMapping("/child/{childId}")
     public ResponseEntity<?> deleteKid(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                       @PathVariable("kidId") Long kidId) {
+                                       @PathVariable("childId") Long childId) {
         String username = customOAuth2User.getUsername();
-        userService.deleteKid(username, kidId);
+        userService.deleteChild(username, childId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/kid")
+    @GetMapping("/child")
     public ResponseEntity<?> getKids(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        List<KidListDto> result = userService.findMyKids(username);
+        List<ChildListDto> result = userService.findMyChildren(username);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/child/{childId}")
+    public ResponseEntity<?> changeMainChild(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                             @PathVariable("childId") Long childId) {
+        String username = customOAuth2User.getUsername();
+        userService.changeMainChild(username, childId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
