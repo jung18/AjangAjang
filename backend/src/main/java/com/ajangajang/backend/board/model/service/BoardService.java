@@ -28,7 +28,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
-    private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
 
@@ -37,11 +36,9 @@ public class BoardService {
 
     public Board save(String username, CreateBoardDto dto, List<MultipartFile> files) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
-        Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
+        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus(), Category.valueOf(dto.getCategory()));
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
 
-        board.setCategory(savedCategory);
         board.setAddress(address);
         setBoardMedia(files, board); // file upload, media save
         writer.addMyBoard(board);
@@ -61,7 +58,7 @@ public class BoardService {
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
-                            findBoard.getContent(), findBoard.getCategory().getCategoryName(), findBoard.getStatus(),
+                            findBoard.getContent(), findBoard.getCategory().name(), findBoard.getStatus(),
                             mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getViewCount(),
                             findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
@@ -79,19 +76,16 @@ public class BoardService {
         }
         // 엔티티 조회
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
-        Category findCategory = categoryRepository.findById(findBoard.getCategory().getId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.CATEGORY_NOT_FOUND));
         // 본인의 게시글이 아닌 경우 수정 불가
         if (!username.equals(findBoard.getWriter().getUsername())) {
             throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
         }
         // 내용 업데이트
         if (updateParam != null) {
-            findCategory.setCategoryName(updateParam.getCategory());
-
             findBoard.setTitle(updateParam.getTitle());
             findBoard.setPrice(updateParam.getPrice());
             findBoard.setContent(updateParam.getContent());
-            findBoard.setCategory(findCategory);
+            findBoard.setCategory(Category.valueOf(updateParam.getCategory()));
             findBoard.setStatus(updateParam.getStatus());
 
             Address findAddress = addressRepository.findById(updateParam.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
@@ -118,8 +112,8 @@ public class BoardService {
     public List<BoardListDto> findAllByUserId(Long userId) {
         return boardRepository.findAllByUserId(userId).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getCategory().getCategoryName(),
-                        board.getStatus(), board.getLikedUsers().size(), board.getViewCount()))
+                        board.getCategory().name(), board.getStatus(), board.getLikedUsers().size(),
+                        board.getViewCount()))
                 .collect(Collectors.toList());
     }
 
@@ -154,7 +148,7 @@ public class BoardService {
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
             result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
-                    board.getCategory().getCategoryName(),
+                    board.getCategory().name(),
                     board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
         }
         return result;

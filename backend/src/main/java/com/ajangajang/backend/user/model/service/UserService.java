@@ -81,7 +81,7 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return boardRepository.findAllByUserId(user.getId()).stream()
                 .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getCategory().getCategoryName(), board.getStatus(),
+                        board.getCategory().name(), board.getStatus(),
                         board.getLikedUsers().size(), board.getViewCount()))
                 .collect(Collectors.toList());
     }

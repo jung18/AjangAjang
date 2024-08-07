@@ -1,6 +1,5 @@
 package com.ajangajang.backend.board.model.entity;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,9 +41,9 @@ public class Board {
 
     private int viewCount;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @Enumerated(EnumType.STRING)
     private Category category;
+
     // 유저 (작성자)
     @ManyToOne
     @JsonIgnore
@@ -61,11 +60,12 @@ public class Board {
     @OneToMany(mappedBy = "board", fetch = LAZY)
     private List<BoardLike> likedUsers = new ArrayList<>();
 
-    public Board(String title, int price, String content, Status status) {
+    public Board(String title, int price, String content, Status status, Category category) {
         this.title = title;
         this.price = price;
         this.content = content;
         this.status = status;
+        this.category = category;
     }
 
     public void addMedia(BoardMedia media) {
