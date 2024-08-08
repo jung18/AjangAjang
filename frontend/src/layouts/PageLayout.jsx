@@ -28,6 +28,12 @@ const PageLayout = ({ page, pageType }) => {
     case "myBoard":
       headerComponent = <SearchHeader />;
       break;
+    case "myLike":
+      headerComponent = <SearchHeader />;
+      break;
+    case "myInfo":
+      headerComponent = <SearchHeader />;
+      break;
     default:
       break;
   }
