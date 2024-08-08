@@ -111,7 +111,7 @@ public class UserApiController {
     public ResponseEntity<?> getKids(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
         List<ChildListDto> result = userService.findMyChildren(username);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("data", result), HttpStatus.OK);
     }
 
     @PostMapping("/child/{childId}")

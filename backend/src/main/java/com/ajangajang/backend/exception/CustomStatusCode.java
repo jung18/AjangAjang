@@ -19,6 +19,7 @@ public enum CustomStatusCode {
     NEARTYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거리 타입"),
     TRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거래내역"),
     STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 판매 상태"),
+    MAIN_CHILD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 메인 아이"),
 
     EMPTY_UPDATE_DATA(HttpStatus.BAD_REQUEST, "업데이트할 데이터 없음"),
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요한 게시글"),
@@ -26,6 +27,7 @@ public enum CustomStatusCode {
     INVALID_NEAR_TYPE(HttpStatus.BAD_REQUEST, "잘못된 거리 타입"),
     DUPLICATE_ADDRESS(HttpStatus.BAD_REQUEST, "이미 존재하는 주소"),
     MAIN_CHILD_DELETE_FAIL(HttpStatus.BAD_REQUEST, "대표 자녀는 삭제 불가"),
+    INVALID_BIRTHDATE(HttpStatus.BAD_REQUEST, "현재 날짜보다 늦게 태어날 수 없음"),
 
     FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패"),
     API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "API 호출 실패"),
