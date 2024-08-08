@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+// SignUp.js
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useTokenStore from '../../store/useTokenStore'; // 경로 수정
+import styles from './SignUp.module.css'; // CSS 파일 import
 
 const SignUp = () => {
   const [nickname, setNickname] = useState('');
   const [phone, setPhone] = useState('');
+  const [addressName, setAddressName] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isVerified, setIsVerified] = useState(false); // 초기값 false로 수정
+
   const navigate = useNavigate();
   const setAccessToken = useTokenStore((state) => state.setAccessToken);
   const setRefreshToken = useTokenStore((state) => state.setRefreshToken);
+  const accessToken = useTokenStore((state) => state.accessToken);
+
+  useEffect(() => {
+    // window.setAddressName을 정의하여 findAddr 함수에서 호출할 수 있도록 함
+    window.setAddressName = setAddressName;
+  }, []);
 
   const handleNicknameChange = (e) => {
     setNickname(e.target.value);
@@ -18,81 +30,85 @@ const SignUp = () => {
     setPhone(e.target.value);
   };
 
-  const getAuthorizationToken = () => {
-    const name = "Authorization=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(';');
-    for (let i = 0; i < cookieArray.length; i++) {
-      let cookie = cookieArray[i];
-      while (cookie.charAt(0) === ' ') {
-        cookie = cookie.substring(1);
+  const handleSendSms = async () => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/user/sms/send', { phone }, {
+        headers: {
+          'Authorization': `${accessToken}`
+        }
+      });
+      if (response.data.success) {
+        alert('인증 코드가 전송되었습니다.');
       }
-      if (cookie.indexOf(name) === 0) {
-        const token = cookie.substring(name.length, cookie.length);
-        return token;
-      }
+    } catch (error) {
+      console.error('Failed to send SMS:', error);
     }
-    return "";
   };
 
-  const clearAllCookies = () => {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i];
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+  const handleVerifyCode = async () => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/user/sms/confirm', { phone, certificationNumber: verificationCode }, {
+        headers: {
+          'Authorization': `${accessToken}`
+        }
+      });
+
+      if (response.status === 200) { // 상태 코드 200 확인
+        setIsVerified(true);
+        alert('인증이 완료되었습니다.');
+      } else {
+        alert('인증 코드가 올바르지 않습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to verify code:', error);
+      alert('인증 코드 확인 중 오류가 발생했습니다.');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = {
-      nickname,
-      phone
-    };
-
-    const token = getAuthorizationToken();
-    const url = 'http://localhost:8080/sign-up'; // 서버 URL
-
-    console.log('Authorization Token:', token); // 토큰 출력
-    console.log('Request URL:', url); // URL 출력
-    console.log('Request Data:', data); // 데이터 출력
+    if (!isVerified) {
+      alert('전화번호 인증을 완료해주세요.');
+      return;
+    }
 
     try {
+      console.log(addressName);
+      const addressResponse = await axios.post('http://localhost:8080/api/address/name', { addressName }, {
+        headers: {
+          'Authorization': `${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const { main_address_id } = addressResponse.data; // 백엔드에서 받은 주소의 main_address_id
+
+      const data = {
+        nickname,
+        phone,
+        main_address_id
+      };
+
+      const url = 'http://localhost:8080/sign-up'; // 서버 URL
+
       const response = await axios.post(url, data, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token, // Bearer 접두사 포함된 토큰
+          'Authorization': `${accessToken}`
         },
       });
 
-      console.log('Response Status:', response.status); // 응답 상태 코드 출력
-      console.log('Response Data:', response.data); // 응답 데이터 출력
+      const headers = response.headers;
+      const newAccessToken = headers['authorization'];
+      const newRefreshToken = headers['authorization-refresh'];
 
-      // 응답 헤더를 소문자로 변환하여 접근
-      const headers = Object.keys(response.headers).reduce((acc, key) => {
-        acc[key.toLowerCase()] = response.headers[key];
-        return acc;
-      }, {});
-
-      const accessToken = headers['authorization'];
-      const refreshToken = headers['authorization-refresh'];
-
-      console.log('Access Token:', accessToken); // 토큰 값 로그 출력
-      console.log('Refresh Token:', refreshToken); // 토큰 값 로그 출력
-
-      if (!accessToken || !refreshToken) {
+      if (!newAccessToken || !newRefreshToken) {
         throw new Error('Authorization headers are missing');
       }
 
       // Zustand 스토어에 토큰 저장
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
-
-      // 쿠키에서 토큰을 지우기
-      clearAllCookies();
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
 
       alert('회원가입이 완료되었습니다.');
       navigate('/direct'); // 회원가입 완료 후 메인 페이지로 이동
@@ -102,31 +118,59 @@ const SignUp = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className={styles.container}>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="nickname">Nickname:</label>
+        <div className={styles.formGroup}>
+          <label htmlFor="nickname">닉네임:</label>
           <input
             type="text"
             id="nickname"
             value={nickname}
             onChange={handleNicknameChange}
-            style={{ width: '100%', marginBottom: '20px', padding: '10px', fontSize: '16px' }}
+            className={styles.inputField}
           />
         </div>
-        <div>
-          <label htmlFor="phone">Phone:</label>
+        <div className={styles.formGroup}>
+          <label htmlFor="phone">휴대전화:</label>
           <input
             type="text"
             id="phone"
             value={phone}
             onChange={handlePhoneChange}
-            style={{ width: '100%', marginBottom: '20px', padding: '10px', fontSize: '16px' }}
+            className={styles.inputField}
           />
+          <button type="button" onClick={handleSendSms} className={styles.smsButton}>
+            인증 코드 전송
+          </button>
         </div>
-        
-        <button type="submit" style={{ padding: '10px 20px', fontSize: '16px' }}>
-          Sign Up
+        <div className={styles.formGroup}>
+          <label htmlFor="verificationCode">인증 코드:</label>
+          <input
+            type="text"
+            id="verificationCode"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            className={styles.inputField}
+          />
+          <button type="button" onClick={handleVerifyCode} className={styles.verifyButton}>
+            인증 코드 확인
+          </button>
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="c_main_address">주소 검색:</label>
+          <input
+            type="text"
+            id="c_main_address"
+            value={addressName}
+            readOnly
+            className={styles.inputField}
+          />
+          <button type="button" id="addressSearch" onClick={() => window.findAddr()} className={styles.searchButton}>
+            주소 검색
+          </button>
+        </div>
+        <button type="submit" className={styles.submitButton}>
+          회원 가입
         </button>
       </form>
     </div>
