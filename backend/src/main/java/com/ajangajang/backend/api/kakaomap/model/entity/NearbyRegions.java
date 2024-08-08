@@ -4,19 +4,23 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class NearbyRegions {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "current_id")
     private Regions current;
-    @ManyToOne
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "nearby_id")
     private Regions nearby;
 
