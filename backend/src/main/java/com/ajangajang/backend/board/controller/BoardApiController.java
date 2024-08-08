@@ -118,7 +118,8 @@ public class BoardApiController {
         searchBoardDto.setCategory(recommendationCategory.name());
         searchBoardDto.setTitle("");
         searchBoardDto.setRetry(true);
-        return searchBoard(customOAuth2User, searchBoardDto);
+        SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(username, searchBoardDto);
+        return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
 
 }
