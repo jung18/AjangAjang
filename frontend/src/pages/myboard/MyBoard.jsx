@@ -1,10 +1,11 @@
-import React, { useContext, useState, setState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { fetchMyBoardList } from "../../api/boardService";
 import styles from"./MyBoard.module.css";
-import BoardList from "../board/components/boardList/BoardList";
+import MyBoardList from "./components/myBoardList/MyBoardList";
 import useTokenStore from '../../store/useTokenStore';
+import SelectBox from "../../components/SelectBox";
 
-const MyBoard = ({salseType}) => {
+const MyBoard = () => {
     const [boards, setBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [maxHeight, setMaxHeight] = useState(0);
@@ -71,11 +72,11 @@ const MyBoard = ({salseType}) => {
     
     return (
       <div className={styles.boardPage} style={{ maxHeight: `${maxHeight}px` }}>
-          {!boards.data || boards.data.length === 0 ? (
-          <div className="not-found-content">게시글이 존재하지 않습니다.</div>
-          ) : (
-          <BoardList boards={boards.data} sType={salseType} />
-          )}
+        {!boards || boards.length === 0 ? (
+          <div className={styles.notFoundContent}>내 게시글이 존재하지 않습니다.</div>
+        ) : (
+          <MyBoardList boards={boards} />
+        )}
       </div>
     );
 }

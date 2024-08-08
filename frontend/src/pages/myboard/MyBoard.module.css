@@ -5,11 +5,42 @@
     width: 100%;
     font-family: "GmarketSansMedium", sans-serif;
     overflow-y: auto;
+  }
+  
+.boardPage .userOption {
+    height: 50px;
+    width: -webkit-fill-available;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ff879e;
+    margin-top: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: white;
+    z-index: 1000; /* 배경색 추가 */
 }
-
-.board-page .not-found-content {
-margin-top: 30vh;
-display: flex;
-align-items: center;
-justify-content: center;
-}
+  
+  .boardPage .userOption .recommand {
+    display: flex;
+    align-items: center;
+    color: #ff879e;
+  }
+  
+  .boardPage .userOption .recommand input {
+    border-color: #ff879e;
+    accent-color: #ffca00;
+    width: 17px;
+    height: 17px;
+  }
+  
+  .boardPage .notFoundContent {
+    margin-top: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
