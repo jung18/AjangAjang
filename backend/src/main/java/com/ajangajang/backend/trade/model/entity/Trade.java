@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -24,14 +25,15 @@ public class Trade {
     @Column(updatable = false)
     private LocalDateTime tradeDate;
 
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
     private Board item; // 거래상품(판매글)
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "seller_id")
     private User seller;
-    @ManyToOne
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "buyer_id")
     private User buyer;
 

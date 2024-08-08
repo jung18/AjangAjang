@@ -2,6 +2,7 @@ package com.ajangajang.backend.board.controller;
 
 import com.ajangajang.backend.board.model.dto.*;
 import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.board.model.entity.Category;
 import com.ajangajang.backend.board.model.service.BoardLikeService;
 import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.elasticsearch.model.service.BoardSearchService;
@@ -41,7 +42,10 @@ public class BoardApiController {
     }
 
     @GetMapping("/board/{id}")
-    public ResponseEntity<?> getBoard(@PathVariable("id") Long id) {
+    public ResponseEntity<?> getBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                      @PathVariable("id") Long id) {
+        String username = customOAuth2User.getUsername();
+        boardService.increaseRecommendationViewCount(username, id);
         boardService.increaseViewCount(id);
         BoardDto result = boardService.findById(id);
         return ResponseEntity.ok(result);
@@ -104,6 +108,18 @@ public class BoardApiController {
         String username = customOAuth2User.getUsername();
         boardLikeService.unlikeBoard(username, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/board/recommendation")
+    public ResponseEntity<?> getRecommendationBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+                                                     @RequestBody SearchBoardDto searchBoardDto) {
+        String username = customOAuth2User.getUsername();
+        Category recommendationCategory = boardService.findRecommendationCategory(username);
+        searchBoardDto.setCategory(recommendationCategory.name());
+        searchBoardDto.setTitle("");
+        searchBoardDto.setRetry(true);
+        SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(username, searchBoardDto);
+        return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
 
 }

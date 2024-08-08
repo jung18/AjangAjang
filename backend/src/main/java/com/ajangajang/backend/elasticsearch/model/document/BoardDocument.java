@@ -35,7 +35,7 @@ public class BoardDocument {
         return BoardDocument.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
-                .category(board.getCategory().getCategoryName())
+                .category(board.getCategory().name())
                 .addressCode(board.getAddress().getAddressCode())
                 .status(board.getStatus().toString())
                 .build();

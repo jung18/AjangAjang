@@ -20,10 +20,15 @@ public class Regions {
     private Long id;
 
     private String sido; // 시/도
+
     private String sigg; // 시/군/구
+
     private String emd; // 읍/면/동
+
     private double longitude; // 경도
+
     private double latitude; // 위도
+
     private String addressCode; // 법정코드
 
     public Regions(String sido, String sigg, String emd, double longitude, double latitude, String addressCode) {
@@ -34,4 +39,5 @@ public class Regions {
         this.latitude = latitude;
         this.addressCode = addressCode;
     }
+
 }

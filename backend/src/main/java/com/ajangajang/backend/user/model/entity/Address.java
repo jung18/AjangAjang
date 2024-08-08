@@ -17,11 +17,17 @@ public class Address {
     private Long id;
 
     private String sido; // 시/도
+
     private String sigg; // 시/군/구
+
     private String emd; // 읍/면/동
+
     private String fullAddress; // 전체 주소
+
     private double longitude; // 경도
+
     private double latitude; // 위도
+
     private String addressCode; // 법정코드
 
     @Enumerated(EnumType.STRING)
