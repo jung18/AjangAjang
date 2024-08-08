@@ -1,0 +1,15 @@
+.boardPage {
+    position: fixed;
+    top: 110px;
+    left: 0;
+    width: 100%;
+    font-family: "GmarketSansMedium", sans-serif;
+    overflow-y: auto;
+}
+
+.board-page .not-found-content {
+margin-top: 30vh;
+display: flex;
+align-items: center;
+justify-content: center;
+}

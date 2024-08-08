@@ -11,6 +11,8 @@ import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
+import MyPage from "./pages/myPage/MyPage";
+import MyBoard from "./pages/myboard/MyBoard";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -26,6 +28,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
+      <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
+      <Route path="/user/boards" element={<PageLayout page={<MyBoard />} pageType={"myBoard"} />} />
       <Route
         path="/direct"
         element={
