@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,8 +42,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://i11b210.p.ssafy.io"));
-//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3001"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://i11b210.p.ssafy.io", "http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -79,10 +80,10 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll());
-//                        .requestMatchers("/reissue").permitAll()
-//                        .requestMatchers("/sign-up").hasRole("GUEST")
-//                        .anyRequest().hasRole("USER"));
+                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/sign-up", "/api/user/sms/**").hasRole("GUEST")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
         httpSecurity
@@ -90,5 +91,17 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();
+    }
+
+    // 역할 계층 설정
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+
+        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER\n" +
+                "ROLE_USER > ROLE_GUEST");
+
+        return hierarchy;
     }
 }

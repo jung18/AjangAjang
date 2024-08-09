@@ -28,12 +28,16 @@ public class BoardDocument {
     @Field(type = FieldType.Keyword)
     private String addressCode;
 
+    @Field(type = FieldType.Keyword)
+    private String status;
+
     public static BoardDocument from (Board board) {
         return BoardDocument.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
-                .category(board.getCategory().getCategoryName())
+                .category(board.getCategory().name())
                 .addressCode(board.getAddress().getAddressCode())
+                .status(board.getStatus().toString())
                 .build();
     }
 }

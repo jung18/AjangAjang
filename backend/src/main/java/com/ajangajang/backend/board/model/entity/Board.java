@@ -1,6 +1,5 @@
 package com.ajangajang.backend.board.model.entity;
 
-import com.ajangajang.backend.api.kakaomap.model.entity.Regions;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,51 +20,59 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class Board {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private String title;
+
     private int price;
+
     @Column(columnDefinition = "longtext")
     private String content;
+
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
     private int viewCount;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @Enumerated(EnumType.STRING)
     private Category category;
+
     // 유저 (작성자)
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User writer;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(mappedBy = "board", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board", fetch = LAZY)
+    @OneToMany(mappedBy = "board")
     private List<BoardLike> likedUsers = new ArrayList<>();
 
-    public Board(String title, int price, String content, Status status) {
+    public Board(String title, int price, String content, Status status, Category category) {
         this.title = title;
         this.price = price;
         this.content = content;
         this.status = status;
+        this.category = category;
     }
 
     public void addMedia(BoardMedia media) {
@@ -77,4 +84,5 @@ public class Board {
         like.setBoard(this);
         this.likedUsers.add(like);
     }
+
 }

@@ -7,7 +7,6 @@ import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.entity.Category;
 import com.ajangajang.backend.board.model.entity.Status;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
-import com.ajangajang.backend.board.model.repository.CategoryRepository;
 import com.ajangajang.backend.elasticsearch.model.service.BoardSearchService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
@@ -34,7 +33,6 @@ public class TestDataService {
 
     private final BoardSearchService boardSearchService;
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
     private final RegionsRepository regionsRepository;
     private final BoardRepository boardRepository;
     private final AddressRepository addressRepository;
@@ -44,7 +42,7 @@ public class TestDataService {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         try {
             // Load the JSON file from the resources/static directory
-            ClassPathResource resource = new ClassPathResource("static/board_requests.json");
+            ClassPathResource resource = new ClassPathResource("static/board_request.json");
 
             // Read the file content into a String
             String jsonContent = new String(Files.readAllBytes(Paths.get(resource.getURI())));
@@ -69,20 +67,18 @@ public class TestDataService {
         int price = jsonObject.getInt("price");
         String content = jsonObject.getString("content");
         String category = jsonObject.getString("category");
-        Status status = Status.FOR_SALE;
+        Status status = Status.fromString(jsonObject.getString("status"));
         Long addressId = jsonObject.getLong("addressId");
         CreateBoardDto dto = new CreateBoardDto(title, price, content, category, status, addressId);
         Regions findRegion = regionsRepository.findById(addressId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
 
-        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus());
-        Category savedCategory = categoryRepository.save(new Category(dto.getCategory()));
+        Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus(), Category.valueOf(dto.getCategory()));
 
         Address testAddress = new Address(findRegion.getSido(), findRegion.getSigg(), findRegion.getEmd(),
                                 "full address", findRegion.getLongitude(), findRegion.getLatitude(),
                                         findRegion.getAddressCode());
         Address savedAddress = addressRepository.save(testAddress);
 
-        board.setCategory(savedCategory);
         board.setAddress(savedAddress);
         writer.addMyBoard(board);
         return boardRepository.save(board);
