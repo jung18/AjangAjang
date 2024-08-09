@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +30,21 @@ public class ChatController {
     }
 
     @GetMapping("/messages/{roomId}")
-    public List<ChatMessage> getMessages(@PathVariable String roomId) { // roomId를 String으로 처리
-        return chatService.getChatMessagesByRoomId(roomId);
+    public List<ChatMessageDto> getMessages(@PathVariable String roomId) {
+        List<ChatMessage> messages = chatService.getChatMessagesByRoomId(roomId);
+
+        // 엔티티를 DTO로 변환
+        return messages.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    private ChatMessageDto convertToDto(ChatMessage chatMessage) {
+        ChatMessageDto dto = new ChatMessageDto();
+        dto.setType(ChatMessageDto.MessageType.TALK); // 기본적으로 TALK 타입을 설정. 필요시 다른 타입으로 설정할 수 있음.
+        dto.setRoomId(chatMessage.getRoom().getId().toString());
+        dto.setUserId(chatMessage.getUser().getId());
+        dto.setMessage(chatMessage.getMessage());
+        dto.setTime(chatMessage.getTime());
+
+        return dto;
     }
 }
