@@ -81,8 +81,8 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/api/user/sms/**", "/api/address/name").hasRole("GUEST")
-                        .requestMatchers("/admin/**", "/sign-up").hasRole("ADMIN")
+                        .requestMatchers("/api/address/name").hasRole("GUEST")
+                        .requestMatchers("/admin/**", "/sign-up", "/api/user/sms/**").hasRole("ADMIN")
                         .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
