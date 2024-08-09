@@ -1,18 +1,33 @@
 import React, { useContext, useState, setState } from "react";
-import styles from"./MyPage.module.css";
+import styles from"./myPage.module.css";
 import { useNavigate } from 'react-router-dom';
-import Logo from '../../assets/logos/logo.png';
+import usePageStore from "../../store/currentPageStore";
 
 function MyPage() {
   const navigate = useNavigate();
+  const setCurrentPage = usePageStore((state) => state.setCurrentPage);
 
-  const handleNavigation = (path) => {
-    console.log(`Navigating to ${path}`);
-    if (path) {
-      navigate(path);
-    }
+  const handleClickBoard = () => {
+    setCurrentPage("my-boards");
+    navigate('/user/boards'); 
   };
-
+  const handleClickReview = () => {
+    setCurrentPage("my-reviews");
+    navigate(`/user/reviews`); 
+  };
+  const handleClickLike = () => {
+    setCurrentPage("my-likes");
+    navigate(`/user/likes`); 
+  };
+  const handleClickTrade = () => {
+    setCurrentPage("my-trades");
+    navigate(`/user/trades`);
+  };
+  const handleClickMyInfo = () => {
+    setCurrentPage("my-info");
+    navigate(`/user/myinfo`);
+  };
+ 
   return (
       <div className={styles.myPage}>
         <div className={styles.profile}>
@@ -26,15 +41,15 @@ function MyPage() {
         </div>
         <div className={styles.menu}>
           <container className={styles.menuitemcontainer}>
-            <div className={styles.menuItem} onClick={() => handleNavigation('/user/boards')}>내 작성글</div>
-            <div className={styles.menuItem}>리뷰목록</div>
+            <div className={styles.menuItem} onClick={handleClickBoard}>내 작성글</div>
+            <div className={styles.menuItem} onClick={handleClickReview}>리뷰목록</div>
           </container>
           <container className={styles.menuitemcontainer}>
-            <div className={styles.menuItem}>찜한목록</div>
-            <div className={styles.menuItem}>거래내역</div>
+            <div className={styles.menuItem} onClick={handleClickLike}>찜한목록</div>
+            <div className={styles.menuItem} onClick={handleClickTrade}>거래내역</div>
           </container>
           <container className={styles.menuitemcontainer}>
-            <div className={styles.myInfo}>회원정보 수정</div>
+            <div className={styles.myInfo} onClick={handleClickMyInfo}>회원정보 수정</div>
           </container>
         </div>
       </div>

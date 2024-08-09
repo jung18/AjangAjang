@@ -3,7 +3,7 @@ import axios from 'axios';
 import useTokenStore from '../store/useTokenStore'; // zustand 스토어 import
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080', // 서버 URL
+  baseURL: 'https://i11b210.p.ssafy.io:4443/', // 서버 URL
   withCredentials: true, // 자격 증명(쿠키 등)을 포함하여 요청
 });
 
@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
         console.log('Access token expired. Attempting to refresh.');
 
         const response = await axios.post(
-          'http://localhost:8080/reissue',
+          'https://i11b210.p.ssafy.io:4443/reissue',
           {},
           {
             headers: {

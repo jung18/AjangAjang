@@ -1,0 +1,12 @@
+.boardList {
+    position: sticky;
+    top: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px; /* 아이템 간의 간격 */
+    margin: 18px 40px 32px;
+  }
+  
