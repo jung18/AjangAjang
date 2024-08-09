@@ -38,7 +38,7 @@ public class RegionDataService {
     private final AddressSearchRepository addressSearchRepository;
 
     public void callApiByCSV() {
-        String filePath = "C:/Users/SSAFY/Documents/location_data.csv";
+        String filePath = "/home/ubuntu/location_data.csv";
         String line;
         String csvSplitBy = ","; // CSV 파일의 구분자
 
