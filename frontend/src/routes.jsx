@@ -8,9 +8,12 @@ import BoardWriter from "./pages/boardwriter/BoardWriter";
 import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
-
+import Chat from "./pages/chat/Chat";
+ 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
+import MyPage from "./pages/myPage/myPage";
+import MyBoard from "./pages/myboard/MyBoard";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -26,11 +29,13 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
+      <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
+      <Route path="/user/boards" element={<PageLayout page={<MyBoard />} pageType={"myBoard"} />} />
       <Route
         path="/direct"
         element={
           <PageLayout
-            page={<Board salseType={"direct"} />}
+            page={<Board />}
             pageType={"board"}
           />
         }
@@ -39,7 +44,7 @@ const AppRoutes = () => {
         path="/parcel"
         element={
           <PageLayout
-            page={<Board salseType={"parcel"} />}
+            page={<Board />}
             pageType={"board"}
           />
         }
@@ -48,10 +53,6 @@ const AppRoutes = () => {
         path="/post"
         element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
       >
-        <Route
-          path="template"
-          element={<PageLayout page={<BoardTemplate />} pageType={"search"} />}
-        />
       </Route>
       <Route
         path="/search"
@@ -61,7 +62,7 @@ const AppRoutes = () => {
         path="/direct/:id"
         element={
           <PageLayout
-            page={<BoardDetail salseType={"direct"} />}
+            page={<BoardDetail />}
             pageType={"boardDetail"}
           />
         }
@@ -70,7 +71,7 @@ const AppRoutes = () => {
         path="/parcel/:id"
         element={
           <PageLayout
-            page={<BoardDetail salseType={"parcel"} />}
+            page={<BoardDetail />}
             pageType={"boardDetail"}
           />
         }
@@ -78,6 +79,19 @@ const AppRoutes = () => {
       <Route
         path="/post/template"
         element={<PageLayout page={<BoardTemplate />} pageType={"template"} />}
+      />
+      <Route
+        path="/board/:id"
+        element={
+          <PageLayout
+            page={<BoardDetail />}
+            pageType={"boardDetail"}
+          />
+        }
+      />
+      <Route
+        path="/chat"
+        element={<PageLayout page={<Chat />} pageType={"chat"} />}
       />
     </Routes>
   );

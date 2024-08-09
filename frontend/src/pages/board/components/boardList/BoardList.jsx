@@ -4,11 +4,11 @@ import BoardItem from "../boardItem/BoardItem";
 
 import "./BoardList.css";
 
-function BoardList({ boards, sType }) {
+function BoardList({ boards }) {
   return (
     <div className="board-list">
       {boards.map((board, index) => (
-        <BoardItem key={index} board={board} salse={sType} />
+        <BoardItem key={index} board={board} />
       ))}
     </div>
   );

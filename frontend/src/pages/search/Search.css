@@ -24,32 +24,97 @@
 }
 
 .search-page .category-tab {
-  margin: 20px 15px;
+  margin: 20px 20px 35px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .search-page .category-tab .tab-item {
   font-size: 13px;
-  margin-right: 15px;
-  padding: 10px 20px;
+  padding: 8px 18px;
   border-radius: 15px;
   background-color: #fef391;
-  color: rgb(147, 147, 147);
+  color: rgb(207, 207, 207);
 }
 
 .search-page .category-tab .active {
   background-color: #ffca00;
-  color: rgb(56, 56, 56);
+  color: rgb(255, 255, 255);
 }
 
-.search-page .recent-search-header {
-  margin: 30px 15px;
+.search-page .recent-search .recent-search-header {
+  margin: 30px 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  border-bottom: #ff8796 1.5px solid;
+  padding-bottom: 8px;
 }
 
-.search-page .recent-search-header .search-header-title {
+.search-page .recent-search .recent-search-header .search-header-title {
   color: #ff8796;
-  font-size: 19px;
+  font-size: 20px;
+}
+
+.search-page .recent-search .recent-search-header .clear-options {
+  color: rgb(163, 163, 163);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.search-page .recent-search .recent-search-header .clear-options span {
+  margin-right: 8px;
+  font-size: 14px;
+  letter-spacing: -1px;
+}
+
+.search-page .recent-search .recent-search-header .clear-options .auto-save-active {
+  color: #ff8796;
+}
+
+.search-page .recent-search {
+  margin: 0 15px;
+}
+
+.search-page .recent-search .recent-search-items-container {
+  padding: 0 10px;
+  margin-top: 30px;
+}
+
+.search-page .recent-search .recent-search-items-container .recent-search-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  color: rgb(149, 149, 149);
+  margin-bottom: 15px;
+}
+
+.search-page .recent-search .recent-search-items-container .recent-search-item .item-left {
+  display: flex;
+  flex-direction: row;
+}
+
+.search-page .recent-search .recent-search-items-container .recent-search-item .item-left img {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+}
+
+.search-page .recent-search .recent-search-items-container .recent-search-item .item-left .search-term {
+  padding-top: 3px;
+}
+
+.search-page .recent-search .recent-search-items-container .recent-search-item img {
+  width: 15px;
+  height: 15px;
+}
+
+.search-page .recent-search .no-recent-search {
+  margin-top: 100px;
+  display: flex;
+  justify-content: center;
 }

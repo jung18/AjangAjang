@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-
 import { useParams } from "react-router-dom";
-
 import { fetchBoardDetail } from "../../api/boardDetailService";
 import useStore from "../../store/store";
 
@@ -19,7 +17,6 @@ function BoardDetail() {
   const likedBoards = useStore((state) => state.likedBoards);
   const toggleLike = useStore((state) => state.toggleLike);
   const [formattedPrice, setFormattedPrice] = useState(0);
-
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
 

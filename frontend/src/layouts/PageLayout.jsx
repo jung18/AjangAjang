@@ -19,7 +19,13 @@ const PageLayout = ({ page, pageType }) => {
     case "post":
       headerComponent = <PostHeader />;
       break;
-    case "search" && "template":
+    case "search" || "template":
+      headerComponent = <SearchHeader />;
+      break;
+    case "myPage":
+      headerComponent = <BoardHeader />;
+      break;
+    case "myBoard":
       headerComponent = <SearchHeader />;
       break;
     default:
