@@ -14,7 +14,7 @@ const ChatRoom = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/rooms');
+                const response = await axios.get('https://i11b210.p.ssafy.io:4443/api/rooms');
                 setRooms(response.data);
             } catch (error) {
                 console.error('Error fetching rooms:', error);
@@ -25,7 +25,7 @@ const ChatRoom = () => {
     }, []);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws-stomp');
+        const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
         const client = Stomp.over(socket);
         setStompClient(client);
 
