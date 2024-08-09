@@ -1,5 +1,7 @@
 package com.ajangajang.backend.chat.controller;
 
+import com.ajangajang.backend.chat.dto.RoomRequestDTO;
+import com.ajangajang.backend.chat.dto.RoomResponseDTO;
 import com.ajangajang.backend.chat.entity.Room;
 import com.ajangajang.backend.chat.repository.RoomRepository;
 import com.ajangajang.backend.chat.service.RoomService;
@@ -21,18 +23,24 @@ public class RoomController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public Room createRoom(@RequestBody Room room) {
-        return roomRepository.save(room);
+    public RoomResponseDTO createRoom(@RequestBody RoomRequestDTO roomRequestDTO) {
+        Room room = roomService.createRoom(
+                roomRequestDTO.getName(),
+                roomRequestDTO.getCreatorUserId(),
+                roomRequestDTO.getPostOwnerId()
+        );
+        return roomService.getRoomResponseDTO(room);
     }
 
+
     @GetMapping("/myRooms")
-    public List<Room> getUserRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public List<RoomResponseDTO> getUserRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         User user = userRepository.findByUsername(customOAuth2User.getUsername()).orElse(null);
         return roomService.getUserRooms(user);
     }
 
     @GetMapping
-    public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+    public List<RoomResponseDTO> getAllRooms() {
+        return roomService.getAllRooms();
     }
 }
