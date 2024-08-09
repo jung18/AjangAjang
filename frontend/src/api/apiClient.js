@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
         console.log('Access token expired. Attempting to refresh.');
 
         const response = await axios.post(
-          'https://i11b210.p.ssafy.io:4443/reissue',
+          'http://i11b210.p.ssafy.io:4443/reissue',
           {},
           {
             headers: {

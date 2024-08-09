@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import './Chat.css';
 import apiClient from '../../api/apiClient';
 
 const Chat = () => {
-    const roomId = 1; // Hardcoded roomId
+    const { roomId } = useParams(); 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);

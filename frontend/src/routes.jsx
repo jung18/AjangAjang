@@ -94,15 +94,9 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
-        path="/chat"
-        element={<PageLayout page={<Chat />} pageType={"chatMessage"} />}
-      />
+      <Route path="/room/:roomId" element={<PageLayout page={<Chat />} pageType={"chat"} />} />
+      <Route path="/chat" element={<PageLayout page={<ChatRoom />} pageType={"chat"} />} />
 
-    {/* <Route
-        path="/chat"
-        element={<PageLayout page={<ChatRoom />} pageType={"chat"} />}
-      /> */}
     </Routes>
     
   );
