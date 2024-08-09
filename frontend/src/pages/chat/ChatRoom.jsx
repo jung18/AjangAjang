@@ -49,12 +49,12 @@ const ChatRoom = () => {
         };
     }, [rooms, currentRoomId]);
 
-    const handleRoomClick = useCallback((roomId) => {
-        setCurrentRoomId(roomId);
+    const handleRoomClick = useCallback(() => {
+        setCurrentRoomId(1);
         setNewMessages(prev => ({
             ...prev,
-            [roomId]: {
-                ...prev[roomId],
+            [1]: {
+                ...prev[1],
                 unreadCount: 0
             }
         }));
@@ -68,9 +68,9 @@ const ChatRoom = () => {
                     <li
                         key={room.id}
                         className="room-item"
-                        onClick={() => handleRoomClick(room.id)}
+                        onClick={handleRoomClick} // 수정된 부분
                     >
-                        <Link to={`/room/${room.id}`} className="room-link">
+                        <Link to="/room/1" className="room-link"> {/* 수정된 부분 */}
                             <div className="room-info">
                                 <div className="room-header">
                                     <div className="room-name">{room.name}</div>

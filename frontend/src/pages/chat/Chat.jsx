@@ -3,27 +3,53 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
 import './Chat.css';
+import apiClient from '../../api/apiClient';
 
 const Chat = () => {
     const roomId = 1; // Hardcoded roomId
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);
+    const [userId, setUserId] = useState(null);
     const chatBoxRef = useRef(null);
-    const userId = 1; // Hardcoded userId
 
-    // Fetch messages when the component mounts
+    // Fetch userId from the backend using the access token
+    useEffect(() => {
+        const fetchUserId = async () => {
+            try {
+                const accessToken = sessionStorage.getItem('token-storage');
+                if (!accessToken) {
+                    console.error('No access token found in session storage');
+                    return;
+                }
+
+                const response = await apiClient.get('/api/user/my');
+
+                if (response.data && response.data.id) {
+                    setUserId(response.data.id);
+                } else {
+                    console.error('Invalid response from /api/user/my:', response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching user ID:', error);
+            }
+        };
+
+        fetchUserId();
+    }, []);
+
+    // Fetch messages and setup WebSocket connection when component mounts
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/chat/messages/1`);
-                console.log(response.data);
+                const response = await axios.get(`http://localhost:8080/api/chat/messages/${roomId}`);
                 if (Array.isArray(response.data)) {
                     setMessages(response.data);
                 } else {
                     console.error('Fetched messages are not an array:', response.data);
                     setMessages([]);
                 }
+
                 // Scroll to the bottom of the chat box
                 setTimeout(() => {
                     if (chatBoxRef.current) {
@@ -46,7 +72,6 @@ const Chat = () => {
             client.subscribe(`/sub/chat/${roomId}`, (msg) => {
                 if (msg.body) {
                     const parsedMessage = JSON.parse(msg.body);
-                    console.log("Received message:", parsedMessage); // Debugging line
                     setMessages(prevMessages => [...prevMessages, parsedMessage]);
                 }
             });
@@ -55,7 +80,7 @@ const Chat = () => {
         return () => {
             if (client) client.disconnect();
         };
-    }, [roomId]); // Only re-run this effect when roomId changes
+    }, [roomId]);
 
     // Scroll to the bottom of the chat box when messages change
     useEffect(() => {
@@ -65,15 +90,14 @@ const Chat = () => {
     }, [messages]);
 
     const sendMessage = () => {
-        if (stompClient && stompClient.connected && message.trim() !== '') {
+        if (stompClient && stompClient.connected && message.trim() !== '' && userId !== null) {
             const chatMessage = {
-                roomId: 1, // Hardcoded roomId
-                userId: 1, // Hardcoded userId
+                roomId,
+                userId,
                 message,
                 time: new Date().toISOString(),
             };
 
-            console.log("Sending chat message:", chatMessage); // Debugging line
             stompClient.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
             setMessage('');
         } else {
@@ -87,9 +111,8 @@ const Chat = () => {
             <div className="username-input">
                 <input
                     type="text"
-                    value={userId}
+                    value={userId !== null ? userId : 'Loading...'}
                     readOnly
-                    placeholder="User ID (1)"
                 />
             </div>
             <div className="chat-box" ref={chatBoxRef}>

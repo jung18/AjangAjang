@@ -9,6 +9,7 @@ import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
+import ChatRoom from "./pages/chat/ChatRoom";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
@@ -91,9 +92,15 @@ const AppRoutes = () => {
       />
       <Route
         path="/chat"
-        element={<PageLayout page={<Chat />} pageType={"chat"} />}
+        element={<PageLayout page={<Chat />} pageType={"chatMessage"} />}
       />
+
+    {/* <Route
+        path="/chat"
+        element={<PageLayout page={<ChatRoom />} pageType={"chat"} />}
+      /> */}
     </Routes>
+    
   );
 };
 
