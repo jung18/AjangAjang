@@ -8,6 +8,7 @@ import BoardWriter from "./pages/boardwriter/BoardWriter";
 import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
+import Chat from "./pages/chat/Chat";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
@@ -87,6 +88,10 @@ const AppRoutes = () => {
             pageType={"boardDetail"}
           />
         }
+      />
+      <Route
+        path="/chat"
+        element={<PageLayout page={<Chat />} pageType={"chat"} />}
       />
     </Routes>
   );
