@@ -8,6 +8,8 @@ import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.elasticsearch.model.service.BoardSearchService;
 import com.ajangajang.backend.elasticsearch.model.service.NaverApiService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
+import com.ajangajang.backend.user.model.dto.AddressDto;
+import com.ajangajang.backend.user.model.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class BoardApiController {
     private final BoardService boardService;
     private final BoardLikeService boardLikeService;
     private final BoardSearchService boardSearchService;
+    private final UserAddressService userAddressService;
 
     @PostMapping("/board")
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -55,8 +58,12 @@ public class BoardApiController {
     public ResponseEntity<?> getAllBoards(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                           @RequestBody SearchBoardDto searchBoardDto) {
         String username = customOAuth2User.getUsername();
-        Page<BoardListDto> result = boardSearchService.getNearbyBoards(username, searchBoardDto);
-        return ResponseEntity.ok(result);
+        Page<BoardListDto> searchResult = boardSearchService.getNearbyBoards(username, searchBoardDto);
+        List<AddressDto> addressList = userAddressService.findMyAddresses(username);
+        SearchResultDto searchResultDto = new SearchResultDto();
+        searchResultDto.setSearchResult(searchResult);
+        searchResultDto.setAddressList(addressList);
+        return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
 
     @PutMapping("/board/{id}")
@@ -119,6 +126,8 @@ public class BoardApiController {
         searchBoardDto.setTitle("");
         searchBoardDto.setRetry(true);
         SearchResultDto searchResultDto = boardSearchService.getSearchResultDto(username, searchBoardDto);
+        List<AddressDto> addressList = userAddressService.findMyAddresses(username);
+        searchResultDto.setAddressList(addressList);
         return new ResponseEntity<>(searchResultDto, HttpStatus.OK);
     }
 
