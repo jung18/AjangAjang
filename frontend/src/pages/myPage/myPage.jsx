@@ -1,6 +1,7 @@
 import React, { useContext, useState, setState } from "react";
 import styles from"./myPage.module.css";
 import { useNavigate } from 'react-router-dom';
+import usePageStore from "../../store/currentPageStore";
 
 function MyPage() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ function MyPage() {
 
   const handleClickBoard = () => {
     setCurrentPage("my-boards");
-    navigate(`/user/boards`); 
+    navigate('/user/boards'); 
   };
   const handleClickReview = () => {
     setCurrentPage("my-reviews");
