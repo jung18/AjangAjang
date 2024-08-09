@@ -1,6 +1,5 @@
-import React from "react";
-import styles from"./MyPage.module.css";
-import usePageStore from "../../store/currentPageStore";
+import React, { useContext, useState, setState } from "react";
+import styles from"./myPage.module.css";
 import { useNavigate } from 'react-router-dom';
 
 function MyPage() {
@@ -27,7 +26,7 @@ function MyPage() {
     setCurrentPage("my-info");
     navigate(`/user/myinfo`);
   };
-
+ 
   return (
       <div className={styles.myPage}>
         <div className={styles.profile}>
