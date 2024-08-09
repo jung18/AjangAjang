@@ -1,5 +1,5 @@
 import React, { useContext, useState, setState } from "react";
-import styles from"./MyPage.module.css";
+import styles from"./myPage.module.css";
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logos/logo.png';
 
@@ -10,9 +10,9 @@ function MyPage() {
     console.log(`Navigating to ${path}`);
     if (path) {
       navigate(path);
-    }
+    } 
   };
-
+ 
   return (
       <div className={styles.myPage}>
         <div className={styles.profile}>
