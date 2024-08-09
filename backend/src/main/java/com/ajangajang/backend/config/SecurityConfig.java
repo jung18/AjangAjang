@@ -42,7 +42,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("http://i11b210.p.ssafy.io", "http://localhost:3000"));
+                        configuration.setAllowedOrigins(Arrays.asList("https://i11b210.p.ssafy.io", "http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -81,7 +81,7 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/sign-up", "/api/user/sms/**").hasRole("GUEST")
+                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().hasRole("USER"));
 
