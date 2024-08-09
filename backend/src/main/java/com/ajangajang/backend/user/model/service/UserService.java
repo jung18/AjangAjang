@@ -70,7 +70,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
     }
 
     public List<BoardListDto> findMyLikes(String username) {
@@ -90,7 +90,7 @@ public class UserService {
 
     public UserInfoDto findUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getNickname(), user.getProfileImg());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg());
     }
 
     public void updateMyInfo(String username, UserInputDto userInputDto) {
