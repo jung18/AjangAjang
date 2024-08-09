@@ -16,11 +16,4 @@ public class AddressDto {
     private String fullAddress; // 나머지 상세주소
     private NearType nearType; // 조회 범위
 
-    public AddressDto(String sido, String sigg, String emd, String fullAddress, NearType nearType) {
-        this.sido = sido;
-        this.sigg = sigg;
-        this.emd = emd;
-        this.fullAddress = fullAddress;
-        this.nearType = nearType;
-    }
 }

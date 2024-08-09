@@ -59,7 +59,7 @@ public class UserAddressService {
 
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
-        return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
+        return new AddressDto(address.getId(), address.getSido(), address.getSigg(), address.getEmd(),
                                 address.getFullAddress(), address.getNearType());
     }
 
@@ -88,7 +88,7 @@ public class UserAddressService {
 
         UserAddress userAddress = new UserAddress(findUser, address);
         userAddressRepository.save(userAddress);
-        return new AddressDto(address.getSido(), address.getSigg(), address.getEmd(),
+        return new AddressDto(address.getId(), address.getSido(), address.getSigg(), address.getEmd(),
                                 address.getFullAddress(), address.getNearType());
     }
 

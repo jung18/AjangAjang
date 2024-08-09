@@ -9,11 +9,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserInfoDto {
 
+    private Long id;
     private String nickname;
     private String profileImg;
     private Long mainAddressId;
 
-    public UserInfoDto(String nickname, String profileImg) {
+    public UserInfoDto(Long id, String nickname, String profileImg) {
+        this.id = id;
         this.nickname = nickname;
         this.profileImg = profileImg;
     }
