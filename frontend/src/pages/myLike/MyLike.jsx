@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { fetchMyBoardList } from "../../api/boardService";
-import styles from"./MyBoard.module.css";
-import MyBoardList from "./components/myBoardList/MyBoardList";
+import { fetchMyLikeList } from "../../api/boardService";
+import styles from"./MyLike.module.css";
+import LikeBoardList from "../board/components/boardList/BoardList";
 import useTokenStore from '../../store/useTokenStore';
 
-const MyBoard = () => {
+const MyLike = () => {
     const [boards, setBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [maxHeight, setMaxHeight] = useState(0);
@@ -17,10 +17,10 @@ const MyBoard = () => {
     useEffect(() => {
         const getBoards = async () => {
           try {
-            const boardList = await fetchMyBoardList();
+            const boardList = await fetchMyLikeList();
             setBoards(boardList);
           } catch (error) {
-            console.error("Failed to fetch my boards", error);
+            console.error("Failed to fetch my likes", error);
           } finally {
             setIsLoading(false); // 데이터 로드가 끝나면 로딩 상태를 false로 설정
           }
@@ -72,12 +72,12 @@ const MyBoard = () => {
     return (
       <div className={styles.boardPage} style={{ maxHeight: `${maxHeight}px` }}>
         {!boards || boards.length === 0 ? (
-          <div className={styles.notFoundContent}>내 게시글이 존재하지 않습니다.</div>
+          <div className={styles.notFoundContent}>찜한 글이 없습니다.</div>
         ) : (
-          <MyBoardList boards={boards} />
+          <LikeBoardList boards={boards} />
         )}
       </div>
     );
 }
 
-export default MyBoard;
+export default MyLike;
