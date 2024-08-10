@@ -34,6 +34,9 @@ const PageLayout = ({ page, pageType }) => {
     case "myInfo":
       headerComponent = <SearchHeader />;
       break;
+    case "myTrade":
+      headerComponent = <SearchHeader />;
+      break;
     default:
       break;
   }

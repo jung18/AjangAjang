@@ -1,23 +1,13 @@
 package com.ajangajang.backend.board.model.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public enum Category {
 
-import static jakarta.persistence.GenerationType.IDENTITY;
+    DAILY_SUPPLIES,
+    BABY_CARRIAGE,
+    FURNITURE,
+    BABY_CLOTHES,
+    TOY,
+    CAR_SEAT,
+    ETC
 
-@Entity
-@Getter @Setter
-@NoArgsConstructor
-public class Category {
-
-    @Id @GeneratedValue(strategy = IDENTITY)
-    private Long id;
-
-    private String categoryName;
-
-    public Category(String categoryName) {
-        this.categoryName = categoryName;
-    }
 }
