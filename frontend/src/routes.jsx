@@ -11,7 +11,7 @@ import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
-import MyPage from "./pages/myPage/MyPage";
+import MyPage from "./pages/myPage/myPage";
 import MyBoard from "./pages/myboard/MyBoard";
 
 const AppRoutes = () => {
