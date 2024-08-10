@@ -10,6 +10,7 @@ import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
 import ChatRoom from "./pages/chat/ChatRoom";
+import AudioCall from "./pages/openvidu/AudioCall";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
