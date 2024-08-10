@@ -1,0 +1,22 @@
+/* AudioCall.css */
+.audio-call-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.audio-call-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.audio-call-button:hover {
+    background-color: #0056b3;
+}
