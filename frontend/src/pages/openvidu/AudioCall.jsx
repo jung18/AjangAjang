@@ -1,49 +1,126 @@
 import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import apiClient from '../../api/apiClient';
 
 const AudioCall = () => {
     const [session, setSession] = useState(null);
+    const [sessionId, setSessionId] = useState('');
+    const videoRef = useRef(null);
+
+    const handleSessionIdChange = (event) => {
+        setSessionId(event.target.value);
+    };
+
+    const initializePublisher = (OV) => {
+        return OV.initPublisher(videoRef.current, {
+            audioSource: undefined, // 기본 오디오 소스 사용
+            videoSource: undefined, // 기본 비디오 소스 사용 (카메라)
+            publishAudio: true,     // 오디오 퍼블리시
+            publishVideo: true,     // 비디오 퍼블리시
+        });
+    };
+
+    const createSession = async () => {
+        try {
+            const OV = new OpenVidu();
+            const session = OV.initSession();
+            setSession(session);
+
+            session.on('streamCreated', (event) => {
+                const subscriber = session.subscribe(event.stream, undefined);
+                if (videoRef.current) {
+                    videoRef.current.srcObject = event.stream.getMediaStream();
+                    console.log('Subscribed to stream:', event.stream);
+                }
+            });
+
+            const { data } = await apiClient.post('/api/openvidu/sessions');
+            const newSessionId = data;
+            setSessionId(newSessionId);
+            console.log(`Session ID created: ${newSessionId}`);
+
+        } catch (error) {
+            console.error('There was an error creating the session:', error.message);
+        }
+    };
 
     const joinSession = async () => {
-        const OV = new OpenVidu();
-        const session = OV.initSession();
-        setSession(session);
-
-        session.on('streamCreated', (event) => {
-            const subscriber = session.subscribe(event.stream, undefined);
-            // For audio-only, you don't need to handle video
-        });
-
         try {
-            // Create a session and get the sessionId
-            const sessionResponse = await axios.post('/api/gopenvidu/sessions');
-            const sessionId = sessionResponse.data;
+            if (!sessionId) {
+                console.error('Session ID is required to join a session.');
+                return;
+            }
 
-            // Create a token for the session
-            const tokenResponse = await axios.post('/api/openvidu/tokens', { sessionId });
+            const OV = new OpenVidu();
+            const session = OV.initSession();
+            setSession(session);
+
+            session.on('streamCreated', (event) => {
+                const subscriber = session.subscribe(event.stream, undefined);
+                if (videoRef.current) {
+                    videoRef.current.srcObject = event.stream.getMediaStream();
+                    console.log('Subscribed to stream:', event.stream);
+                }
+            });
+
+            const tokenResponse = await apiClient.post('/api/openvidu/tokens', sessionId, {
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+            });
+
             const token = tokenResponse.data;
-
-            // Connect to the session
+            console.log(`Token: ${token}`);
             await session.connect(token);
 
-            // Publish own audio
-            const publisher = OV.initPublisher(undefined, {
-                audioSource: undefined, // Use default audio source
-                videoSource: undefined, // No video
-                publishAudio: true,     // Publish audio
-                publishVideo: false,    // Don't publish video
+            const publisher = initializePublisher(OV);
+
+            publisher.once('accessAllowed', () => {
+                console.log('Access to camera and microphone granted');
+                session.publish(publisher);
+
+                if (videoRef.current && publisher.stream) {
+                    videoRef.current.srcObject = publisher.stream.getMediaStream();
+                    console.log('Published stream:', publisher.stream);
+
+                    const videoTracks = publisher.stream.getMediaStream().getVideoTracks();
+                    if (videoTracks && videoTracks.length > 0) {
+                        console.log('Video tracks found:', videoTracks);
+                    } else {
+                        console.error('No video tracks available in the stream');
+                    }
+                } else {
+                    console.error('Publisher stream is not available');
+                }
             });
-            session.publish(publisher);
+
+            publisher.once('accessDenied', () => {
+                console.error('Access to camera and microphone denied');
+            });
+
         } catch (error) {
-            console.error('There was an error connecting to the session:', error.message);
+            console.error('There was an error joining the session:', error.message);
         }
     };
 
     return (
         <div>
-            <button onClick={joinSession}>Join Session</button>
-            {/* Video container is not needed for audio-only */}
+            <div>
+                <button onClick={createSession}>Create Session</button>
+                <button onClick={joinSession}>Join Session</button>
+            </div>
+            <div>
+                <input
+                    type="text"
+                    value={sessionId}
+                    onChange={handleSessionIdChange}
+                    placeholder="Enter Session ID"
+                />
+            </div>
+            {/* 비디오 요소 렌더링 */}
+            <div>
+                <video ref={videoRef} autoPlay playsInline controls={false} style={{ width: '100%', height: 'auto', backgroundColor: 'black' }} />
+            </div>
         </div>
     );
 };

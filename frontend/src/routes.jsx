@@ -9,8 +9,10 @@ import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
+import ChatTest from "./pages/chatTest/ChatTest";
 import ChatRoom from "./pages/chat/ChatRoom";
 import AudioCall from "./pages/openvidu/AudioCall";
+import AudioTest from "./pages/openvidu/AudioTest";
 
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
@@ -102,6 +104,7 @@ const AppRoutes = () => {
       <Route path="/room/:roomId" element={<PageLayout page={<Chat />} pageType={"chat"} />} />
       <Route path="/chat" element={<PageLayout page={<ChatRoom />} pageType={"chat"} />} />
       <Route path="/audio-call" element={<AudioCall />} />
+      <Route path="/audio-call-test" element={<AudioTest />} />
 
     </Routes>
     
