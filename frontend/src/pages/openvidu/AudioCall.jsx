@@ -20,9 +20,15 @@ const AudioCall = () => {
             // Create a session and get the sessionId
             const sessionResponse = await apiClient.post('/api/openvidu/sessions');
             const sessionId = sessionResponse.data;
+            console.log(sessionId);
 
             // Create a token for the session
-            const tokenResponse = await apiClient.post('/api/openvidu/tokens', sessionId);
+            const tokenResponse = await apiClient.post('/api/openvidu/tokens', sessionId, {
+                headers: {
+                  'Content-Type': 'text/plain'
+                }
+              });
+              
             const token = tokenResponse.data;
 
             // Connect to the session
