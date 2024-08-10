@@ -11,10 +11,10 @@ const BoardWrite = () => {
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState('ETC');
   const [region, setRegion] = useState('');
-  const [status, setStatus] = useState('SOLD_OUT'); // status 상태 추가
-  const [addressId, setAddressId] = useState('1'); // deliveryType 상태 추가
+  const [status, setStatus] = useState('FOR_SALE'); // status 상태 추가
+  const [addressId, setAddressId] = useState(); // deliveryType 상태 추가
   const [images, setImages] = useState([]); // 이미지 상태를 배열로 변경
   const fileInputRef = useRef(null);
   const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
@@ -23,6 +23,20 @@ const BoardWrite = () => {
 
 
   useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        const response = await apiClient.get('/api/address/my');
+        if (response.data && response.data.data && response.data.data.length > 0) {
+          const addressId = response.data.data[0].addressId; // 첫 번째 주소의 ID를 사용
+          setAddressId(addressId);
+        }
+      } catch (error) {
+        console.error('Failed to fetch address data', error);
+      }
+    };
+  
+    fetchAddress();
+  
     if (location.state?.templateData) {
       const { title, content, price } = location.state.templateData;
       setTitle(title || '');
@@ -30,6 +44,7 @@ const BoardWrite = () => {
       setPrice(price || '');
     }
   }, [location.state]);
+  
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -76,32 +91,35 @@ const BoardWrite = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!isFormValid()) {
       alert('제목, 가격, 내용은 반드시 입력해야 합니다.');
       return;
     }
-
+  
     const createBoardDto = {
       title,
       price: parseInt(price),
       content,
       category,
-      region,
       status,
-      // deliveryType,
-      writerId: 1,
       addressId,
     };
-
+  
     const formData = new FormData();
     formData.append('board', new Blob([JSON.stringify(createBoardDto)], { type: 'application/json' }));
     images.forEach((image) => {
       formData.append('media', image); // 서버에서 배열로 받도록 설정
     });
-
+  
+    console.log("createBoardDto:", createBoardDto);
+    console.log("FormData entries:");
+    for (let pair of formData.entries()) {
+      console.log(pair[0]+ ', ' + pair[1]);
+    }
+  
     const url = '/api/board';
-
+  
     try {
       const response = await apiClient.post(url, formData, {
         headers: {
@@ -114,6 +132,7 @@ const BoardWrite = () => {
       console.error('Error submitting the form', error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="board-write-container">
@@ -132,11 +151,13 @@ const BoardWrite = () => {
           className="input-field"
         />
         <select value={category} onChange={handleCategoryChange} className="category-select">
-          <option value="유모차">유모차</option>
-          <option value="장난감">장난감</option>
-          <option value="아기옷">아기옷</option>
-          <option value="카시트">카시트</option>
-          <option value="기타">기타</option>
+          <option value="ETC">기타</option>
+          <option value="DAILY_SUPPLIES">일상용품</option>
+          <option value="BABY_CARRIAGE">유모차</option>
+          <option value="FURNITURE">아기가구</option>
+          <option value="BABY_CLOTHES">아기옷</option>
+          <option value="TOY">장난감</option>
+          <option value="CAR_SEAT">카시트</option>
         </select>
       </div>
       <div className="input-group">
