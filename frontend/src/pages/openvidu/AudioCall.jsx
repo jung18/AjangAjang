@@ -1,6 +1,7 @@
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import React, { useState } from 'react';
+import apiClient from '../../api/apiClient'
 
 const AudioCall = () => {
     const [session, setSession] = useState(null);
@@ -17,11 +18,11 @@ const AudioCall = () => {
 
         try {
             // Create a session and get the sessionId
-            const sessionResponse = await axios.post('/api/openvidu/sessions');
+            const sessionResponse = await apiClient.post('/api/openvidu/sessions');
             const sessionId = sessionResponse.data;
 
             // Create a token for the session
-            const tokenResponse = await axios.post('/api/openvidu/tokens', { sessionId });
+            const tokenResponse = await apiClient.post('/api/openvidu/tokens', { sessionId });
             const token = tokenResponse.data;
 
             // Connect to the session
