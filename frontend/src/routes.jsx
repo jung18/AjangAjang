@@ -19,6 +19,7 @@ import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
 import MyInfo from "./pages/myInfo/MyInfo";
 import MyTrade from "./pages/myTrade/MyTrade";
+import ChatTest from "./pages/chatTest/ChatTest";
 
 const AppRoutes = () => {
   const location = useLocation();
