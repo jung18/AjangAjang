@@ -6,18 +6,23 @@ const AudioCall = () => {
     const [session, setSession] = useState(null);
     const [sessionId, setSessionId] = useState('');
     const [isSessionCreated, setIsSessionCreated] = useState(false);
-    const videoRef = useRef(null);
+    const [videoElements, setVideoElements] = useState([]); // 비디오 요소 관리
 
     const handleSessionIdChange = (event) => {
         setSessionId(event.target.value);
     };
 
     const initializePublisher = (OV) => {
-        return OV.initPublisher(videoRef.current, {
+        return OV.initPublisher(undefined, {
             audioSource: undefined, // 기본 오디오 소스 사용
             videoSource: undefined, // 기본 비디오 소스 사용 (카메라)
             publishAudio: true,     // 오디오 퍼블리시
             publishVideo: true,     // 비디오 퍼블리시
+            audioProcessing: {
+                noiseSuppression: true,   // 노이즈 억제
+                echoCancellation: true,   // 에코 제거
+                autoGainControl: true     // 자동 이득 제어
+            }
         });
     };
 
@@ -28,10 +33,13 @@ const AudioCall = () => {
 
         session.on('streamCreated', (event) => {
             const subscriber = session.subscribe(event.stream, undefined);
-            if (videoRef.current) {
-                videoRef.current.srcObject = event.stream.getMediaStream();
-                console.log('Subscribed to stream:', event.stream);
-            }
+            const newVideoElement = document.createElement('video');
+            newVideoElement.srcObject = event.stream.getMediaStream();
+            newVideoElement.autoplay = true;
+            newVideoElement.controls = false;
+            newVideoElement.playsInline = true;
+            setVideoElements((prevElements) => [...prevElements, newVideoElement]); // 새로운 비디오 요소 추가
+            console.log('Subscribed to stream:', event.stream);
         });
 
         try {
@@ -52,22 +60,16 @@ const AudioCall = () => {
 
             const publisher = initializePublisher(OV);
 
-            publisher.once('accessAllowed', () => {
+            publisher.once('accessAllowed', () => { 
                 console.log('Access to camera and microphone granted');
-                session.publish(publisher); // 퍼블리셔를 접근 권한 부여 후 퍼블리시
-                if (videoRef.current && publisher.stream) {
-                    videoRef.current.srcObject = publisher.stream.getMediaStream();
-                    console.log('Published stream:', publisher.stream);
-
-                    const videoTracks = publisher.stream.getMediaStream().getVideoTracks();
-                    if (videoTracks && videoTracks.length > 0) {
-                        console.log('Video tracks found:', videoTracks);
-                    } else {
-                        console.error('No video tracks available in the stream');
-                    }
-                } else {
-                    console.error('Publisher stream is not available');
-                }
+                session.publish(publisher); 
+                const newVideoElement = document.createElement('video');
+                newVideoElement.srcObject = publisher.stream.getMediaStream();
+                newVideoElement.autoplay = true;
+                newVideoElement.controls = false;
+                newVideoElement.playsInline = true;
+                setVideoElements((prevElements) => [...prevElements, newVideoElement]); // 퍼블리셔의 비디오 요소 추가
+                console.log('Published stream:', publisher.stream);
             });
 
             publisher.once('accessDenied', () => {
@@ -86,10 +88,13 @@ const AudioCall = () => {
 
         session.on('streamCreated', (event) => {
             const subscriber = session.subscribe(event.stream, undefined);
-            if (videoRef.current) {
-                videoRef.current.srcObject = event.stream.getMediaStream();
-                console.log('Subscribed to stream:', event.stream);
-            }
+            const newVideoElement = document.createElement('video');
+            newVideoElement.srcObject = event.stream.getMediaStream();
+            newVideoElement.autoplay = true;
+            newVideoElement.controls = false;
+            newVideoElement.playsInline = true;
+            setVideoElements((prevElements) => [...prevElements, newVideoElement]); // 새로운 비디오 요소 추가
+            console.log('Subscribed to stream:', event.stream);
         });
 
         try {
@@ -107,20 +112,14 @@ const AudioCall = () => {
 
             publisher.once('accessAllowed', () => {
                 console.log('Access to camera and microphone granted');
-                session.publish(publisher); // 퍼블리셔를 접근 권한 부여 후 퍼블리시
-                if (videoRef.current && publisher.stream) {
-                    videoRef.current.srcObject = publisher.stream.getMediaStream();
-                    console.log('Published stream:', publisher.stream);
-
-                    const videoTracks = publisher.stream.getMediaStream().getVideoTracks();
-                    if (videoTracks && videoTracks.length > 0) {
-                        console.log('Video tracks found:', videoTracks);
-                    } else {
-                        console.error('No video tracks available in the stream');
-                    }
-                } else {
-                    console.error('Publisher stream is not available');
-                }
+                session.publish(publisher);
+                const newVideoElement = document.createElement('video');
+                newVideoElement.srcObject = publisher.stream.getMediaStream();
+                newVideoElement.autoplay = true;
+                newVideoElement.controls = false;
+                newVideoElement.playsInline = true;
+                setVideoElements((prevElements) => [...prevElements, newVideoElement]); // 퍼블리셔의 비디오 요소 추가
+                console.log('Published stream:', publisher.stream);
             });
 
             publisher.once('accessDenied', () => {
@@ -153,7 +152,9 @@ const AudioCall = () => {
 
             {/* 비디오 요소 렌더링 */}
             <div>
-                <video ref={videoRef} autoPlay playsInline controls={false} style={{ width: '100%', height: 'auto', backgroundColor: 'black' }} />
+                {videoElements.map((videoElement, index) => (
+                    <div key={index} ref={(el) => el && el.appendChild(videoElement)} />
+                ))}
             </div>
         </div>
     );
