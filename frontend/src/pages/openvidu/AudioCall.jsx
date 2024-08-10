@@ -17,7 +17,7 @@ const AudioCall = () => {
 
         try {
             // Create a session and get the sessionId
-            const sessionResponse = await axios.post('/api/openvidu/sessions');
+            const sessionResponse = await axios.post('/api/gopenvidu/sessions');
             const sessionId = sessionResponse.data;
 
             // Create a token for the session
