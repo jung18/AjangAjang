@@ -40,9 +40,9 @@ export const KakaoLoginButton = ({ redirectUrl }) => (
 export const LoginButtons = () => {
   return (
     <div className="login-buttons">
-      <GoogleLoginButton redirectUrl="https://i11b210.p.ssafy.io:4443/oauth2/authorization/google" />
-      <NaverLoginButton redirectUrl="https://i11b210.p.ssafy.io:4443/oauth2/authorization/naver" />
-      <KakaoLoginButton redirectUrl="https://i11b210.p.ssafy.io:4443/oauth2/authorization/kakao" />
+      <GoogleLoginButton redirectUrl="https://i11b210.p.ssafy.io:8443/oauth2/authorization/google" />
+      <NaverLoginButton redirectUrl="https://i11b210.p.ssafy.io:8443/oauth2/authorization/naver" />
+      <KakaoLoginButton redirectUrl="https://i11b210.p.ssafy.io:8443/oauth2/authorization/kakao" />
     </div>
   );
 };

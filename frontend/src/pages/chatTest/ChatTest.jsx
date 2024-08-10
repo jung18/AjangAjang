@@ -1,15 +1,55 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from "react";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+// SimplePeer를 올바르게 import합니다.
 import SimplePeer from 'simple-peer';
+
 
 function ChatTest() {
   const [peer, setPeer] = useState(null);
   const [stream, setStream] = useState(null);
   const [callActive, setCallActive] = useState(false);
-  const [incomingOffer, setIncomingOffer] = useState("");
-  const [incomingAnswer, setIncomingAnswer] = useState("");
+  const [stompClient, setStompClient] = useState(null);
 
   const myAudio = useRef();
   const partnerAudio = useRef();
+
+  useEffect(() => {
+    // WebSocket 서버에 연결
+    const socket = new SockJS("https://i11b210.p.ssafy.io:8443/ws-stomp");
+    const client = new Client({
+      webSocketFactory: () => socket,
+      debug: (str) => {
+        console.log(str);
+      },
+      onConnect: () => {
+        console.log("Connected to WebSocket server");
+
+        client.subscribe("/topic/offer", (message) => {
+          const data = JSON.parse(message.body);
+          if (data.type === "offer") {
+            receiveCall(data.offer);
+          }
+        });
+
+        client.subscribe("/topic/answer", (message) => {
+          const data = JSON.parse(message.body);
+          if (data.type === "answer") {
+            peer.signal(data.answer);
+          }
+        });
+      },
+    });
+
+    client.activate();
+    setStompClient(client);
+
+    return () => {
+      if (stompClient) {
+        stompClient.deactivate();
+      }
+    };
+  }, [peer]);
 
   // 1. 사용자 오디오 스트림 가져오기
   const getUserMedia = async () => {
@@ -18,7 +58,7 @@ function ChatTest() {
       setStream(stream);
       myAudio.current.srcObject = stream; // 자신의 오디오를 재생 (테스트용)
     } catch (error) {
-      console.error('Error accessing media devices.', error);
+      console.error("Error accessing media devices.", error);
     }
   };
 
@@ -30,12 +70,16 @@ function ChatTest() {
       stream: stream,
     });
 
-    p.on('signal', (data) => {
-      console.log('Signal data (offer):', JSON.stringify(data));
-      // 호스트가 생성한 Offer 데이터를 콘솔에 출력
+    p.on("signal", (data) => {
+      console.log("Signal data (offer):", JSON.stringify(data));
+      // Offer 데이터를 WebSocket을 통해 게스트에게 전송
+      stompClient.publish({
+        destination: "/app/offer",
+        body: JSON.stringify({ type: "offer", offer: data }),
+      });
     });
 
-    p.on('stream', (stream) => {
+    p.on("stream", (stream) => {
       partnerAudio.current.srcObject = stream; // 게스트의 오디오를 재생
     });
 
@@ -44,30 +88,29 @@ function ChatTest() {
   };
 
   // 3. 통화 받기 (게스트)
-  const receiveCall = () => {
+  const receiveCall = (offer) => {
     const p = new SimplePeer({
       initiator: false,
       trickle: false,
       stream: stream,
     });
 
-    p.on('signal', (data) => {
-      console.log('Signal data (answer):', JSON.stringify(data));
-      // 게스트가 생성한 Answer 데이터를 콘솔에 출력
+    p.on("signal", (data) => {
+      console.log("Signal data (answer):", JSON.stringify(data));
+      // Answer 데이터를 WebSocket을 통해 호스트에게 전송
+      stompClient.publish({
+        destination: "/app/answer",
+        body: JSON.stringify({ type: "answer", answer: data }),
+      });
     });
 
-    p.on('stream', (stream) => {
+    p.on("stream", (stream) => {
       partnerAudio.current.srcObject = stream; // 호스트의 오디오를 재생
     });
 
-    p.signal(JSON.parse(incomingOffer));
+    p.signal(offer);
     setPeer(p);
     setCallActive(true);
-  };
-
-  // 4. 상대방의 Answer 신호 처리 (호스트)
-  const handleSignalData = () => {
-    peer.signal(JSON.parse(incomingAnswer));
   };
 
   return (
@@ -77,30 +120,8 @@ function ChatTest() {
       <button onClick={startCall} disabled={!stream}>
         통화 시작
       </button>
-      <textarea
-        placeholder="Offer 데이터 입력"
-        value={incomingOffer}
-        onChange={(e) => setIncomingOffer(e.target.value)}
-        rows="4"
-        cols="50"
-        disabled={callActive}
-      />
-      <button onClick={receiveCall} disabled={!stream}>
-        통화 받기
-      </button>
-      <textarea
-        placeholder="Answer 데이터 입력"
-        value={incomingAnswer}
-        onChange={(e) => setIncomingAnswer(e.target.value)}
-        rows="4"
-        cols="50"
-        disabled={!callActive}
-      />
-      <button onClick={handleSignalData} disabled={!incomingAnswer}>
-        Answer 처리
-      </button>
-      <audio ref={myAudio} autoPlay muted={false} />  {/* 자신의 오디오 재생 */}
-      <audio ref={partnerAudio} autoPlay />  {/* 상대방의 오디오 재생 */}
+      <audio ref={myAudio} autoPlay muted={false} /> {/* 자신의 오디오 재생 */}
+      <audio ref={partnerAudio} autoPlay /> {/* 상대방의 오디오 재생 */}
       {callActive && <p>통화 중...</p>}
     </div>
   );

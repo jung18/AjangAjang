@@ -49,7 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else if (customUserDetails.getRole().equals("ROLE_USER")) {
             response.sendRedirect("http://localhost:3000/direct");
         } else {
-            response.sendRedirect("http://localhost:3000/");
+            response.sendRedirect("https://i11b210.p.ssafy.io/");
         }
     }
 
@@ -58,8 +58,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
         cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true);
+        cookie.setSecure(true);
 
         return cookie;
     }

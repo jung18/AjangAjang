@@ -43,7 +43,7 @@ const Chat = () => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get(`https://i11b210.p.ssafy.io:4443/api/chat/messages/${roomId}`);
+                const response = await axios.get(`https://i11b210.p.ssafy.io:8443/api/chat/messages/${roomId}`);
                 if (Array.isArray(response.data)) {
                     setMessages(response.data);
                 } else {
@@ -66,7 +66,7 @@ const Chat = () => {
         fetchMessages();
 
         // Setup WebSocket connection
-        const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
+        const socket = new SockJS('https://i11b210.p.ssafy.io:8443/ws-stomp');
         const client = Stomp.over(socket);
         client.connect({}, () => {
             setStompClient(client);

@@ -27,7 +27,7 @@ const ChatRoom = () => {
 
     useEffect(() => {
         if (rooms.length > 0) {
-            const socket = new SockJS('http://i11b210.p.ssafy.io:4443/ws-stomp');
+            const socket = new SockJS('https://i11b210.p.ssafy.io:8443/ws-stomp');
             const client = Stomp.over(socket);
             client.connect({}, () => {
                 console.log("Connected to WebSocket");

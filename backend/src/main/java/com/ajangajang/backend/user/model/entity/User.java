@@ -2,6 +2,8 @@ package com.ajangajang.backend.user.model.entity;
 
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.entity.BoardLike;
+import com.ajangajang.backend.chat.entity.ChatMessage;
+import com.ajangajang.backend.chat.entity.UserRoom;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,19 +26,36 @@ public class User {
     @Column(unique = true)
     private String username; // 식별 아이디
 
-    @OneToMany(mappedBy = "writer", fetch = LAZY, cascade = REMOVE, orphanRemoval = true)
-    private List<Board> myBoards = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = LAZY)
-    private List<BoardLike> myLikes = new ArrayList<>();
-
     private String name;
+
     private String role;
 
     private String nickname;
+
     private String phone;
 
     private String profileImg;
+
+    private Long mainChildId;
+
+    @OneToMany(mappedBy = "writer", cascade = REMOVE, orphanRemoval = true)
+    private List<Board> myBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<BoardLike> myLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
+    private List<Child> children = new ArrayList<>();
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "main_address_id")
+    private Address mainAddress;
+
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
+    private List<UserRoom> userRooms = new ArrayList<>();
 
     public void addMyBoard(Board board) {
         board.setWriter(this);
@@ -47,4 +66,5 @@ public class User {
         like.setUser(this);
         this.myLikes.add(like);
     }
+
 }

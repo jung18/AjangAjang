@@ -20,6 +20,8 @@ import MyPage from "./pages/myPage/myPage";
 import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
 import MyInfo from "./pages/myInfo/MyInfo";
+import MyTrade from "./pages/myTrade/MyTrade";
+import ChatTest from "./pages/chatTest/ChatTest";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -33,12 +35,13 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/test" element={<ChatTest />}/>
+      <Route path="/test" element={<ChatTest />} />
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
       <Route path="/user/boards" element={<PageLayout page={<MyBoard />} pageType={"myBoard"} />} />
       <Route path="/user/likes" element={<PageLayout page={<MyLike />} pageType={"myLike"} />} />
+      <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
       <Route
         path="/direct"
