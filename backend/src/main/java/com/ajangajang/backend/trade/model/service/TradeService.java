@@ -24,9 +24,9 @@ public class TradeService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    public Long saveTrade(String username, CreateRecommendDto dto) {
-        User buyer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        User seller = userRepository.findById(dto.getSellerId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+    public Long saveTrade(String username, CreateTradeDto dto) {
+        User seller = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        User buyer = userRepository.findById(dto.getBuyerId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board item = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
         Trade trade = new Trade(item, seller, buyer);
         return tradeRepository.save(trade).getId(); // 거래내역 생성
