@@ -4,7 +4,7 @@ const AudioTest = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const wsUrl = "wss://i11b210.p.ssafy.io:8443?sessionId=ses_E47CyFGUTu&token=tok_EHF1BUrCXgzxieYa";
+        const wsUrl = "wss://i11b210.p.ssafy.io:4443?sessionId=ses_E47CyFGUTu&token=tok_EHF1BUrCXgzxieYa";
         const newSocket = new WebSocket(wsUrl);
 
         newSocket.onopen = () => {

@@ -9,6 +9,8 @@ import com.ajangajang.backend.review.model.dto.ReviewDto;
 import com.ajangajang.backend.review.model.dto.UpdateReviewDto;
 import com.ajangajang.backend.review.model.entity.Review;
 import com.ajangajang.backend.review.model.repository.ReviewRepository;
+import com.ajangajang.backend.trade.model.entity.Trade;
+import com.ajangajang.backend.trade.model.repository.TradeRepository;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +27,13 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final BoardRepository boardRepository;
+    private final TradeRepository tradeRepository;
 
     public Long save(String username, CreateReviewDto dto) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
+        Trade trade = tradeRepository.findById(dto.getTradeId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.TRADE_NOT_FOUND));
         Review review = new Review(dto.getScore(), dto.getContent());
-        review.setBoard(board);
+        review.setTrade(trade);
         review.setWriter(writer);
 
         return reviewRepository.save(review).getId();

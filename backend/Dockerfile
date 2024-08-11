@@ -8,11 +8,11 @@ WORKDIR /app
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 빌드 컨텍스트의 app.jar 파일을 복사합니다.
-COPY app.jar /app/app.jar
+# 빌드 컨텍스트의 JAR 파일을 명시적으로 복사합니다.
+COPY backend/build/libs/backend-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # 컨테이너 실행 시 실행될 명령어를 설정합니다.
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
 # 애플리케이션이 사용할 포트를 노출합니다.
 EXPOSE 8080

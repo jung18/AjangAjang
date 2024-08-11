@@ -8,20 +8,23 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class BoardLike {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 

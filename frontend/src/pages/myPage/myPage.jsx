@@ -42,11 +42,11 @@ function MyPage() {
         <div className={styles.menu}>
           <container className={styles.menuitemcontainer}>
             <div className={styles.menuItem} onClick={handleClickBoard}>내 작성글</div>
-            <div className={styles.menuItem} onClick={handleClickReview}>리뷰목록</div>
+            <div className={styles.menuItem} onClick={handleClickReview}>리뷰 목록</div>
           </container>
           <container className={styles.menuitemcontainer}>
-            <div className={styles.menuItem} onClick={handleClickLike}>찜한목록</div>
-            <div className={styles.menuItem} onClick={handleClickTrade}>거래내역</div>
+            <div className={styles.menuItem} onClick={handleClickLike}>찜한 목록</div>
+            <div className={styles.menuItem} onClick={handleClickTrade}>구매 목록</div>
           </container>
           <container className={styles.menuitemcontainer}>
             <div className={styles.myInfo} onClick={handleClickMyInfo}>회원정보 수정</div>
