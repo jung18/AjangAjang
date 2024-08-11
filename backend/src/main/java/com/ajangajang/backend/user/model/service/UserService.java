@@ -79,13 +79,8 @@ public class UserService {
 
     public List<BoardListDto> findMyBoards(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return boardRepository.findAllByUserId(user.getId()).stream()
-                .map(board -> new BoardListDto(board.getId(),
-                        boardService.getThumbnail(board),
-                        new UserProfileDto(board.getWriter().getId(), board.getWriter().getNickname(), board.getWriter().getProfileImg()),
-                        board.getTitle(), board.getPrice(), board.getCategory().name(), board.getStatus(),
-                        board.getLikedUsers().size(), board.getViewCount()))
-                .collect(Collectors.toList());
+        List<Board> boardList = boardRepository.findAllByUserId(user.getId());
+        return boardService.getBoardListDtos(boardList);
     }
 
     public UserInfoDto findUserInfo(Long id) {
