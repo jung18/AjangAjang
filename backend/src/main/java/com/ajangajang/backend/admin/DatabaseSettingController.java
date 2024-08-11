@@ -6,6 +6,7 @@ import com.ajangajang.backend.api.kakaomap.model.service.TestDataService;
 import com.ajangajang.backend.board.model.service.RecommendationDbSettingService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Slf4j
 public class DatabaseSettingController { // 초기 데이터 설정용
 
     private final RegionDataService regionDataService;
@@ -35,6 +37,7 @@ public class DatabaseSettingController { // 초기 데이터 설정용
 
     @GetMapping("/regions/setting")
     public ResponseEntity<?> saveRegionsByJson() {
+        log.info("setting 시작");
         regionDataService.saveRegionsByJson();
         return new ResponseEntity<>(HttpStatus.OK);
     }

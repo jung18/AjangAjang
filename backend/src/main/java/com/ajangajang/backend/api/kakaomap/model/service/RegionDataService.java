@@ -95,12 +95,14 @@ public class RegionDataService {
             // 파일에서 JSON 문자열 읽어오기
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
 
+            log.info("파일 읽기");
             // JSON 문자열을 JSONArray로 변환
             JSONArray jsonArray = new JSONArray(content);
 
             // JSONArray에서 각 객체를 하나씩 처리
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+                log.info(jsonObject.getString("emd"));
                 Regions regions = new Regions(jsonObject.getString("sido"), jsonObject.getString("sigg"),
                         jsonObject.getString("emd"), jsonObject.getDouble("longitude"),
                         jsonObject.getDouble("latitude"), jsonObject.getString("address_code"));
