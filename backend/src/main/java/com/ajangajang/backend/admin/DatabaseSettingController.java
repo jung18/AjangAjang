@@ -10,13 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
-@RestController("/admin")
+@RestController
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class DatabaseSettingController { // 초기 데이터 설정용
 
@@ -31,6 +33,12 @@ public class DatabaseSettingController { // 초기 데이터 설정용
         return ResponseEntity.ok("ok");
     }
 
+    @GetMapping("/regions/setting")
+    public ResponseEntity<?> saveRegionsByJson() {
+        regionDataService.saveRegionsByJson();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/kakao/nearby") // 인접지역 테이블 만들기
     public ResponseEntity<?> saveNearbyRegions() {
         regionDataService.saveNearbyRegions();
@@ -39,7 +47,7 @@ public class DatabaseSettingController { // 초기 데이터 설정용
 
     @GetMapping("/location/nearby") // 주소로 인접지역 조회하기
     public ResponseEntity<?> getNearbyRegions(@RequestParam String code,
-                                            @RequestParam String type) {
+                                              @RequestParam String type) {
         List<String> result = kakaoApiService.getNearbyAddressCodes(code, type);
         return ResponseEntity.ok(Map.of("data", result));
     }
@@ -62,5 +70,4 @@ public class DatabaseSettingController { // 초기 데이터 설정용
         recommendationDbSettingService.databaseSetting();
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

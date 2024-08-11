@@ -5,23 +5,19 @@ import com.ajangajang.backend.api.kakaomap.model.repository.RegionsRepository;
 import com.ajangajang.backend.api.kakaomap.model.repository.NearbyRegionsRepository;
 import com.ajangajang.backend.elasticsearch.model.document.AddressDocument;
 import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchRepository;
-import com.ajangajang.backend.exception.CustomGlobalException;
-import com.ajangajang.backend.exception.CustomStatusCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
@@ -88,6 +84,30 @@ public class RegionDataService {
         if (!isExist) {
             Regions regions = new Regions(sido, sigg, emd, longitude, latitude, addressCode);
             regionsRepository.save(regions);
+        }
+    }
+
+    public void saveRegionsByJson() {
+        try {
+            // JSON 파일 경로
+            String filePath = "/home/ubuntu/data-test.json";
+
+            // 파일에서 JSON 문자열 읽어오기
+            String content = new String(Files.readAllBytes(Paths.get(filePath)));
+
+            // JSON 문자열을 JSONArray로 변환
+            JSONArray jsonArray = new JSONArray(content);
+
+            // JSONArray에서 각 객체를 하나씩 처리
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Regions regions = new Regions(jsonObject.getString("sido"), jsonObject.getString("sigg"),
+                        jsonObject.getString("emd"), jsonObject.getDouble("longitude"),
+                        jsonObject.getDouble("latitude"), jsonObject.getString("address_code"));
+                regionsRepository.save(regions);
+            }
+        } catch (IOException e) {
+            log.info("{}", e.getMessage());
         }
     }
 
