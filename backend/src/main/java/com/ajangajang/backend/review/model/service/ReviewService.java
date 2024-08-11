@@ -47,8 +47,9 @@ public class ReviewService {
                              findReview.getCreatedAt(), findReview.getUpdatedAt());
     }
 
-    public List<ReviewDto> findAll() {
-        return reviewRepository.findAll().stream()
+    public List<ReviewDto> findMyReviews(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        return reviewRepository.findMyReviews(user.getId()).stream()
                 .map(review -> new ReviewDto(review.getScore(), review.getContent(),
                                             review.getCreatedAt(), review.getUpdatedAt()))
                 .collect(Collectors.toList());
