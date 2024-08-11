@@ -109,6 +109,7 @@ public class RegionDataService {
                 regionsRepository.save(regions);
             }
         } catch (IOException e) {
+            log.info("IOException 에러");
             log.info("{}", e.getMessage());
         }
     }
