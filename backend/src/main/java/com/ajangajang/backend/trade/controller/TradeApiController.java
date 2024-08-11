@@ -4,6 +4,7 @@ import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.trade.model.dto.CreateRecommendDto;
 import com.ajangajang.backend.trade.model.dto.CreateTradeDto;
 import com.ajangajang.backend.trade.model.dto.TradeDto;
+import com.ajangajang.backend.trade.model.dto.TradeListDto;
 import com.ajangajang.backend.trade.model.service.TradeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +39,12 @@ public class TradeApiController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<?> getMyTrades(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<?> getMyBuyingTrades(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        List<TradeDto> result = tradeService.getMyTrades(username);
-        return ResponseEntity.ok(Map.of("data", result));
+        List<TradeDto> buyingTrades = tradeService.getMyBuyingTrades(username);
+        List<TradeDto> sellingTrades = tradeService.getMySellingTrades(username);
+        TradeListDto tradeList = new TradeListDto(buyingTrades, sellingTrades);
+        return new ResponseEntity<>(tradeList, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -34,15 +34,23 @@ public class TradeService {
 
     public TradeDto getTradeById(Long id) {
         Trade findTrade = tradeRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.TRADE_NOT_FOUND));
-        return new TradeDto(findTrade.getId(), findTrade.getSeller().getId(), findTrade.getItem().getId(),
-                            findTrade.getItem().getTitle(), findTrade.getTradeDate());
+        return new TradeDto(findTrade.getId(), findTrade.getBuyer().getId(), findTrade.getSeller().getId(),
+                            findTrade.getItem().getId(), findTrade.getItem().getTitle(), findTrade.getTradeDate());
     }
 
-    public List<TradeDto> getMyTrades(String username) {
+    public List<TradeDto> getMyBuyingTrades(String username) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return tradeRepository.findMyTrades(findUser.getId()).stream()
-                .map(trade -> new TradeDto(trade.getId(), trade.getSeller().getId(), trade.getItem().getId(),
-                                        trade.getItem().getTitle(), trade.getTradeDate()))
+        return tradeRepository.findMyBuyingTrades(findUser.getId()).stream()
+                .map(trade -> new TradeDto(trade.getId(), trade.getBuyer().getId(), trade.getSeller().getId(),
+                                        trade.getItem().getId(), trade.getItem().getTitle(), trade.getTradeDate()))
+                .collect(Collectors.toList());
+    }
+
+    public List<TradeDto> getMySellingTrades(String username) {
+        User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        return tradeRepository.findMySellingTrades(findUser.getId()).stream()
+                .map(trade -> new TradeDto(trade.getId(), trade.getBuyer().getId(), trade.getSeller().getId(),
+                        trade.getItem().getId(), trade.getItem().getTitle(), trade.getTradeDate()))
                 .collect(Collectors.toList());
     }
 
