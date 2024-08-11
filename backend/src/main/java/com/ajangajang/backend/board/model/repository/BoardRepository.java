@@ -28,4 +28,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Modifying
     @Query("UPDATE Board b SET b.viewCount = b.viewCount + 1 WHERE b.id = :boardId")
     void increaseViewCount(Long boardId);
+
+    @Query("select b from Board b " +
+            "join fetch b.writer " +
+            "join fetch b.trade t where t.buyer.id = :id")
+    List<Board> findMyBuyingBoards(Long id);
+
+    @Query("select b from Board b " +
+            "join fetch b.writer " +
+            "join fetch b.trade t where t.seller.id = :id")
+    List<Board> findMySellingBoards(Long id);
 }

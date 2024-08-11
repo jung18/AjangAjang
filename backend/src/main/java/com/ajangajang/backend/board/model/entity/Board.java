@@ -1,5 +1,6 @@
 package com.ajangajang.backend.board.model.entity;
 
+import com.ajangajang.backend.trade.model.entity.Trade;
 import com.ajangajang.backend.user.model.entity.Address;
 import com.ajangajang.backend.user.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,6 +61,9 @@ public class Board {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @OneToOne(fetch = LAZY, mappedBy = "item")
+    private Trade trade;
 
     @OneToMany(mappedBy = "board", cascade = REMOVE, orphanRemoval = true)
     private List<BoardMedia> mediaList = new ArrayList<>();
