@@ -91,7 +91,7 @@ public class RegionDataService {
 
     public void saveRegionsByJson() {
 
-        String filePath = System.getProperty("user.home") + "/data-test.json";
+        String filePath = "/home/ubuntu/data-test.json";
         File file = new File(filePath);
 
         if (!file.exists()) {
