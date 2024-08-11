@@ -37,7 +37,6 @@ public class DatabaseSettingController { // 초기 데이터 설정용
 
     @GetMapping("/regions/setting")
     public ResponseEntity<?> saveRegionsByJson() {
-        log.info("setting 시작");
         try {
             regionDataService.saveRegionsByJson();
             return ResponseEntity.ok("Regions saved successfully");

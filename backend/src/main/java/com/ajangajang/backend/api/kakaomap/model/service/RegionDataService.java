@@ -96,7 +96,7 @@ public class RegionDataService {
     public void saveRegionsByJson() throws IOException, JSONException {
 
         // 리소스에서 JSON 파일 읽기
-        Resource resource = new ClassPathResource("static/data-test.json");
+        Resource resource = new ClassPathResource("static/data.json");
         String content = new String(FileCopyUtils.copyToByteArray(resource.getInputStream()));
 
         JSONArray jsonArray = new JSONArray(content);
