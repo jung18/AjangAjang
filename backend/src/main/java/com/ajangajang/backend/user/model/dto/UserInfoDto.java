@@ -13,10 +13,12 @@ public class UserInfoDto {
     private String nickname;
     private String profileImg;
     private Long mainAddressId;
+    private int level;
 
-    public UserInfoDto(Long id, String nickname, String profileImg) {
+    public UserInfoDto(Long id, String nickname, String profileImg, int level) {
         this.id = id;
         this.nickname = nickname;
         this.profileImg = profileImg;
+        this.level = level;
     }
 }
