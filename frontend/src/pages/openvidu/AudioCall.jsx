@@ -63,11 +63,17 @@ const AudioCall = () => {
                 }
             });
 
+            // 세션 ID를 사용하여 토큰을 발급받음
             const tokenResponse = await apiClient.post('/api/openvidu/tokens', sessionId, {
                 headers: {
                     'Content-Type': 'text/plain',
                 },
             });
+
+            if (tokenResponse.status !== 200) {
+                console.error(`Error joining session: ${tokenResponse.data}`);
+                return;
+            }
 
             const token = tokenResponse.data;
             console.log(`Token: ${token}`);
@@ -82,13 +88,6 @@ const AudioCall = () => {
                 if (videoRef.current && publisher.stream) {
                     videoRef.current.srcObject = publisher.stream.getMediaStream();
                     console.log('Published stream:', publisher.stream);
-
-                    const videoTracks = publisher.stream.getMediaStream().getVideoTracks();
-                    if (videoTracks && videoTracks.length > 0) {
-                        console.log('Video tracks found:', videoTracks);
-                    } else {
-                        console.error('No video tracks available in the stream');
-                    }
                 } else {
                     console.error('Publisher stream is not available');
                 }
