@@ -41,7 +41,7 @@ const AppRoutes = () => {
         element={
           <PageLayout
             page={<Board />}
-            pageType={"board"}
+            pageType={"board"} 
           />
         }
       />
@@ -94,11 +94,27 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route path="/room/:roomId" element={<PageLayout page={<Chat />} pageType={"chat"} />} />
-      <Route path="/chat" element={<PageLayout page={<ChatRoom />} pageType={"chat"} />} />
+      <Route 
+        path="/chat" 
+        element={
+          <PageLayout 
+            page={<ChatRoom />} 
+            pageType={"chat"} 
+          />
+        } 
+      />
 
+      <Route 
+        path="/room/:roomId" 
+        element={
+          <PageLayout 
+            page={<Chat />} 
+            pageType={"chating"} 
+          />
+        } 
+      />
+      {/* <Route path="/room/:roomId" element={<Chat />} /> */}
     </Routes>
-    
   );
 };
 

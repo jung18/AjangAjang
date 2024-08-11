@@ -1,0 +1,96 @@
+.room-list-container {
+  padding: 20px 15px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.header {
+  margin-bottom: 20px; /* 필터 버튼과 채팅 방 리스트 사이 간격 */
+  display: flex;
+  gap: 10px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filter-button {
+  background-color: #ff7096;
+  color: #fff;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.room-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%; /* 전체 너비에 맞춤 */
+  max-width: 600px; /* 최대 너비를 설정하여 중앙에 배치 */
+}
+
+.room-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 95%;
+}
+
+.room-item:hover {
+  background-color: #f5f5f5;
+}
+
+.room-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  background-color: #ddd;
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.room-last-message {
+  color: #666;
+  font-size: 14px;
+}
+
+.room-time {
+  font-size: 12px;
+  color: #aaa;
+  margin-left: auto;
+}
+
+.unread-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: #ff6347;
+  border-radius: 50%;
+  margin-left: 10px;
+}
