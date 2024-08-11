@@ -35,17 +35,14 @@ const PageLayout = ({ page, pageType }) => {
     case "myInfo":
       headerComponent = <SearchHeader />;
       break;
-<<<<<<< HEAD
     case "myTrade":
       headerComponent = <SearchHeader />;
-=======
+      break;
     case "chat":
       headerComponent = <PostHeader />; 
       break;
     case "chating":
       headerComponent = <SearchHeader />; 
->>>>>>> feature/frontend-chatdesign
-      break;
     default:
       headerComponent = null;
       break;
