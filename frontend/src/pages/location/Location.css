@@ -74,3 +74,10 @@
   color: #ff879e;
   font-size: 14px;
 }
+
+.location-scroll {
+  max-height: 300px; /* 스크롤을 적용할 최대 높이 설정 */
+  overflow-y: scroll; /* 세로 스크롤 추가 */
+  border: 1px solid #ccc; /* 스크롤 영역을 구분하기 위한 경계선 */
+  padding: 10px; /* 내부 여백 */
+}
