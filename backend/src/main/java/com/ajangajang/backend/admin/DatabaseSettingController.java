@@ -38,8 +38,13 @@ public class DatabaseSettingController { // 초기 데이터 설정용
     @GetMapping("/regions/setting")
     public ResponseEntity<?> saveRegionsByJson() {
         log.info("setting 시작");
-        regionDataService.saveRegionsByJson();
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            regionDataService.saveRegionsByJson();
+            return ResponseEntity.ok("Regions saved successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving regions: " + e.getMessage());
+        }
     }
 
     @GetMapping("/kakao/nearby") // 인접지역 테이블 만들기

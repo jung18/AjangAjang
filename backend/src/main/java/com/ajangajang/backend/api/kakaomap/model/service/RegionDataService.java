@@ -8,10 +8,14 @@ import com.ajangajang.backend.elasticsearch.model.repository.AddressSearchReposi
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -89,36 +93,25 @@ public class RegionDataService {
         }
     }
 
-    public void saveRegionsByJson() {
+    public void saveRegionsByJson() throws IOException, JSONException {
 
-        String filePath = "/home/ubuntu/data-test.json";
-        File file = new File(filePath);
+        // 리소스에서 JSON 파일 읽기
+        Resource resource = new ClassPathResource("data-test.json");
+        String content = new String(FileCopyUtils.copyToByteArray(resource.getInputStream()));
 
-        if (!file.exists()) {
-            log.error("File does not exist: {}", filePath);
-            return;
-        }
+        JSONArray jsonArray = new JSONArray(content);
 
-        try {
-            // 파일에서 JSON 문자열 읽어오기
-            String content = new String(Files.readAllBytes(Paths.get(filePath)));
-
-            log.info("파일 읽기");
-            // JSON 문자열을 JSONArray로 변환
-            JSONArray jsonArray = new JSONArray(content);
-
-            // JSONArray에서 각 객체를 하나씩 처리
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                log.info(jsonObject.getString("emd"));
-                Regions regions = new Regions(jsonObject.getString("sido"), jsonObject.getString("sigg"),
-                        jsonObject.getString("emd"), jsonObject.getDouble("longitude"),
-                        jsonObject.getDouble("latitude"), jsonObject.getString("address_code"));
-                regionsRepository.save(regions);
-            }
-        } catch (IOException e) {
-            log.info("IOException 에러");
-            log.info("{}", e.getMessage());
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Regions regions = new Regions(
+                    jsonObject.getString("sido"),
+                    jsonObject.getString("sigg"),
+                    jsonObject.getString("emd"),
+                    jsonObject.getDouble("longitude"),
+                    jsonObject.getDouble("latitude"),
+                    jsonObject.getString("address_code")
+            );
+            regionsRepository.save(regions);
         }
     }
 
