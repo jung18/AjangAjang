@@ -77,14 +77,9 @@ public class RoomService {
                 .findFirst()
                 .map(UserRoom::getUser)
                 .orElse(null);
-        if (creatorUser != null) {
-            dto.setCreatorUserId(creatorUser.getId());
-        }
-
-        // Board의 Address 설정
-        if (room.getBoard() != null && room.getBoard().getAddress() != null) {
-            dto.setAddress(room.getBoard().getAddress().toString());
-        }
+        dto.setCreatorUserId(creatorUser.getId());
+        dto.setLongitude(room.getBoard().getAddress().getLongitude());
+        dto.setLatitude(room.getBoard().getAddress().getLatitude());
 
         return dto;
     }
