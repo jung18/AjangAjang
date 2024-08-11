@@ -18,6 +18,7 @@ import MyLike from "./pages/myLike/MyLike";
 import MyInfo from "./pages/myInfo/MyInfo";
 import KakaoMap from "./pages/kakaoMap/KakaoMap";
 import GeoLocation from "./pages/geoLocation/GeoLocation";
+import Location from "./pages/location/Location";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -40,6 +41,7 @@ const AppRoutes = () => {
       {/* 테스트용 */}
       <Route path="/kakaomap" element={<KakaoMap />} />
       <Route path="/gps" element={<GeoLocation />} />
+      <Route path="/test2" element={<Location />} />
       <Route
         path="/direct"
         element={
