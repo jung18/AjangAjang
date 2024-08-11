@@ -1,5 +1,7 @@
 package com.ajangajang.backend.chat.service;
 
+import com.ajangajang.backend.board.model.entity.Board;
+import com.ajangajang.backend.board.model.repository.BoardRepository;
 import com.ajangajang.backend.chat.dto.RoomResponseDTO;
 import com.ajangajang.backend.chat.dto.UserRoomDTO;
 import com.ajangajang.backend.chat.entity.Room;
@@ -22,14 +24,21 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRoomRepository userRoomRepository;
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
 
-    public Room createRoom(String name, Long creatorUserId, Long postOwnerId) {
+    public Room createRoom(String name, Long boardId) {
         Room room = new Room();
         room.setName(name);
+        room.setLastMessage("");
+        room.setLastMessageTime(LocalDateTime.now());
 
-        User creator = userRepository.findById(creatorUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        User postOwner = userRepository.findById(postOwnerId)
+        // Board 엔티티 설정
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+        room.setBoard(board);
+
+        User creator = board.getWriter(); // 게시글 작성자 (판매자)
+        User postOwner = userRepository.findById(board.getWriter().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Create UserRoom entities
@@ -66,6 +75,21 @@ public class RoomService {
 
         dto.setUserRooms(userRoomDTOs);
 
+        // Room을 생성한 사용자의 ID 설정
+        User creatorUser = room.getUserRooms().stream()
+                .filter(userRoom -> userRoom.getUser().getId().equals(room.getBoard().getWriter().getId()))
+                .findFirst()
+                .map(UserRoom::getUser)
+                .orElse(null);
+        if (creatorUser != null) {
+            dto.setCreatorUserId(creatorUser.getId());
+        }
+
+        // Board의 Address 설정
+        if (room.getBoard() != null && room.getBoard().getAddress() != null) {
+            dto.setAddress(room.getBoard().getAddress().toString());
+        }
+
         return dto;
     }
 
@@ -75,6 +99,7 @@ public class RoomService {
                 .map(this::getRoomResponseDTO)
                 .collect(Collectors.toList());
     }
+
     public void updateLastMessage(Long roomId, String lastMessage) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
         room.setLastMessage(lastMessage);

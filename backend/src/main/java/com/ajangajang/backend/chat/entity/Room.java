@@ -1,5 +1,6 @@
 package com.ajangajang.backend.chat.entity;
 
+import com.ajangajang.backend.board.model.entity.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,10 @@ public class Room {
     private String lastMessage;
 
     private LocalDateTime lastMessageTime;
+
+    @OneToOne
+    @JoinColumn(name = "board_id")
+    private Board board; // 추가된 부분
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRoom> userRooms = new ArrayList<>();

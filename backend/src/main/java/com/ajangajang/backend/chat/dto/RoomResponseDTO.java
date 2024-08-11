@@ -14,4 +14,6 @@ public class RoomResponseDTO {
     private String lastMessage;
     private LocalDateTime lastMessageTime;
     private List<UserRoomDTO> userRooms;
+    private Long creatorUserId; // Room 생성자 ID 추가
+    private String address; // Board의 Address 추가
 }

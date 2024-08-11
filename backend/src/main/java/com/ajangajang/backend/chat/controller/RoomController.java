@@ -26,12 +26,10 @@ public class RoomController {
     public RoomResponseDTO createRoom(@RequestBody RoomRequestDTO roomRequestDTO) {
         Room room = roomService.createRoom(
                 roomRequestDTO.getName(),
-                roomRequestDTO.getCreatorUserId(),
-                roomRequestDTO.getPostOwnerId()
+                roomRequestDTO.getBoardId()  // 수정된 부분: boardId를 넘김
         );
         return roomService.getRoomResponseDTO(room);
     }
-
 
     @GetMapping("/myRooms")
     public List<RoomResponseDTO> getUserRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
