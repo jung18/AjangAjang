@@ -28,6 +28,7 @@ public enum CustomStatusCode {
     DUPLICATE_ADDRESS(HttpStatus.BAD_REQUEST, "이미 존재하는 주소"),
     MAIN_CHILD_DELETE_FAIL(HttpStatus.BAD_REQUEST, "대표 자녀는 삭제 불가"),
     INVALID_BIRTHDATE(HttpStatus.BAD_REQUEST, "현재 날짜보다 늦게 태어날 수 없음"),
+    AT_LEAST_ONE_MEDIA_REQUIRED(HttpStatus.BAD_REQUEST, "이미지는 최소 1개는 있어야함"),
 
     FILE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 실패"),
     API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "API 호출 실패"),
