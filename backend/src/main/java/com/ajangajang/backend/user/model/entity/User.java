@@ -15,8 +15,8 @@ import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
+@EntityListeners(UserEntityListener.class)
 public class User {
 
     @Id
