@@ -6,12 +6,11 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class CreateTradeDto {
+public class CreateRecommendDto {
 
-    private Long boardId;
-    private Long sellerId;
+    private Long buyerId;
     private RecommendType recommendType; // 추천받을 위치 기준
-    private double longitude; // 판매자 경도
-    private double latitude; // 판매자 위도
+    private double longitude; // 판매글 경도
+    private double latitude; // 판매글 위도
 
 }
