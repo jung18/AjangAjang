@@ -14,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -88,10 +90,16 @@ public class RegionDataService {
     }
 
     public void saveRegionsByJson() {
-        try {
-            // JSON 파일 경로
-            String filePath = "/home/ubuntu/data-test.json";
 
+        String filePath = System.getProperty("user.home") + "/data-test.json";
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            log.error("File does not exist: {}", filePath);
+            return;
+        }
+
+        try {
             // 파일에서 JSON 문자열 읽어오기
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
 
