@@ -96,7 +96,7 @@ public class KakaoApiService {
 
         } catch (Exception e) {
             log.info(e.getMessage());
-            throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
+            throw new CustomGlobalException(CustomStatusCode.API_CALL_FAILED);
         }
     }
 
