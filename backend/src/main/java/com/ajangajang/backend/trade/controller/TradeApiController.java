@@ -1,5 +1,6 @@
 package com.ajangajang.backend.trade.controller;
 
+import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.trade.model.dto.CreateRecommendDto;
 import com.ajangajang.backend.trade.model.dto.CreateTradeDto;
@@ -41,8 +42,8 @@ public class TradeApiController {
     @GetMapping("/my")
     public ResponseEntity<?> getMyBuyingTrades(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        List<TradeDto> buyingTrades = tradeService.getMyBuyingTrades(username);
-        List<TradeDto> sellingTrades = tradeService.getMySellingTrades(username);
+        List<BoardListDto> buyingTrades = tradeService.getMyBuyingTrades(username);
+        List<BoardListDto> sellingTrades = tradeService.getMySellingTrades(username);
         TradeListDto tradeList = new TradeListDto(buyingTrades, sellingTrades);
         return new ResponseEntity<>(tradeList, HttpStatus.OK);
     }
