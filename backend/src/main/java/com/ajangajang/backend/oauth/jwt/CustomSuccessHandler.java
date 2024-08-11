@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,6 +23,9 @@ import java.util.Iterator;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
+
+    @Value("${front.server.url}")
+    private String frontUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -45,11 +49,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
         if (customUserDetails.getRole().equals("ROLE_GUEST")) {
-            response.sendRedirect("https://i11b210.p.ssafy.io/sign-up");
+            response.sendRedirect(frontUrl + "/sign-up");
         } else if (customUserDetails.getRole().equals("ROLE_USER")) {
-            response.sendRedirect("https://i11b210.p.ssafy.io/direct");
+            response.sendRedirect(frontUrl + "/direct");
         } else {
-            response.sendRedirect("https://i11b210.p.ssafy.io/");
+            response.sendRedirect(frontUrl);
         }
     }
 

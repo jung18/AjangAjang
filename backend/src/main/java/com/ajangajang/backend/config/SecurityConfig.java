@@ -6,6 +6,7 @@ import com.ajangajang.backend.oauth.jwt.JwtUtil;
 import com.ajangajang.backend.oauth.model.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -30,6 +31,9 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
     private final JwtUtil jwtUtil;
 
+    @Value("${front.server.url}")
+    private String frontUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -42,7 +46,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("https://i11b210.p.ssafy.io", "http://localhost:3000","https://localhost:3000"));
+                        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -82,8 +86,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .anyRequest().permitAll());
 //                        .requestMatchers("/reissue").permitAll()
-//                        .requestMatchers("/api/address/name").hasRole("GUEST")
-//                        .requestMatchers("/admin/**", "/sign-up", "/api/user/sms/**").hasRole("ADMIN")
+//                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
 //                        .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
