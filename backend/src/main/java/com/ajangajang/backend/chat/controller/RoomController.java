@@ -3,7 +3,6 @@ package com.ajangajang.backend.chat.controller;
 import com.ajangajang.backend.chat.dto.RoomRequestDTO;
 import com.ajangajang.backend.chat.dto.RoomResponseDTO;
 import com.ajangajang.backend.chat.entity.Room;
-import com.ajangajang.backend.chat.repository.RoomRepository;
 import com.ajangajang.backend.chat.service.RoomService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.user.model.entity.User;
@@ -18,15 +17,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/rooms")
 public class RoomController {
-    private final RoomRepository roomRepository;
     private final RoomService roomService;
     private final UserRepository userRepository;
 
     @PostMapping
-    public RoomResponseDTO createRoom(@RequestBody RoomRequestDTO roomRequestDTO) {
+    public RoomResponseDTO createRoom(@RequestBody RoomRequestDTO roomRequestDTO,
+                                      @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        // 현재 소셜 로그인된 유저를 가져옴
+        User creatorUser = userRepository.findByUsername(customOAuth2User.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 채팅방 생성
         Room room = roomService.createRoom(
                 roomRequestDTO.getName(),
-                roomRequestDTO.getBoardId()  // 수정된 부분: boardId를 넘김
+                roomRequestDTO.getBoardId(),
+                creatorUser
         );
         return roomService.getRoomResponseDTO(room);
     }

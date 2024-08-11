@@ -26,7 +26,7 @@ public class RoomService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    public Room createRoom(String name, Long boardId) {
+    public Room createRoom(String name, Long boardId, User creator) {
         Room room = new Room();
         room.setName(name);
         room.setLastMessage("");
@@ -37,17 +37,13 @@ public class RoomService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
         room.setBoard(board);
 
-        User creator = board.getWriter(); // 게시글 작성자 (판매자)
-        User postOwner = userRepository.findById(board.getWriter().getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Create UserRoom entities
+        // Create UserRoom entities for the creator (current user) and the post owner (seller)
         UserRoom creatorUserRoom = new UserRoom();
         creatorUserRoom.setUser(creator);
         creatorUserRoom.setRoom(room);
 
         UserRoom postOwnerUserRoom = new UserRoom();
-        postOwnerUserRoom.setUser(postOwner);
+        postOwnerUserRoom.setUser(board.getWriter());
         postOwnerUserRoom.setRoom(room);
 
         room.addUserRoom(creatorUserRoom);
