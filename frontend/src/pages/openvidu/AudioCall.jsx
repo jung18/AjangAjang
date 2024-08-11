@@ -1,127 +1,109 @@
-import { OpenVidu } from 'openvidu-browser';
 import React, { useState, useRef } from 'react';
-import apiClient from '../../api/apiClient';
+import axios from 'axios';
+import { OpenVidu } from 'openvidu-browser';
 
-const AudioCall = () => {
+const VideoChat = () => {
     const [session, setSession] = useState(null);
+    const [publisher, setPublisher] = useState(null);
+    const [subscribers, setSubscribers] = useState([]);
     const [sessionId, setSessionId] = useState('');
-    const videoRef = useRef(null);
+    const OV = useRef(new OpenVidu());
 
-    const handleSessionIdChange = (event) => {
-        setSessionId(event.target.value);
-    };
-
-    const initializePublisher = (OV) => {
-        return OV.initPublisher(videoRef.current, {
-            audioSource: undefined, // 기본 오디오 소스 사용
-            videoSource: undefined, // 기본 비디오 소스 사용 (카메라)
-            publishAudio: true,     // 오디오 퍼블리시
-            publishVideo: true,     // 비디오 퍼블리시
-        });
-    };
-
-    const createSession = async () => {
-        try {
-            const OV = new OpenVidu();
-            const session = OV.initSession();
-            setSession(session);
-
-            session.on('streamCreated', (event) => {
-                const subscriber = session.subscribe(event.stream, undefined);
-                if (videoRef.current) {
-                    videoRef.current.srcObject = event.stream.getMediaStream();
-                    console.log('Subscribed to stream:', event.stream);
-                }
-            });
-
-            const { data } = await apiClient.post('/api/openvidu/sessions');
-            const newSessionId = data;
-            setSessionId(newSessionId);
-            console.log(`Session ID created: ${newSessionId}`);
-
-        } catch (error) {
-            console.error('There was an error creating the session:', error.message);
-        }
+    const handleSessionIdChange = (e) => {
+        setSessionId(e.target.value);
     };
 
     const joinSession = async () => {
         try {
-            if (!sessionId) {
-                console.error('Session ID is required to join a session.');
-                return;
+            let currentSessionId = sessionId; // 상위 스코프의 sessionId를 currentSessionId로 할당
+
+            if (!currentSessionId) {  // sessionId가 비어있다면 새로운 세션 생성
+                const sessionResponse = await axios.post('http://localhost:8080/api/sessions/create');
+                currentSessionId = sessionResponse.data;
             }
 
-            const OV = new OpenVidu();
-            const session = OV.initSession();
-            setSession(session);
-
-            session.on('streamCreated', (event) => {
-                const subscriber = session.subscribe(event.stream, undefined);
-                if (videoRef.current) {
-                    videoRef.current.srcObject = event.stream.getMediaStream();
-                    console.log('Subscribed to stream:', event.stream);
-                }
-            });
-
-            // 세션 ID를 사용하여 토큰을 발급받음
-            const tokenResponse = await apiClient.post('/api/openvidu/tokens', sessionId, {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-            });
-
-            if (tokenResponse.status !== 200) {
-                console.error(`Error joining session: ${tokenResponse.data}`);
-                return;
-            }
-
+            const tokenResponse = await axios.post(`http://localhost:8080/api/sessions/${currentSessionId}/connections`);
             const token = tokenResponse.data;
-            console.log(`Token: ${token}`);
-            await session.connect(token);
 
-            const publisher = initializePublisher(OV);
+            let newSession = OV.current.initSession();
 
-            publisher.once('accessAllowed', () => {
-                console.log('Access to camera and microphone granted');
-                session.publish(publisher);
-
-                if (videoRef.current && publisher.stream) {
-                    videoRef.current.srcObject = publisher.stream.getMediaStream();
-                    console.log('Published stream:', publisher.stream);
-                } else {
-                    console.error('Publisher stream is not available');
-                }
+            newSession.on('streamCreated', (event) => {
+                const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
             });
 
-            publisher.once('accessDenied', () => {
-                console.error('Access to camera and microphone denied');
+            newSession.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
+                );
             });
 
+            await newSession.connect(token);
+
+            let newPublisher = await OV.current.initPublisherAsync(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: true,
+                resolution: '640x480',
+                frameRate: 30,
+                insertMode: 'APPEND',
+                mirror: false,
+            });
+
+            newSession.publish(newPublisher);
+
+            setSession(newSession);
+            setPublisher(newPublisher);
+            setSessionId(currentSessionId);
         } catch (error) {
-            console.error('There was an error joining the session:', error.message);
+            console.error('Error joining session:', error);
+            alert('Failed to join session. Please check your network and server.');
         }
+    };
+
+    const leaveSession = () => {
+        if (session) {
+            session.disconnect();
+        }
+        setSession(null);
+        setPublisher(null);
+        setSubscribers([]);
+        setSessionId('');
     };
 
     return (
         <div>
-            <div>
-                <button onClick={createSession}>Create Session</button>
-                <button onClick={joinSession}>Join Session</button>
-            </div>
-            <div>
-                <input
-                    type="text"
-                    value={sessionId}
-                    onChange={handleSessionIdChange}
-                    placeholder="Enter Session ID"
-                />
-            </div>
-            {/* 비디오 요소 렌더링 */}
-            <div>
-                <video ref={videoRef} autoPlay playsInline controls={false} style={{ width: '100%', height: 'auto', backgroundColor: 'black' }} />
-            </div>
+            {!session ? (
+                <div>
+                    <input 
+                        type="text" 
+                        placeholder="Enter session ID or leave blank for new session" 
+                        value={sessionId} 
+                        onChange={handleSessionIdChange}
+                    />
+                    <button onClick={joinSession}>Join Session</button>
+                </div>
+            ) : (
+                <div>
+                    <h2>Session ID: {sessionId}</h2>
+                    <button onClick={leaveSession}>Leave Session</button>
+                </div>
+            )}
+            {publisher && (
+                <div id="publisher">
+                    <h3>My Camera</h3>
+                    <video autoPlay={true} ref={(video) => video && publisher.addVideoElement(video)} />
+                </div>
+            )}
+            {subscribers.map((sub, i) => (
+                <div key={i} id="subscriber">
+                    <h3>Participant {i + 1}</h3>
+                    <video autoPlay={true} ref={(video) => video && sub.addVideoElement(video)} />
+                </div>
+            ))}
         </div>
     );
 };
 
-export default AudioCall;
+export default VideoChat;
