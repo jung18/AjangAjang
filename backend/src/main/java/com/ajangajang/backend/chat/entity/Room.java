@@ -23,7 +23,7 @@ public class Room {
 
     private LocalDateTime lastMessageTime;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board; // 추가된 부분
 
