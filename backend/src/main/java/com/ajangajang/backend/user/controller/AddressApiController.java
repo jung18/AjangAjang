@@ -1,6 +1,8 @@
 package com.ajangajang.backend.user.controller;
 
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
+import com.ajangajang.backend.trade.model.dto.CreateRecommendDto;
+import com.ajangajang.backend.trade.model.dto.RecommendDto;
 import com.ajangajang.backend.user.model.dto.*;
 import com.ajangajang.backend.user.model.service.UserAddressService;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +68,12 @@ public class AddressApiController {
         String username = customOAuth2User.getUsername();
         String nearType = userAddressService.updateNearType(username, searchRangeDto);
         return new ResponseEntity<>(Map.of("nearType", nearType), HttpStatus.OK);
+    }
+
+    @PostMapping("/recommend")
+    public ResponseEntity<?> getRecommendAddresses(@RequestBody CreateRecommendDto dto) {
+        List<RecommendDto> result = userAddressService.getRecommendLocations(dto);
+        return new ResponseEntity<>(Map.of("data", result), HttpStatus.OK);
     }
 
 }

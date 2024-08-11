@@ -121,13 +121,13 @@ public class KakaoApiService {
         };
     }
 
-    public List<RecommendDto> findRecommendLocation(double longitude, double latitude) {
+    public List<RecommendDto> findRecommendLocation(double longitude, double latitude, int range) {
         String[] codes = {"BK9", "PO3"};
         List<RecommendDto> result = new ArrayList<>();
 
         for (String code : codes) {
             String apiUrl = "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=" +
-                            code + "&x=" + longitude + "&y=" + latitude + "&radius=10000";
+                            code + "&x=" + longitude + "&y=" + latitude + "&radius=" + range;
             ResponseEntity<String> response = callApiAndGetResponse(apiUrl);
 
             try {
