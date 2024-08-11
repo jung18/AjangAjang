@@ -16,7 +16,7 @@ function ChatTest() {
 
   useEffect(() => {
     // WebSocket 서버에 연결
-    const socket = new SockJS("https://i11b210.p.ssafy.io:4443/ws-stomp");
+    const socket = new SockJS("http://localhost:8080/ws-stomp");
     const client = new Client({
       webSocketFactory: () => socket,
       debug: (str) => {

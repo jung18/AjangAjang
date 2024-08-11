@@ -18,11 +18,11 @@ const VideoChat = () => {
             let currentSessionId = sessionId; // 상위 스코프의 sessionId를 currentSessionId로 할당
 
             if (!currentSessionId) {  // sessionId가 비어있다면 새로운 세션 생성
-                const sessionResponse = await axios.post('https://i11b210.p.ssafy.io:4443/api/sessions/create');
+                const sessionResponse = await axios.post('http://localhost:8080/api/sessions/create');
                 currentSessionId = sessionResponse.data;
             }
 
-            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${currentSessionId}/connections`);
+            const tokenResponse = await axios.post(`http://localhost:8080/api/sessions/${currentSessionId}/connections`);
             const token = tokenResponse.data;
 
             let newSession = OV.current.initSession();
