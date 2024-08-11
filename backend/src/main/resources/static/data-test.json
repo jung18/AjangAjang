@@ -1,0 +1,6 @@
+[{"id":1, "address_code":"1111010100", "emd":"\uccad\uc6b4\ub3d9", "latitude":37.5891974378629, "longitude":126.969329763593, "sido":"\uc11c\uc6b8", "sigg":"\uc885\ub85c\uad6c"},
+ {"id":2, "address_code":"1111010200", "emd":"\uc2e0\uad50\ub3d9", "latitude":37.5844902776103, "longitude":126.967923271581, "sido":"\uc11c\uc6b8", "sigg":"\uc885\ub85c\uad6c"},
+ {"id":3, "address_code":"1111010300", "emd":"\uad81\uc815\ub3d9", "latitude":37.5846825915784, "longitude":126.973144784748, "sido":"\uc11c\uc6b8", "sigg":"\uc885\ub85c\uad6c"},
+ {"id":4, "address_code":"1111010400", "emd":"\ud6a8\uc790\ub3d9", "latitude":37.5826496685118, "longitude":126.971931855344, "sido":"\uc11c\uc6b8", "sigg":"\uc885\ub85c\uad6c"},
+ {"id":5, "address_code":"1111010500", "emd":"\ucc3d\uc131\ub3d9", "latitude":37.580545072399, "longitude":126.972462474485, "sido":"\uc11c\uc6b8", "sigg":"\uc885\ub85c\uad6c"}
+] 
