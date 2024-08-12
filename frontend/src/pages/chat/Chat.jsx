@@ -60,7 +60,7 @@ const Chat = () => {
             client.subscribe(`/sub/chat/${roomId}`, (msg) => {
                 const parsedMessage = JSON.parse(msg.body);
                 if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
-                    console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
+                    console.log('통화 요청이 있습니다. Session ID:', parsedMessage.sessionId);
                     if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
                         handleCallAccept(parsedMessage.sessionId);
                     }
@@ -109,8 +109,8 @@ const Chat = () => {
                 type: 'CALL_REQUEST',
                 time: new Date().toISOString(),
             };
-            stompClientRef.current.send('/pub/chat/call', {}, JSON.stringify(callMessage));
-            // 세션 ID를 전달하며 VideoChat 페이지로 이동
+            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(callMessage));
+            // 발신자도 해당 세션에 바로 참여
             navigate(`/audio-call/${sessionId}`); 
         } else {
             alert('통화 세션 생성에 실패했습니다.');
@@ -118,7 +118,7 @@ const Chat = () => {
     };
 
     const handleCallAccept = async (sessionId) => {
-        // 수락 시에도 세션 ID를 전달하며 VideoChat 페이지로 이동
+        // 수락 시에도 세션 ID를 전달하며 AudioCall 페이지로 이동
         navigate(`/audio-call/${sessionId}`); 
     };
 
@@ -130,7 +130,7 @@ const Chat = () => {
                 message,
                 time: new Date().toISOString(),
             };
-            stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
+            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(chatMessage));
             setMessage('');
         } else {
             alert("Message or connection issues detected.");

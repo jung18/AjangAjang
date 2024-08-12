@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 
-const VideoChat = () => {
+const AudioCall = () => {
     const { sessionId } = useParams();
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
@@ -13,13 +13,13 @@ const VideoChat = () => {
     useEffect(() => {
         const joinSession = async () => {
             try {
-                const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${sessionId}/connections`);
+                const tokenResponse = await axios.post(`/api/sessions/${sessionId}/connections`);
                 const token = tokenResponse.data;
 
-                let newSession = OV.current.initSession();
+                const newSession = OV.current.initSession();
 
                 newSession.on('streamCreated', (event) => {
-                    const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                    const subscriber = newSession.subscribe(event.stream, undefined);
                     setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
                 });
 
@@ -31,9 +31,9 @@ const VideoChat = () => {
 
                 await newSession.connect(token);
 
-                let newPublisher = await OV.current.initPublisherAsync(undefined, {
-                    audioSource: undefined,
-                    videoSource: undefined, // 오디오 콜이기 때문에 비디오를 끄도록 설정
+                const newPublisher = await OV.current.initPublisherAsync(undefined, {
+                    audioSource: true, 
+                    videoSource: false,
                     publishAudio: true,
                     publishVideo: false,
                     resolution: '640x480',
@@ -93,4 +93,4 @@ const VideoChat = () => {
     );
 };
 
-export default VideoChat;
+export default AudioCall;
