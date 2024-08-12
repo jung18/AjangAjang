@@ -4,6 +4,7 @@ import com.ajangajang.backend.board.model.entity.Status;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
@@ -11,6 +12,7 @@ import lombok.Setter;
 public class BoardListDto {
 
     private Long boardId;
+    private String thumbnailUrl;
     private UserProfileDto writer;
     private String title;
     private int price;
@@ -19,13 +21,4 @@ public class BoardListDto {
     private int likeCount;
     private int viewCount;
 
-    public BoardListDto(Long boardId, String title, int price, String category, Status status, int likeCount, int viewCount) {
-        this.boardId = boardId;
-        this.title = title;
-        this.price = price;
-        this.category = category;
-        this.status = status;
-        this.likeCount = likeCount;
-        this.viewCount = viewCount;
-    }
 }

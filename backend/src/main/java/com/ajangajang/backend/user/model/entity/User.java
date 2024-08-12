@@ -15,8 +15,8 @@ import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
+@EntityListeners(UserEntityListener.class)
 public class User {
 
     @Id
@@ -37,6 +37,8 @@ public class User {
     private String profileImg;
 
     private Long mainChildId;
+
+    private int score;
 
     @OneToMany(mappedBy = "writer", cascade = REMOVE, orphanRemoval = true)
     private List<Board> myBoards = new ArrayList<>();

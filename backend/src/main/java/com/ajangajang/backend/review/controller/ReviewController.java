@@ -38,8 +38,9 @@ public class ReviewController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> findAllReviews() {
-        List<ReviewDto> result = reviewService.findAll();
+    public ResponseEntity<?> findMyReviews(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        String username = customOAuth2User.getUsername();
+        List<ReviewDto> result = reviewService.findMyReviews(username);
         return ResponseEntity.ok(Map.of("data", result));
     }
 

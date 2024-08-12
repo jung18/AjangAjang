@@ -14,6 +14,7 @@ import com.ajangajang.backend.user.model.repository.AddressRepository;
 import com.ajangajang.backend.user.model.repository.ChildRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,11 +118,8 @@ public class BoardService {
     }
 
     public List<BoardListDto> findAllByUserId(Long userId) {
-        return boardRepository.findAllByUserId(userId).stream()
-                .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getCategory().name(), board.getStatus(), board.getLikedUsers().size(),
-                        board.getViewCount()))
-                .collect(Collectors.toList());
+        List<Board> boards = boardRepository.findAllByUserId(userId);
+        return getBoardListDtos(boards);
     }
 
     private void setBoardMedia(List<MultipartFile> files, Board board) {
@@ -133,6 +131,8 @@ public class BoardService {
                 board.addMedia(media);
                 boardMediaRepository.save(media);
             }
+        } else {
+            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
         }
     }
 
@@ -152,13 +152,30 @@ public class BoardService {
         List<BoardListDto> result = new ArrayList<>();
         for (Board board : boards) {
             User writer = board.getWriter();
+            String thumbnail = getThumbnail(board);
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg());
-            result.add(new BoardListDto(board.getId(), profile, board.getTitle(), board.getPrice(),
+            result.add(new BoardListDto(board.getId(), thumbnail, profile, board.getTitle(), board.getPrice(),
                     board.getCategory().name(),
                     board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
         }
         return result;
+    }
+
+    public @NotNull String getThumbnail(Board board) {
+        String thumbnail = "";
+        List<BoardMedia> mediaList = board.getMediaList();
+        // 판매글 썸네일 불러오기
+        for (BoardMedia media : mediaList) {
+            if (media.getMediaType() == MediaType.IMAGE) {
+                thumbnail = media.getMediaUrl();
+                break;
+            }
+        }
+        if (thumbnail == null || thumbnail.isEmpty()) {
+            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
+        }
+        return thumbnail;
     }
 
     public Board findBoardById(Long boardId) {

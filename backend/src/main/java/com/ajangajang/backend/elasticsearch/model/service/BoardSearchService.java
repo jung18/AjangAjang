@@ -65,17 +65,16 @@ public class BoardSearchService {
         }
 
         List<String> codes = getNearbyCodes(mainAddress.getAddressCode(), mainAddress.getNearType());
-
+        // 쿼리 생성
+        BoolQuery.Builder boolQueryBuilder = defaultBoolQueryBuilder(codes);
+        Query searchQuery = boolQueryBuilder.build()._toQuery();
         // 페이징
         Pageable pageable = PageRequest.of(searchBoardDto.getPage(), searchBoardDto.getSize());
-        Page<BoardDocument> boardDocuments = boardSearchRepository.findByAddressCodeInAndStatusIn(codes, List.of("FOR_SALE", "RESERVED"), pageable);
+        NativeQuery query = defaultNativeQueryBuilder(searchQuery, pageable);
+        SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
+        List<BoardListDto> searchResult = getSearchResult(response);
 
-        List<Long> boardIds = boardDocuments.stream()
-                .map(BoardDocument::getBoardId).collect(Collectors.toList());
-        List<Board> boards = boardRepository.findByIdIn(boardIds);
-        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
-
-        return new PageImpl<>(boardListDtos, pageable, boardDocuments.getTotalElements());
+        return new PageImpl<>(searchResult, pageable, response.getTotalHits());
     }
 
     public List<String> getNearbyCodes(String addressCode, NearType nearType) {
@@ -142,15 +141,7 @@ public class BoardSearchService {
         List<String> codes = getNearbyCodes(addressCode, nearType);
 
         // 기본 bool 쿼리 빌더
-        BoolQuery.Builder boolQueryBuilder = QueryBuilders.bool()
-                .filter(QueryBuilders.terms(t -> t.field("addressCode")
-                        .terms(v -> v.value(codes.stream()
-                                .map(FieldValue::of)
-                                .collect(Collectors.toList())))))
-                .filter(QueryBuilders.terms(t -> t.field("status")
-                        .terms(v -> v.value(Stream.of("FOR_SALE", "RESERVED")
-                                .map(FieldValue::of)
-                                .collect(Collectors.toList())))));
+        BoolQuery.Builder boolQueryBuilder = defaultBoolQueryBuilder(codes);
 
         // title이 존재하는 경우 match 쿼리 추가
         if (title != null && !title.isEmpty()) {
@@ -166,19 +157,37 @@ public class BoardSearchService {
         // 쿼리 생성
         Query searchQuery = boolQueryBuilder.build()._toQuery();
         Pageable pageable = PageRequest.of(page, size);
+        NativeQuery query = defaultNativeQueryBuilder(searchQuery, pageable);
 
-        NativeQuery query = NativeQuery.builder()
+        // 검색
+        SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
+        List<BoardListDto> boardListDtos = getSearchResult(response);
+        return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
+    }
+
+    private BoolQuery.Builder defaultBoolQueryBuilder(List<String> codes) {
+        return QueryBuilders.bool()
+                .filter(QueryBuilders.terms(t -> t.field("addressCode")
+                        .terms(v -> v.value(codes.stream()
+                                .map(FieldValue::of).collect(Collectors.toList())))))
+                .filter(QueryBuilders.terms(t -> t.field("status")
+                        .terms(v -> v.value(Stream.of("FOR_SALE", "RESERVED")
+                                .map(FieldValue::of).collect(Collectors.toList())))));
+    }
+
+    private NativeQuery defaultNativeQueryBuilder(Query searchQuery, Pageable pageable) {
+        return NativeQuery.builder()
                 .withQuery(searchQuery)
                 .withPageable(pageable)
                 .withSourceFilter(new FetchSourceFilter(new String[]{"boardId"}, null))
                 .build();
-        // 검색
-        SearchHits<BoardDocument> response = elasticsearchOperations.search(query, BoardDocument.class);
+    }
+
+    private List<BoardListDto> getSearchResult(SearchHits<BoardDocument> response) {
         List<Long> boardIds = response.getSearchHits().stream()
                 .map(hit -> hit.getContent().getBoardId()).toList();
         List<Board> boards = boardRepository.findByIdIn(boardIds);
-        List<BoardListDto> boardListDtos = boardService.getBoardListDtos(boards);
-        return new PageImpl<>(boardListDtos, pageable, response.getTotalHits());
+        return boardService.getBoardListDtos(boards);
     }
 
 }
