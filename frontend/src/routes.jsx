@@ -102,7 +102,7 @@ const AppRoutes = () => {
       />
       <Route path="/room/:roomId" element={<PageLayout page={<Chat />} pageType={"chat"} />} />
       <Route path="/chat" element={<PageLayout page={<ChatRoom />} pageType={"chat"} />} />
-      <Route path="/audio-call" element={<AudioCall />} />
+      <Route path="/audio-call/:sessionId" element={<AudioCall />} />
       <Route path="/audio-call-test" element={<AudioTest />} />
       {/* <Route 
         path="/chat" 

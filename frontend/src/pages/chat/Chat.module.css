@@ -101,3 +101,18 @@
   background-color: #ddd;
   cursor: not-allowed;
 }
+
+.call-button {
+  background-color: #FF879E; /* 버튼 배경색을 입력창 테두리 색상과 맞춤 */
+  color: white; /* 버튼 텍스트 색상 */
+  border: none; /* 버튼 테두리 제거 */
+  padding: 10px 20px; /* 버튼 패딩 조정 */
+  border-radius: 20px; /* 버튼의 모서리를 둥글게 */
+  margin-right: 10px; /* 오른쪽 여백 추가 */
+  cursor: pointer; /* 커서를 포인터로 변경 */
+  font-size: 16px; /* 폰트 크기 조정 */
+}
+
+.call-button:hover {
+  background-color: #FF6F91; /* 호버 시 버튼 색상 변경 */
+}
