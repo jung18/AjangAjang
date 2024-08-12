@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { OpenVidu } from 'openvidu-browser';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; 
-import dayjs from 'dayjs';
 import styles from './Chat.module.css';
-import apiClient from '../../api/apiClient';
-import sentImage from '../../assets/icons/sent.png'; 
-import sentActiveImage from '../../assets/icons/sent-active.png';
 
 const Chat = () => {
     const { roomId } = useParams(); 
@@ -16,13 +13,16 @@ const Chat = () => {
     const [userId, setUserId] = useState(null);
     const chatBoxRef = useRef(null);
     const stompClientRef = useRef(null);
-    const [sendButtonImage, setSendButtonImage] = useState(sentImage); 
+    const OV = useRef(new OpenVidu());
+    const [session, setSession] = useState(null);
+    const [publisher, setPublisher] = useState(null);
+    const [subscribers, setSubscribers] = useState([]);
     const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchUserId = async () => {
             try {
-                const response = await apiClient.get('/api/user/my');
+                const response = await axios.get('/api/user/my');
                 if (response.data && response.data.id) {
                     setUserId(response.data.id);
                 }
@@ -60,7 +60,6 @@ const Chat = () => {
             client.subscribe(`/sub/chat/${roomId}`, (msg) => {
                 const parsedMessage = JSON.parse(msg.body);
                 if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
-                    console.log('통화 요청이 있습니다. Session ID:', parsedMessage.sessionId);
                     if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
                         handleCallAccept(parsedMessage.sessionId);
                     }
@@ -84,90 +83,74 @@ const Chat = () => {
         }
     }, [messages]);
 
-    useEffect(() => {
-        setSendButtonImage(message.trim() ? sentActiveImage : sentImage);
-    }, [message]);
-
-    const createSession = async () => {
-        try {
-            const response = await apiClient.post('/api/call/session', { roomId });
-            console.log('생성된 Session ID:', response.data.sessionId);
-            return response.data.sessionId; // 생성된 세션 ID 반환
-        } catch (error) {
-            console.error('Error creating session:', error);
-            return null;
-        }
-    };
-
     const handleCallButtonClick = async () => {
-        const sessionId = await createSession();
-        if (sessionId) {
-            const callMessage = {
-                roomId,
-                userId,
-                sessionId,
+        try {
+            const sessionResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/create`);
+            const newSessionId = sessionResponse.data;
+            
+            const message = {
+                sessionId: newSessionId,
                 type: 'CALL_REQUEST',
-                time: new Date().toISOString(),
             };
-            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(callMessage));
-            // 발신자도 해당 세션에 바로 참여
-            navigate(`/audio-call/${sessionId}`); 
-        } else {
-            alert('통화 세션 생성에 실패했습니다.');
+            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
+
+            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
+            const token = tokenResponse.data;
+
+            let newSession = OV.current.initSession();
+
+            newSession.on('streamCreated', (event) => {
+                const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+            });
+
+            newSession.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
+                );
+            });
+
+            await newSession.connect(token);
+
+            let newPublisher = await OV.current.initPublisherAsync(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: false,
+            });
+
+            newSession.publish(newPublisher);
+
+            setSession(newSession);
+            setPublisher(newPublisher);
+        } catch (error) {
+            console.error('Error joining session:', error);
+            alert('Failed to join session. Please check your network and server.');
         }
     };
 
     const handleCallAccept = async (sessionId) => {
-        // 수락 시에도 세션 ID를 전달하며 AudioCall 페이지로 이동
-        navigate(`/audio-call/${sessionId}`); 
+        navigate(`/audio-call/${sessionId}`);
     };
 
-    const sendMessage = () => {
-        if (stompClientRef.current && stompClientRef.current.connected && message.trim() !== '' && userId !== null) {
-            const chatMessage = {
-                roomId,
-                userId,
-                message,
-                time: new Date().toISOString(),
-            };
-            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(chatMessage));
-            setMessage('');
-        } else {
-            alert("Message or connection issues detected.");
+    const leaveSession = () => {
+        if (session) {
+            session.disconnect();
         }
-    };
-
-    const shouldShowTime = (currentMessage, previousMessage) => {
-        if (!previousMessage) return true;
-        const currentTime = dayjs(currentMessage.time);
-        const previousTime = dayjs(previousMessage.time);
-        return !currentTime.isSame(previousTime, 'minute');
+        setSession(null);
+        setPublisher(null);
+        setSubscribers([]);
     };
 
     return (
         <div className={styles['chat-room-container']}>
             <div className={styles['chat-box']} ref={chatBoxRef}>
                 {Array.isArray(messages) ? (
-                    messages.map((msg, index) => {
-                        const previousMessage = messages[index - 1];
-                        const showTime = shouldShowTime(msg, previousMessage);
-
-                        return (
-                            <div 
-                                key={index} 
-                                className={`${styles.message} ${msg.userId === userId ? styles['from-user'] : styles['from-other']}`}
-                            >
-                                <div className={styles['message-content']}>
-                                    {msg.message}
-                                </div>
-                                {showTime && (
-                                    <div className={styles['message-time']}>
-                                        {dayjs(msg.time).format('HH:mm')}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })
+                    messages.map((msg, index) => (
+                        <div key={index} className={`${styles.message} ${msg.userId === userId ? styles['from-user'] : styles['from-other']}`}>
+                            <div className={styles['message-content']}>{msg.message}</div>
+                        </div>
+                    ))
                 ) : (
                     <p>Loading messages...</p>
                 )}
@@ -180,19 +163,7 @@ const Chat = () => {
                     onChange={e => setMessage(e.target.value)}
                     placeholder="메시지를 입력하세요."
                 />
-                <img 
-                    src={sendButtonImage} 
-                    alt="Send"
-                    className={styles['send-button']}
-                    onClick={sendMessage} 
-                    style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} 
-                />
-                <button 
-                    className={styles['call-button']}
-                    onClick={handleCallButtonClick}
-                >
-                    통화
-                </button>
+                <button onClick={handleCallButtonClick} className={styles['call-button']}>통화</button>
             </div>
         </div>
     );
