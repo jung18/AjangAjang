@@ -6,12 +6,19 @@ import { fetchSearchResults } from "../../api/searchService";
 import SearchListIcon from "../../assets/icons/search-list.png";
 import DeleteSearchItemIcon from "../../assets/icons/delete-search-item.png";
 
+import BoardList from "../board/components/boardList/BoardList";
+
 import "./Search.css";
 
 function Search() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("전체"); // 활성화된 탭 상태
-  const [searchResults, setSearchResults] = useState([]); 
+  const [searchResults, setSearchResults] = useState([]);
+  const [isChanged, setIsChanged] = useState(false);
+  const [changedTerm, setChangedTerm] = useState("");
+  const [originalTerm, setoriginalTerm] = useState("");
+  const [maxHeight, setMaxHeight] = useState(0); // maxHeight 상태 추가
+
   const {
     recentSearches,
     autoSave,
@@ -37,12 +44,37 @@ function Search() {
     if (searchTerm.trim()) {
       addSearchTerm(searchTerm.trim());
       try {
-        const results = await fetchSearchResults(searchTerm, activeTab);
-        setSearchResults(results); // 검색 결과 설정
+        const results = await fetchSearchResults(searchTerm, activeTab, false);
+
+        setSearchResults(results.searchResult); // 검색 결과 설정
+        setIsChanged(results.changed);
+
+        if (results.changed) {
+          setChangedTerm(results.suggestedTitle);
+        }
+
+        setoriginalTerm(results.originalTitle);
       } catch (error) {
         console.error("검색 결과를 가져오는데 실패했습니다:", error);
       }
       setSearchTerm("");
+    }
+  };
+
+  const handleResearch = async () => {
+    try {
+      const results = await fetchSearchResults(originalTerm, activeTab, true);
+
+      setSearchResults(results.searchResult); // 검색 결과 설정
+      setIsChanged(results.changed);
+
+      if (results.changed) {
+        setChangedTerm(results.suggestedTitle);
+      }
+
+      setoriginalTerm(results.originalTitle);
+    } catch (error) {
+      console.error("검색 결과를 가져오는데 실패했습니다:", error);
     }
   };
 
@@ -63,7 +95,15 @@ function Search() {
         />
       </div>
       <div className="category-tab">
-        {["전체", "유모차", "장난감", "아기옷", "카시트", "생활용품", "가구"].map((tab) => (
+        {[
+          "전체",
+          "유모차",
+          "장난감",
+          "아기옷",
+          "카시트",
+          "생활용품",
+          "가구",
+        ].map((tab) => (
           <div
             key={tab}
             className={`tab-item ${activeTab === tab ? "active" : ""}`}
@@ -74,37 +114,57 @@ function Search() {
         ))}
       </div>
       <div className="recent-search">
-        <div className="recent-search-header">
-          <span className="search-header-title">최근 검색</span>
-          <span className="clear-options">
-            <span onClick={clearSearchHistory}>전체 삭제</span>
-            <span className="separator">|</span>
-            <span
-              onClick={toggleAutoSave}
-              className={autoSave ? "auto-save-active" : ""}
-            >
-              {autoSave ? "자동 저장 끄기" : "자동 저장 켜기"}
-            </span>
-          </span>
-        </div>
-        {recentSearches.length === 0 ? (
-          <div className="no-recent-search">최근 검색 기록이 없습니다.</div>
-        ) : (
-          <div className="recent-search-items-container">
-            {recentSearches.map((search, index) => (
-              <div key={index} className="recent-search-item">
-                <div className="item-left">
-                  <img alt="아이콘" src={SearchListIcon} />
-                  <div className="search-term">{search}</div>
+        {searchResults.length !== 0 ? (
+          <>
+            {isChanged && (
+              <div>
+                <div>{changedTerm}로 검색한 결과</div>
+                <div onClick={handleResearch}>
+                  {originalTerm}로 다시 검색하기
                 </div>
-                <img
-                  alt="아이콘"
-                  src={DeleteSearchItemIcon}
-                  onClick={() => removeSearchTerm(index)}
-                />
               </div>
-            ))}
-          </div>
+            )}
+            {searchResults.content.length === 0 ? (
+              <div>검색 결과가 없습니다.</div>
+            ) : (
+              <BoardList boards={searchResults.content} />
+            )}
+          </>
+        ) : (
+          <>
+            <div className="recent-search-header">
+              <span className="search-header-title">최근 검색</span>
+              <span className="clear-options">
+                <span onClick={clearSearchHistory}>전체 삭제</span>
+                <span className="separator">|</span>
+                <span
+                  onClick={toggleAutoSave}
+                  className={autoSave ? "auto-save-active" : ""}
+                >
+                  {autoSave ? "자동 저장 끄기" : "자동 저장 켜기"}
+                </span>
+              </span>
+            </div>
+            {recentSearches.length === 0 ? (
+              <div className="no-recent-search">최근 검색 기록이 없습니다.</div>
+            ) : (
+              <div className="recent-search-items-container">
+                {recentSearches.map((search, index) => (
+                  <div key={index} className="recent-search-item">
+                    <div className="item-left">
+                      <img alt="아이콘" src={SearchListIcon} />
+                      <div className="search-term">{search}</div>
+                    </div>
+                    <img
+                      alt="아이콘"
+                      src={DeleteSearchItemIcon}
+                      onClick={() => removeSearchTerm(index)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
