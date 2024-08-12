@@ -1,4 +1,4 @@
-import React, { useContext, useState, setState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { SearchHistoryContext } from "../../contexts/SearchHistoryContext";
 
 import { fetchSearchResults } from "../../api/searchService";
@@ -16,8 +16,9 @@ function Search() {
   const [searchResults, setSearchResults] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
   const [changedTerm, setChangedTerm] = useState("");
-  const [originalTerm, setoriginalTerm] = useState("");
+  const [originalTerm, setOriginalTerm] = useState("");
   const [maxHeight, setMaxHeight] = useState(0); // maxHeight 상태 추가
+  const [maxHeight2, setMaxHeight2] = useState(0);
 
   const {
     recentSearches,
@@ -27,7 +28,76 @@ function Search() {
     toggleAutoSave,
     removeSearchTerm,
   } = useContext(SearchHistoryContext);
-  //카테고리 목록 관리 필요
+
+  // 더미 데이터 생성
+  const dummyData = [
+    {
+      boardId: 1,
+      thumbnailUrl: "https://example.com/image1.jpg",
+      writer: {
+        userId: 101,
+        username: "user1",
+        profileImage: "https://example.com/user1.jpg",
+      },
+      title: "Awesome Baby Stroller",
+      price: 100000,
+      category: "유모차",
+      status: "AVAILABLE",
+      likeCount: 10,
+      viewCount: 100,
+    },
+    {
+      boardId: 2,
+      thumbnailUrl: "https://example.com/image2.jpg",
+      writer: {
+        userId: 102,
+        username: "user2",
+        profileImage: "https://example.com/user2.jpg",
+      },
+      title: "Baby Car Seat - Like New",
+      price: 50000,
+      category: "카시트",
+      status: "SOLD",
+      likeCount: 5,
+      viewCount: 50,
+    },
+    {
+      boardId: 3,
+      thumbnailUrl: "https://example.com/image3.jpg",
+      writer: {
+        userId: 103,
+        username: "user3",
+        profileImage: "https://example.com/user3.jpg",
+      },
+      title: "Gently Used Baby Clothes",
+      price: 30000,
+      category: "아기옷",
+      status: "AVAILABLE",
+      likeCount: 8,
+      viewCount: 80,
+    },
+  ];
+
+  // max-height 계산
+  useEffect(() => {
+    const calculateMaxHeight = () => {
+      const headerHeight = 434; // 예상되는 헤더 높이
+      const viewportHeight = window.innerHeight;
+      const calculatedMaxHeight = viewportHeight - headerHeight;
+      setMaxHeight(calculatedMaxHeight);
+
+      const footerHeight = 354; // 예상되는 푸터 높이
+      const calculatedMaxHeight2 = viewportHeight - footerHeight;
+      setMaxHeight2(calculatedMaxHeight2);
+    };
+
+    calculateMaxHeight();
+    window.addEventListener("resize", calculateMaxHeight);
+
+    return () => {
+      window.removeEventListener("resize", calculateMaxHeight);
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -53,7 +123,7 @@ function Search() {
           setChangedTerm(results.suggestedTitle);
         }
 
-        setoriginalTerm(results.originalTitle);
+        setOriginalTerm(results.originalTitle);
       } catch (error) {
         console.error("검색 결과를 가져오는데 실패했습니다:", error);
       }
@@ -66,13 +136,16 @@ function Search() {
       const results = await fetchSearchResults(originalTerm, activeTab, true);
 
       setSearchResults(results.searchResult); // 검색 결과 설정
+
+      console.log(searchResults);
+
       setIsChanged(results.changed);
 
       if (results.changed) {
         setChangedTerm(results.suggestedTitle);
       }
 
-      setoriginalTerm(results.originalTitle);
+      setOriginalTerm(results.originalTitle);
     } catch (error) {
       console.error("검색 결과를 가져오는데 실패했습니다:", error);
     }
@@ -117,21 +190,32 @@ function Search() {
         {searchResults.length !== 0 ? (
           <>
             {isChanged && (
-              <div>
-                <div>{changedTerm}로 검색한 결과</div>
-                <div onClick={handleResearch}>
-                  {originalTerm}로 다시 검색하기
+              <div className="recommend-search">
+                <div className="changed-search">
+                  <div className="changed-term">{changedTerm}</div>
+                  <div className="changed-text">로 검색</div>
+                </div>
+                <div className="original-search" onClick={handleResearch}>
+                  <div className="original-term">{originalTerm}</div>
+                  <div className="original-text">로 다시 검색</div>
                 </div>
               </div>
             )}
-            {searchResults.content.length === 0 ? (
-              <div>검색 결과가 없습니다.</div>
+            {dummyData.length === 0 ? (
+              //searchResults.content.length === 0
+              <div className="no-search-result">검색 결과가 없습니다.</div>
             ) : (
-              <BoardList boards={searchResults.content} />
+              /*<BoardList boards={searchResults.content} />*/
+              <div
+                className="search-result-list"
+                style={{ maxHeight: `${maxHeight2}px` }}
+              >
+                <BoardList boards={dummyData} />
+              </div>
             )}
           </>
         ) : (
-          <>
+          <div className="recent-search-items">
             <div className="recent-search-header">
               <span className="search-header-title">최근 검색</span>
               <span className="clear-options">
@@ -148,23 +232,31 @@ function Search() {
             {recentSearches.length === 0 ? (
               <div className="no-recent-search">최근 검색 기록이 없습니다.</div>
             ) : (
-              <div className="recent-search-items-container">
-                {recentSearches.map((search, index) => (
-                  <div key={index} className="recent-search-item">
-                    <div className="item-left">
-                      <img alt="아이콘" src={SearchListIcon} />
-                      <div className="search-term">{search}</div>
+              <div
+                className="recent-search-items-container"
+                style={{ maxHeight: `${maxHeight}px` }}
+              >
+                {recentSearches
+                  .slice()
+                  .reverse()
+                  .map((search, index, array) => (
+                    <div key={index} className="recent-search-item">
+                      <div className="item-left">
+                        <img alt="아이콘" src={SearchListIcon} />
+                        <div className="search-term">{search}</div>
+                      </div>
+                      <img
+                        alt="아이콘"
+                        src={DeleteSearchItemIcon}
+                        onClick={() =>
+                          removeSearchTerm(array.length - 1 - index)
+                        }
+                      />
                     </div>
-                    <img
-                      alt="아이콘"
-                      src={DeleteSearchItemIcon}
-                      onClick={() => removeSearchTerm(index)}
-                    />
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
