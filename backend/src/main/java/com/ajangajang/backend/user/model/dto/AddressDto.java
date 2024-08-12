@@ -15,5 +15,15 @@ public class AddressDto {
     private String emd; // 읍/면/동
     private String fullAddress; // 나머지 상세주소
     private NearType nearType; // 조회 범위
+    private boolean isRep; // 대표주소인지 확인
+
+    public AddressDto(Long addressId, String sido, String sigg, String emd, String fullAddress, NearType nearType) {
+        this.addressId = addressId;
+        this.sido = sido;
+        this.sigg = sigg;
+        this.emd = emd;
+        this.fullAddress = fullAddress;
+        this.nearType = nearType;
+    }
 
 }

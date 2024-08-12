@@ -92,7 +92,7 @@ public class UserApiController {
     }
 
     @PostMapping("/child")
-    public ResponseEntity<?> addKid(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+    public ResponseEntity<?> addChild(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                     @RequestBody ChildInputDto childInputDto) {
         String username = customOAuth2User.getUsername();
         userService.addChild(username, childInputDto);
@@ -100,7 +100,7 @@ public class UserApiController {
     }
 
     @DeleteMapping("/child/{childId}")
-    public ResponseEntity<?> deleteKid(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+    public ResponseEntity<?> deleteChild(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @PathVariable("childId") Long childId) {
         String username = customOAuth2User.getUsername();
         userService.deleteChild(username, childId);
@@ -108,7 +108,7 @@ public class UserApiController {
     }
 
     @GetMapping("/child")
-    public ResponseEntity<?> getKids(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<?> getChildren(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
         List<ChildListDto> result = userService.findMyChildren(username);
         return new ResponseEntity<>(Map.of("data", result), HttpStatus.OK);

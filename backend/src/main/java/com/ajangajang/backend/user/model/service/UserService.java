@@ -135,7 +135,8 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         List<Child> children = user.getChildren();
         return children.stream()
-                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender().name()))
+                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender().name(),
+                                                child.getId().equals(user.getMainChildId())))
                 .collect(Collectors.toList());
     }
 

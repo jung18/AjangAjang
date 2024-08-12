@@ -100,7 +100,8 @@ public class UserAddressService {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return addressRepository.findMyAddresses(findUser.getId()).stream()
                 .map(address -> new AddressDto(address.getId(), address.getSido(), address.getSigg(),
-                                            address.getEmd(), address.getFullAddress(), address.getNearType()))
+                                            address.getEmd(), address.getFullAddress(), address.getNearType(),
+                                            address.getId().equals(findUser.getMainAddress().getId())))
                 .collect(Collectors.toList());
     }
 
