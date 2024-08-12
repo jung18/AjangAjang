@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; 
 import dayjs from 'dayjs';
 import styles from './Chat.module.css';
 import apiClient from '../../api/apiClient';
@@ -17,6 +17,7 @@ const Chat = () => {
     const chatBoxRef = useRef(null);
     const stompClientRef = useRef(null);
     const [sendButtonImage, setSendButtonImage] = useState(sentImage); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -48,7 +49,6 @@ const Chat = () => {
         };
         fetchMessages();
 
-        // Setup WebSocket connection
         const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
         const client = Stomp.over(socket);
         if (stompClientRef.current) {
@@ -58,8 +58,13 @@ const Chat = () => {
         client.connect({}, () => {
             stompClientRef.current = client;
             client.subscribe(`/sub/chat/${roomId}`, (msg) => {
-                if (msg.body) {
-                    const parsedMessage = JSON.parse(msg.body);
+                const parsedMessage = JSON.parse(msg.body);
+                if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
+                    console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
+                    if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
+                        handleCallAccept(parsedMessage.sessionId);
+                    }
+                } else {
                     setMessages(prevMessages => [...prevMessages, parsedMessage]);
                 }
             });
@@ -80,9 +85,42 @@ const Chat = () => {
     }, [messages]);
 
     useEffect(() => {
-        // 메시지가 있으면 활성화 이미지, 없으면 기본 이미지
         setSendButtonImage(message.trim() ? sentActiveImage : sentImage);
     }, [message]);
+
+    const createSession = async () => {
+        try {
+            const response = await apiClient.post('/api/call/session', { roomId });
+            console.log('생성된 Session ID:', response.data.sessionId);
+            return response.data.sessionId; // 생성된 세션 ID 반환
+        } catch (error) {
+            console.error('Error creating session:', error);
+            return null;
+        }
+    };
+
+    const handleCallButtonClick = async () => {
+        const sessionId = await createSession();
+        if (sessionId) {
+            const callMessage = {
+                roomId,
+                userId,
+                sessionId,
+                type: 'CALL_REQUEST',
+                time: new Date().toISOString(),
+            };
+            stompClientRef.current.send('/pub/chat/call', {}, JSON.stringify(callMessage));
+            // 세션 ID를 전달하며 VideoChat 페이지로 이동
+            navigate(`/audio-call/${sessionId}`); 
+        } else {
+            alert('통화 세션 생성에 실패했습니다.');
+        }
+    };
+
+    const handleCallAccept = async (sessionId) => {
+        // 수락 시에도 세션 ID를 전달하며 VideoChat 페이지로 이동
+        navigate(`/audio-call/${sessionId}`); 
+    };
 
     const sendMessage = () => {
         if (stompClientRef.current && stompClientRef.current.connected && message.trim() !== '' && userId !== null) {
@@ -147,8 +185,14 @@ const Chat = () => {
                     alt="Send"
                     className={styles['send-button']}
                     onClick={sendMessage} 
-                    style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} // 포인터 커서 변경
+                    style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} 
                 />
+                <button 
+                    className={styles['call-button']}
+                    onClick={handleCallButtonClick}
+                >
+                    통화
+                </button>
             </div>
         </div>
     );
