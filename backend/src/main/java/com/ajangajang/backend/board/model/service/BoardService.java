@@ -131,9 +131,10 @@ public class BoardService {
                 board.addMedia(media);
                 boardMediaRepository.save(media);
             }
-        } else {
-            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
         }
+//        else {
+//            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
+//        }
     }
 
     private void deleteFiles(List<Long> deleteFileIds) {
@@ -172,9 +173,9 @@ public class BoardService {
                 break;
             }
         }
-        if (thumbnail == null || thumbnail.isEmpty()) {
-            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
-        }
+//        if (thumbnail == null || thumbnail.isEmpty()) {
+//            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
+//        }
         return thumbnail;
     }
 
