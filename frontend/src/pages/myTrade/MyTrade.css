@@ -14,7 +14,7 @@
 
 .boardPage {
   position: fixed;
-  top: 110px;
+  top: 180px;
   left: 0;
   width: 100%;
   font-family: "GmarketSansMedium", sans-serif;
@@ -69,4 +69,29 @@
   line-height: 1.6;
   padding-left: 10px;
   border-left: 4px solid #ff879e;
+}
+
+.category-tab {
+  position: fixed;
+  top: 120px;
+  left: 0;
+  right: 0;
+  margin: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.category-tab .tab-item {
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 15px;
+  background-color: #fef391;
+  color: rgb(207, 207, 207);
+}
+
+.category-tab .active {
+  background-color: #ffca00;
+  color: rgb(255, 255, 255);
 }
