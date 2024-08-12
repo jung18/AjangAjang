@@ -162,7 +162,7 @@ public class BoardService {
         return result;
     }
 
-    private static @NotNull String getThumbnail(Board board) {
+    public @NotNull String getThumbnail(Board board) {
         String thumbnail = "";
         List<BoardMedia> mediaList = board.getMediaList();
         // 판매글 썸네일 불러오기

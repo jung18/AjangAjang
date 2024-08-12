@@ -38,6 +38,8 @@ public class User {
 
     private Long mainChildId;
 
+    private int score;
+
     @OneToMany(mappedBy = "writer", cascade = REMOVE, orphanRemoval = true)
     private List<Board> myBoards = new ArrayList<>();
 
