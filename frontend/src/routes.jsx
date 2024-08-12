@@ -9,7 +9,6 @@ import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
-import ChatTest from "./pages/chatTest/ChatTest";
 import ChatRoom from "./pages/chat/ChatRoom";
 import AudioCall from "./pages/openvidu/AudioCall";
 import AudioTest from "./pages/openvidu/AudioTest";
@@ -34,7 +33,6 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/test" element={<ChatTest />} />
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
