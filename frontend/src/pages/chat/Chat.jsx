@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; 
 import dayjs from 'dayjs';
 import styles from './Chat.module.css';
 import apiClient from '../../api/apiClient';
@@ -14,9 +14,11 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
+    const [newMessages, setNewMessages] = useState({});
     const chatBoxRef = useRef(null);
     const stompClientRef = useRef(null);
     const [sendButtonImage, setSendButtonImage] = useState(sentImage); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -48,22 +50,32 @@ const Chat = () => {
         };
         fetchMessages();
 
-        // Setup WebSocket connection
         const socket = new SockJS('http://localhost:8080/ws-stomp');
         const client = Stomp.over(socket);
-        if (stompClientRef.current) {
-            stompClientRef.current.disconnect();
+
+        if (stompClientRef.current && stompClientRef.current.connected) {
+            return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
         }
 
         client.connect({}, () => {
             stompClientRef.current = client;
             client.subscribe(`/sub/chat/${roomId}`, (msg) => {
-                if (msg.body) {
-                    const parsedMessage = JSON.parse(msg.body);
+                const parsedMessage = JSON.parse(msg.body);
+                if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
+                    console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
+                    if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
+                        handleCallAccept(parsedMessage.sessionId);
+                    }
+                } else {
                     setMessages(prevMessages => [...prevMessages, parsedMessage]);
                 }
             });
         });
+
+        // 알림 읽음 처리: 방에 입장할 때 해당 방의 알림 카운터를 0으로 리셋
+        if (userId) {
+            handleMarkAsRead(roomId);
+        }
 
         return () => {
             if (stompClientRef.current) {
@@ -71,7 +83,7 @@ const Chat = () => {
                 stompClientRef.current = null;
             }
         };
-    }, [roomId]);
+    }, [roomId, userId]);
 
     useEffect(() => {
         if (chatBoxRef.current) {
@@ -80,22 +92,76 @@ const Chat = () => {
     }, [messages]);
 
     useEffect(() => {
-        // 메시지가 있으면 활성화 이미지, 없으면 기본 이미지
         setSendButtonImage(message.trim() ? sentActiveImage : sentImage);
     }, [message]);
 
-    const sendMessage = () => {
-        if (stompClientRef.current && stompClientRef.current.connected && message.trim() !== '' && userId !== null) {
-            const chatMessage = {
+    const createSession = async () => {
+        try {
+            const response = await apiClient.post('/api/call/session', { roomId });
+            console.log('생성된 Session ID:', response.data.sessionId);
+            return response.data.sessionId;
+        } catch (error) {
+            console.error('Error creating session:', error);
+            return null;
+        }
+    };
+
+    const handleCallButtonClick = async () => {
+        const sessionId = await createSession();
+        if (sessionId) {
+            const callMessage = {
                 roomId,
                 userId,
-                message,
-                time: new Date().toISOString(),
+                sessionId,
+                type: 'CALL_REQUEST',
+                time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
             };
-            stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
-            setMessage('');
+            stompClientRef.current.send('/pub/chat/call', {}, JSON.stringify(callMessage));
+            navigate(`/audio-call/${sessionId}`); 
         } else {
-            alert("Message or connection issues detected.");
+            alert('통화 세션 생성에 실패했습니다.');
+        }
+    };
+
+    const handleCallAccept = (sessionId) => {
+        navigate(`/audio-call/${sessionId}`); 
+    };
+
+    const sendMessage = () => {
+        if (!stompClientRef.current || !stompClientRef.current.connected) {
+            alert("WebSocket connection is not established.");
+            return;
+        }
+        if (message.trim() === '') {
+            alert("Message cannot be empty.");
+            return;
+        }
+        if (userId === null) {
+            alert("User ID is not available.");
+            return;
+        }
+
+        const chatMessage = {
+            roomId,
+            userId,
+            message,
+            time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
+        };
+        console.log(new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString());
+        stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
+        setMessage('');
+    };
+
+    // 알림 읽음 처리 로직
+    const handleMarkAsRead = async (roomId) => {
+        try {
+            await apiClient.post(`/api/chat/markAsRead`, { roomId });
+            setNewMessages(prev => ({
+                ...prev,
+                [roomId]: 0 // 알림 카운터를 0으로 설정
+            }));
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
         }
     };
 
@@ -147,8 +213,14 @@ const Chat = () => {
                     alt="Send"
                     className={styles['send-button']}
                     onClick={sendMessage} 
-                    style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} // 포인터 커서 변경
+                    style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} 
                 />
+                <button 
+                    className={styles['call-button']}
+                    onClick={handleCallButtonClick}
+                >
+                    통화
+                </button>
             </div>
         </div>
     );

@@ -32,7 +32,7 @@ const SignUp = () => {
 
   const handleSendSms = async () => {
     try {
-      const response = await axios.post('http://:8080/api/user/sms/send', { phone }, {
+      const response = await axios.post('http://localhost:8080/api/user/sms/send', { phone }, {
         headers: {
           'Authorization': `${accessToken}`
         }

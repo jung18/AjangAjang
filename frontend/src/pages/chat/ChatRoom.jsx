@@ -2,23 +2,40 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
-import styles from './ChatRoom.module.css'; // CSS 모듈 import
+import styles from './ChatRoom.module.css';
 import apiClient from '../../api/apiClient';
+import usePageStore from '../../store/currentPageStore'; // 페이지 스토어 import
 
 const ChatRoom = () => {
     const [rooms, setRooms] = useState([]);
-    const [newMessages, setNewMessages] = useState({});
+    const [newMessages, setNewMessages] = useState(() => {
+        const savedMessages = localStorage.getItem('newMessages');
+        return savedMessages ? JSON.parse(savedMessages) : {};
+    });
     const [currentRoomId, setCurrentRoomId] = useState(null);
     const navigate = useNavigate();
-    const stompClientRef = useRef(null);  // stompClient를 useRef로 관리
+    const stompClientRef = useRef(null);	
+    const setCurrentPage = usePageStore((state) => state.setCurrentPage); // 페이지 저장 함수 가져오기
 
     useEffect(() => {
         const fetchRooms = async () => {
             try {
                 const response = await apiClient.get('/api/rooms/myRooms');
-                setRooms(response.data);
+                const roomsData = response.data;
+                console.log(roomsData);
+                const updatedMessages = roomsData.reduce((acc, room) => {
+                    acc[room.id] = {
+                        lastMessage: room.lastMessage,
+                        unreadCount: room.unreadCount,
+                        lastReadTime: room.lastReadTime,
+                    };
+                    return acc;
+                }, {});
+
+                setRooms(roomsData);
+                setNewMessages(updatedMessages);
             } catch (error) {
-                console.error('Error fetching rooms:', error);
+                console.error('방 목록을 가져오는 중 오류 발생:', error);
             }
         };
 
@@ -26,53 +43,88 @@ const ChatRoom = () => {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem('newMessages', JSON.stringify(newMessages));
+    }, [newMessages]);
+
+    useEffect(() => {
         if (rooms.length > 0) {
             const socket = new SockJS('http://localhost:8080/ws-stomp');
             const client = Stomp.over(socket);
+    
+            if (stompClientRef.current && stompClientRef.current.connected) {
+                return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
+            }
+    
             client.connect({}, () => {
-                console.log("Connected to WebSocket");
-                stompClientRef.current = client;  // stompClient 저장
-
+                console.log("WebSocket에 연결됨");
+                stompClientRef.current = client;
+    
                 rooms.forEach(room => {
-                    console.log(`Subscribing to room ${room.id}`);
                     client.subscribe(`/sub/chat/${room.id}`, (msg) => {
                         const message = JSON.parse(msg.body);
-                        setNewMessages(prev => ({
-                            ...prev,
-                            [room.id]: {
-                                lastMessage: message.message,
-                                unreadCount: room.id === currentRoomId ? 0 : (prev[room.id]?.unreadCount || 0) + 1
-                            }
-                        }));
+                        const isCurrentRoom = room.id === currentRoomId;
+                        const lastReadTime = new Date(newMessages[room.id]?.lastReadTime || room.lastReadTime);
+    
+                        setNewMessages(prev => {
+                            const newUnreadCount = (!isCurrentRoom && new Date(message.time) > lastReadTime) 
+                                ? (prev[room.id]?.unreadCount || 0) + 1 
+                                : prev[room.id]?.unreadCount || 0;
+    
+                            const updatedMessages = {
+                                ...prev,
+                                [room.id]: {
+                                    ...prev[room.id],
+                                    lastMessage: message.message,
+                                    unreadCount: newUnreadCount
+                                }
+                            };
+    
+                            // 알림 개수를 콘솔에 출력
+                            console.log(`Room ID: ${room.id}, Unread Count: ${newUnreadCount}`);
+    
+                            localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
+                            return updatedMessages;
+                        });
                     });
                 });
             });
-
+    
             return () => {
                 if (stompClientRef.current) {
                     stompClientRef.current.disconnect();
-                    stompClientRef.current = null;  // 연결 해제 후 null로 초기화
+                    stompClientRef.current = null;
                 }
             };
         }
-    }, [rooms, currentRoomId]);
+    }, [rooms, currentRoomId, newMessages]);
+    
 
-    const handleRoomClick = (roomId) => {
-        console.log(`Room clicked: ${roomId}`);
-        
+    const handleRoomClick = async (roomId) => {
         if (!roomId) {
-            console.error('roomId is undefined or null');
+            console.error('roomId가 정의되지 않았거나 null입니다.');
             return;
         }
-    
+
         setCurrentRoomId(roomId);
-        setNewMessages(prev => ({
-            ...prev,
-            [roomId]: {
-                ...prev[roomId],
-                unreadCount: 0
-            }
-        }));
+
+        try {
+            await apiClient.post(`/api/rooms/${roomId}/read`);
+            setNewMessages(prev => {
+                const updatedMessages = {
+                    ...prev,
+                    [roomId]: {
+                        ...prev[roomId],
+                        unreadCount: 0,
+                        lastReadTime: new Date().toISOString(),
+                    }
+                };
+                localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
+                return updatedMessages;
+            });
+        } catch (error) {
+            console.error('읽음 상태를 업데이트하는 중 오류 발생:', error);
+        }
+        setCurrentPage('chat');
 
         navigate(`/room/${roomId}`);
     };
@@ -100,11 +152,10 @@ const ChatRoom = () => {
                         <div className={styles['room-info']}>
                             <div className={styles['room-header']}>
                                 <div className={styles['room-name']}>{room.name}</div>
-                                <div className={styles['room-time']}></div>
                                 {newMessages[room.id]?.unreadCount > 0 && (
-                                    <div className={styles['unread-indicator']}></div>
+                                    <div className={styles['unread-indicator']}>{newMessages[room.id].unreadCount}</div>
                                 )}
-                            </div>
+                            </div>  
                             <div className={styles['room-last-message']}>
                                 <span>{newMessages[room.id]?.lastMessage || room.lastMessage}</span>
                             </div>
