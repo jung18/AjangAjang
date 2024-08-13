@@ -47,9 +47,13 @@ function registerValidSW(swUrl, config) {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               console.log(
-                'New content is available and will be used when all ' +
-                'tabs for this page are closed. See https://cra.link/PWA.'
+                'New content is available; please refresh.'
               );
+
+              // 사용자에게 새로운 콘텐츠가 있음을 알리고 새로고침 요청
+              if (confirm('새로운 콘텐츠가 있습니다. 페이지를 새로고침하시겠습니까?')) {
+                window.location.reload();
+              }
 
               if (config && config.onUpdate) {
                 config.onUpdate(registration);

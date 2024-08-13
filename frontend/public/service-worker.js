@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // 서비스 워커가 대기 상태 없이 바로 활성화되도록 합니다.
 });
 
 // 활성화 이벤트: 이전 캐시 정리 및 활성화된 서비스 워커가 클라이언트에 적용되도록 설정
@@ -25,40 +25,36 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log(`Deleting old cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
-      return self.clients.claim();
+      return self.clients.claim(); // 활성화된 서비스 워커가 기존 클라이언트에도 적용되도록 설정
     })
   );
 });
 
 // fetch 이벤트: 네트워크 요청 가로채기 및 캐시 응답 제공
 self.addEventListener('fetch', (event) => {
-  // POST 요청은 캐시하지 않도록 필터링
-  if (event.request.method !== 'GET' || !event.request.url.startsWith('https')) {
+  if (event.request.method !== 'GET') {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request, { cache: "no-store" }) // 네트워크 요청 우선, 캐시 사용 안함
       .then((response) => {
-        return response || fetch(event.request).then((response) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response.clone()); // 최신 응답을 캐시에 저장
-            return response;
-          });
+        // 네트워크 요청이 성공하면 최신 응답을 캐시에 저장
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, response.clone());
+          return response;
         });
       })
       .catch(() => {
-        // 여기서 네트워크 요청이 실패할 경우 대체 응답을 제공할 수 있음
-        return new Response('Network error occurred', {
-          status: 408,
-          statusText: 'Request Timeout'
-        });
+        // 네트워크 요청이 실패하면 캐시에서 응답 제공
+        return caches.match(event.request);
       })
   );
 });
