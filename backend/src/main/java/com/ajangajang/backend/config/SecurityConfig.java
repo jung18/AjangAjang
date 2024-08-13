@@ -30,6 +30,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JwtUtil jwtUtil;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Value("${front.server.url}")
     private String frontUrl;
@@ -38,25 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         // CORS 설정
-        httpSecurity
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization", "Authorization-refresh"));
-
-                        return configuration;
-                    }
-                }));
+        httpSecurity.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource));
 
         // csrf disable
         httpSecurity
