@@ -9,6 +9,8 @@ import "./Board.css";
 
 const Board = () => {
   const [boards, setBoards] = useState([]);
+  const [addressList, setAddressList] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
 
@@ -21,7 +23,15 @@ const Board = () => {
     const getBoards = async () => {
       try {
         const boardList = await fetchBoardList();
-        setBoards(boardList.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
+        setBoards(boardList.searchResult.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
+        
+        // addressList의 각 요소를 하나의 문자열로 합치기
+        const combinedAddresses = (boardList.addressList || []).map(address => {
+          return address.fullAddress;
+        });
+
+        setAddressList(combinedAddresses);
+
       } catch (error) {
         console.error("Failed to fetch boards", error);
       } finally {
@@ -77,14 +87,14 @@ const Board = () => {
     <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
       <div className="user-option">
         <SelectBox
-          optionList={["대전시 유성구 덕명동", "대전시 유성구 계산동"]}
+          optionList={addressList}
         />
         <label className="recommand">
           자동 추천
           <input type="checkbox" />
         </label>
       </div>
-
+      
       {!boards || boards.length === 0 ? (
         <div className="not-found-content">게시글이 존재하지 않습니다.</div>
       ) : (

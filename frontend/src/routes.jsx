@@ -9,7 +9,6 @@ import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
-import ChatTest from "./pages/chatTest/ChatTest";
 import ChatRoom from "./pages/chat/ChatRoom";
 import AudioCall from "./pages/openvidu/AudioCall";
 import AudioTest from "./pages/openvidu/AudioTest";
@@ -19,8 +18,10 @@ import usePageStore from "./store/currentPageStore";
 import MyPage from "./pages/myPage/myPage";
 import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
+import MyReview from "./pages/myReview/MyReview";
 import MyInfo from "./pages/myInfo/MyInfo";
 import MyTrade from "./pages/myTrade/MyTrade";
+import EditMyInfo from "./pages/myInfo/EditMyInfo";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -34,14 +35,15 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/test" element={<ChatTest />} />
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
       <Route path="/user/boards" element={<PageLayout page={<MyBoard />} pageType={"myBoard"} />} />
       <Route path="/user/likes" element={<PageLayout page={<MyLike />} pageType={"myLike"} />} />
       <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
+      <Route path="/user/reviews" element={<PageLayout page={<MyReview />} pageType={"myBoard"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
+      <Route path="/user/myinfo/edit" element={<PageLayout page={<EditMyInfo />} pageType={"myInfo"} />} />
       <Route
         path="/direct"
         element={
