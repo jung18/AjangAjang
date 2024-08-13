@@ -84,11 +84,10 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll());
-//                        .requestMatchers("/reissue").permitAll()
-//                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .anyRequest().hasRole("USER"));
+                        .requestMatchers("/reissue", "/ws-stomp").permitAll()
+                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
         httpSecurity
