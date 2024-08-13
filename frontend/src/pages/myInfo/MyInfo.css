@@ -248,7 +248,7 @@ button {
   align-items: center;
 }
 
-.myPage .children .children-list .children-item .rep {
+.myPage .children .children-list .rep {
   font-weight: 900;
 }
 
@@ -260,4 +260,17 @@ button {
 
 .myPage .children .children-list .children-item img {
   width: 23px;
+}
+
+.myPage .children .children-header .children-btns .save-changes {
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin-right: 5px;
+  display: flex;
+  font-size: 17px;
+  width: 70px;
+  height: 20px;
+  justify-content: center;
 }
