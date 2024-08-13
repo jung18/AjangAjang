@@ -68,7 +68,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), getLevel(user.getScore()));
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), getLevel(user.getScore()), user.getScore());
     }
 
     public List<BoardListDto> findMyLikes(String username) {
@@ -85,7 +85,7 @@ public class UserService {
 
     public UserInfoDto findUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), getLevel(user.getScore()));
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), getLevel(user.getScore()), user.getScore());
     }
 
     public void updateMyInfo(String username, UserInputDto userInputDto) {
@@ -152,25 +152,25 @@ public class UserService {
         user.setMainChildId(childId);
     }
 
-    public int getLevel(int score) {
+    public String getLevel(int score) {
         if (score > 92) {
-            return 9;
+            return "숲";
         } else if (score > 80) {
-            return 8;
+            return "나무";
         } else if (score > 68) {
-            return 7;
+            return "열매";
         } else if (score > 56) {
-            return 6;
+            return "가지";
         } else if (score > 44) {
-            return 5;
+            return "잎새";
         } else if (score > 32) {
-            return 4;
+            return "새싹";
         } else if (score > 20) {
-            return 3;
+            return "씨앗";
         } else if (score > 8) {
-            return 2;
+            return "사기꾼";
         } else {
-            return 1;
+            return "범죄자";
         }
     }
 
