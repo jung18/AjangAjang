@@ -38,6 +38,11 @@ self.addEventListener('activate', (event) => {
 
 // fetch 이벤트: 네트워크 요청 가로채기 및 캐시 응답 제공
 self.addEventListener('fetch', (event) => {
+  // POST 요청은 캐시하지 않도록 필터링
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

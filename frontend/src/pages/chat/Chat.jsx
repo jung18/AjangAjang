@@ -10,7 +10,6 @@ import apiClient from '../../api/apiClient';
 import sentImage from '../../assets/icons/sent.png'; 
 import sentActiveImage from '../../assets/icons/sent-active.png';
 
-
 const Chat = () => {
     const { roomId } = useParams(); 
     const [messages, setMessages] = useState([]);
@@ -29,7 +28,6 @@ const Chat = () => {
     const sessionRef = useRef(null);
     const chatBoxRef = useRef(null);
 
-    
     useEffect(() => {
         const fetchUserId = async () => {
             try {
@@ -104,7 +102,6 @@ const Chat = () => {
         }
     }, [roomId, userId]);
 
-    
     useEffect(() => {
         if (chatBoxRef.current) {
             chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -115,20 +112,71 @@ const Chat = () => {
         setSendButtonImage(message.trim() ? sentActiveImage : sentImage);
     }, [message]);
 
-    
-    const handleCallButtonClick = async () => {
-        setLoading(true); // 로딩 상태 시작
+    const createSession = async () => {
         try {
-            const sessionResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/create`);
-            const newSessionId = sessionResponse.data;
-            
-            const message = {
-                sessionId: newSessionId,
-                type: 'CALL_REQUEST',
-            };
-            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
+            const response = await apiClient.post('/api/call/session', { roomId });
+            console.log('생성된 Session ID:', response.data.sessionId);
+            return response.data.sessionId;
+        } catch (error) {
+            console.error('Error creating session:', error);
+            return null;
+        }
+    };
 
-            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
+    const handleCallButtonClick = async () => {
+        setLoading(true);
+        try {
+            const sessionId = await createSession();
+            if (sessionId) {
+                const callMessage = {
+                    sessionId,
+                    type: 'CALL_REQUEST',
+                };
+                stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(callMessage));
+
+                const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${sessionId}/connections`);
+                const token = tokenResponse.data;
+
+                let newSession = OV.current.initSession();
+                sessionRef.current = newSession;
+
+                newSession.on('streamCreated', (event) => {
+                    const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                    setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+                });
+
+                newSession.on('streamDestroyed', (event) => {
+                    setSubscribers((prevSubscribers) =>
+                        prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
+                    );
+                });
+
+                await newSession.connect(token);
+
+                let newPublisher = await OV.current.initPublisherAsync(undefined, {
+                    audioSource: undefined,
+                    videoSource: undefined,
+                    publishAudio: true,
+                    publishVideo: false,
+                });
+
+                newSession.publish(newPublisher);
+
+                setInCall(true);
+                setPublisher(newPublisher);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.error('Error joining session:', error);
+            alert('Failed to join session. Please check your network and server.');
+            setLoading(false);
+        }
+    };
+
+    const handleCallAccept = async () => {
+        setLoading(true);
+        try {
+            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
             const token = tokenResponse.data;
 
             let newSession = OV.current.initSession();
@@ -158,52 +206,15 @@ const Chat = () => {
 
             setInCall(true);
             setPublisher(newPublisher);
-            setLoading(false); // 로딩 상태 종료
+            setIncomingCall(false);
         } catch (error) {
-            console.error('Error joining session:', error);
-            alert('Failed to join session. Please check your network and server.');
-            setLoading(false); // 로딩 상태 종료
+            console.error('Error accepting call:', error);
+            alert('Failed to accept call. Please check your network and server.');
         }
-    };
-
-    const handleCallAccept = async () => {
-        setLoading(true); // 로딩 상태 시작
-        const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
-        const token = tokenResponse.data;
-
-        let newSession = OV.current.initSession();
-        sessionRef.current = newSession;
-
-        newSession.on('streamCreated', (event) => {
-            const subscriber = newSession.subscribe(event.stream, 'subscriber');
-            setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
-        });
-
-        newSession.on('streamDestroyed', (event) => {
-            setSubscribers((prevSubscribers) =>
-                prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
-            );
-        });
-
-        await newSession.connect(token);
-
-        let newPublisher = await OV.current.initPublisherAsync(undefined, {
-            audioSource: undefined,
-            videoSource: undefined,
-            publishAudio: true,
-            publishVideo: false,
-        });
-
-        newSession.publish(newPublisher);
-
-        setInCall(true);
-        setPublisher(newPublisher);
-        setIncomingCall(false); // 통화 요청 상태 초기화
-        setLoading(false); // 로딩 상태 종료
+        setLoading(false);
     };
 
     const handleCallReject = () => {
-        // 통화 요청 거절 처리
         setIncomingCall(false);
         setCallerSessionId(null);
     };
@@ -238,7 +249,6 @@ const Chat = () => {
         const previousTime = dayjs(previousMessage.time);
         return !currentTime.isSame(previousTime, 'minute');
     };
-
 
     const leaveSession = () => {
         if (sessionRef.current) {
