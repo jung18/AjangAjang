@@ -10,7 +10,6 @@ import apiClient from '../../api/apiClient';
 import sentImage from '../../assets/icons/sent.png'; 
 import sentActiveImage from '../../assets/icons/sent-active.png';
 
-
 const Chat = () => {
     const { roomId } = useParams(); 
     const [messages, setMessages] = useState([]);
@@ -29,7 +28,6 @@ const Chat = () => {
     const sessionRef = useRef(null);
     const chatBoxRef = useRef(null);
 
-    
     useEffect(() => {
         const fetchUserId = async () => {
             try {
@@ -224,6 +222,12 @@ const Chat = () => {
     
             console.log('Publisher initialized:', newPublisher); // 퍼블리셔 초기화 로그 추가
     
+            if (!newPublisher || typeof newPublisher.addAudioElement !== 'function') {
+                console.error('Publisher object is invalid or does not have addAudioElement function');
+                setLoading(false); // 로딩 상태 종료
+                return;
+            }
+    
             // 세션에 퍼블리셔 발행
             newSession.publish(newPublisher);
             console.log('Publisher published to session'); // 퍼블리셔 발행 로그 추가
@@ -340,33 +344,32 @@ const Chat = () => {
             </div>
 
             {inCall && (
-               <div className={styles['call-container']}>
-               <h3>통화 중...</h3>
-               {publisher && (
-                   <div id="publisher">
-                       <audio autoPlay={true} ref={(audio) => {
-                           if (audio && typeof publisher.addAudioElement === 'function') {
-                               publisher.addAudioElement(audio);
-                           } else {
-                               console.error('Failed to add audio element: Invalid Publisher object or addAudioElement is not a function');
-                           }
-                       }} />
-                   </div>
-               )}
-               {subscribers.map((sub, i) => (
-                   <div key={i} id="subscriber">
-                       <audio autoPlay={true} ref={(audio) => {
-                           if (audio && typeof sub.addAudioElement === 'function') {
-                               sub.addAudioElement(audio);
-                           } else {
-                               console.error('Failed to add audio element: Invalid Subscriber object or addAudioElement is not a function');
-                           }
-                       }} />
-                   </div>
-               ))}
-               <button onClick={leaveSession} className={styles['end-call-button']}>통화 종료</button>
-           </div>
-           
+                <div className={styles['call-container']}>
+                    <h3>통화 중...</h3>
+                    {publisher && (
+                        <div id="publisher">
+                            <audio autoPlay={true} ref={(audio) => {
+                                if (audio && typeof publisher.addAudioElement === 'function') {
+                                    publisher.addAudioElement(audio);
+                                } else {
+                                    console.error('Failed to add audio element: Invalid Publisher object or addAudioElement is not a function');
+                                }
+                            }} />
+                        </div>
+                    )}
+                    {subscribers.map((sub, i) => (
+                        <div key={i} id="subscriber">
+                            <audio autoPlay={true} ref={(audio) => {
+                                if (audio && typeof sub.addAudioElement === 'function') {
+                                    sub.addAudioElement(audio);
+                                } else {
+                                    console.error('Failed to add audio element: Invalid Subscriber object or addAudioElement is not a function');
+                                }
+                            }} />
+                        </div>
+                    ))}
+                    <button onClick={leaveSession} className={styles['end-call-button']}>통화 종료</button>
+                </div>
             )}
 
             {incomingCall && (
