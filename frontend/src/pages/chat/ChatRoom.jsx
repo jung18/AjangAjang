@@ -48,64 +48,68 @@ const ChatRoom = () => {
     }, [newMessages]);
 
     useEffect(() => {
-        if (rooms.length > 0) {
-            const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
-            const client = Stomp.over(socket);
-    
-            if (stompClientRef.current && stompClientRef.current.connected) {
-                return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
-            }
-    
-            const accessToken = useTokenStore.getState().accessToken; // 상태에서 액세스 토큰 가져오기
-    
-            client.connect(
-                { Authorization: accessToken }, // 토큰을 헤더에 추가
-                () => {
-                    console.log("WebSocket에 연결됨");
-                    stompClientRef.current = client;
-    
-                    rooms.forEach(room => {
-                        client.subscribe(`/sub/chat/${room.id}`, (msg) => {
-                            const message = JSON.parse(msg.body);
-                            const isCurrentRoom = room.id === currentRoomId;
-                            const lastReadTime = new Date(newMessages[room.id]?.lastReadTime || room.lastReadTime);
-    
-                            setNewMessages(prev => {
-                                const newUnreadCount = (!isCurrentRoom && new Date(message.time) > lastReadTime) 
-                                    ? (prev[room.id]?.unreadCount || 0) + 1 
-                                    : prev[room.id]?.unreadCount || 0;
-    
-                                const updatedMessages = {
-                                    ...prev,
-                                    [room.id]: {
-                                        ...prev[room.id],
-                                        lastMessage: message.message,
-                                        unreadCount: newUnreadCount
-                                    }
-                                };
-    
-                                // 알림 개수를 콘솔에 출력
-                                console.log(`Room ID: ${room.id}, Unread Count: ${newUnreadCount}`);
-    
-                                localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
-                                return updatedMessages;
-                            });
+    if (rooms.length > 0) {
+        const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
+        const client = Stomp.over(socket);
+
+        if (stompClientRef.current && stompClientRef.current.connected) {
+            return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
+        }
+
+        const accessToken = useTokenStore.getState().accessToken; // 상태에서 액세스 토큰 가져오기
+        console.log(accessToken);
+
+        // 헤더를 통해 액세스 토큰을 전달합니다.
+        client.connect(
+            { Authorization: accessToken }, // 토큰을 헤더에 추가
+            () => {
+                console.log("WebSocket에 연결됨");
+                stompClientRef.current = client;
+
+                rooms.forEach(room => {
+                    client.subscribe(`/sub/chat/${room.id}`, (msg) => {
+                        const message = JSON.parse(msg.body);
+                        const isCurrentRoom = room.id === currentRoomId;
+                        const lastReadTime = new Date(newMessages[room.id]?.lastReadTime || room.lastReadTime);
+
+                        setNewMessages(prev => {
+                            const newUnreadCount = (!isCurrentRoom && new Date(message.time) > lastReadTime) 
+                                ? (prev[room.id]?.unreadCount || 0) + 1 
+                                : prev[room.id]?.unreadCount || 0;
+
+                            const updatedMessages = {
+                                ...prev,
+                                [room.id]: {
+                                    ...prev[room.id],
+                                    lastMessage: message.message,
+                                    unreadCount: newUnreadCount
+                                }
+                            };
+
+                            localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
+                            return updatedMessages;
                         });
                     });
-                },
-                (error) => {
-                    console.error('WebSocket 연결 오류:', error);
+                });
+            },
+            (error) => {
+                console.error('WebSocket 연결 오류:', error);
+                if (error.headers && error.headers['message'] && error.headers['message'].includes('401')) {
+                    console.log('Unauthorized, attempt to refresh token');
+                    // 여기서 토큰 갱신 로직을 추가할 수 있습니다.
                 }
-            );
-    
-            return () => {
-                if (stompClientRef.current) {
-                    stompClientRef.current.disconnect();
-                    stompClientRef.current = null;
-                }
-            };
-        }
-    }, [rooms, currentRoomId, newMessages]);
+            }
+        );
+
+        return () => {
+            if (stompClientRef.current) {
+                stompClientRef.current.disconnect();
+                stompClientRef.current = null;
+            }
+        };
+    }
+}, [rooms, currentRoomId, newMessages]);
+
     
     const handleRoomClick = async (roomId) => {
         if (!roomId) {
