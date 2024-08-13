@@ -17,8 +17,27 @@ const MyBoard = () => {
     useEffect(() => {
         const getBoards = async () => {
           try {
-            const boardList = await fetchMyBoardList();
-            setBoards(boardList);
+            //const boardList = await fetchMyBoardList();
+            //setBoards(boardList);
+
+            setBoards([{
+              "category": "유모차",
+              "title": "유모차 팔아요",
+              "price": 12312312,
+              "likeCount": 10,
+            }, 
+            {
+              "category": "장난감",
+              "title": "장난감 팔아요",
+              "price": 12312312,
+              "likeCount": 10,
+            }, 
+            {
+              "category": "카시트",
+              "title": "카시트 팔아요",
+              "price": 12312312,
+              "likeCount": 10,
+            }]);
           } catch (error) {
             console.error("Failed to fetch my boards", error);
           } finally {
@@ -70,12 +89,15 @@ const MyBoard = () => {
     }
     
     return (
-      <div className={styles.boardPage} style={{ maxHeight: `${maxHeight}px` }}>
-        {!boards || boards.length === 0 ? (
-          <div className={styles.notFoundContent}>내 게시글이 존재하지 않습니다.</div>
-        ) : (
-          <MyBoardList boards={boards} />
-        )}
+      <div>
+        <div className={styles.boardTitle}>판매 내역</div>
+        <div className={styles.boardPage} style={{ maxHeight: `${maxHeight}px` }}>
+          {!boards || boards.length === 0 ? (
+            <div className={styles.notFoundContent}>내 게시글이 존재하지 않습니다.</div>
+          ) : (
+            <MyBoardList boards={boards} />
+          )}
+        </div>
       </div>
     );
 }

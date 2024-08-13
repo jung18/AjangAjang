@@ -32,7 +32,7 @@ const SignUp = () => {
 
   const handleSendSms = async () => {
     try {
-      const response = await axios.post('https://i11b210.p.ssafy.io:4443/api/user/sms/send', { phone }, {
+      const response = await axios.post('http://:8080/api/user/sms/send', { phone }, {
         headers: {
           'Authorization': `${accessToken}`
         }
@@ -44,7 +44,7 @@ const SignUp = () => {
       console.error('Failed to send SMS:', error);
     }
   };
-
+  
   const handleVerifyCode = async () => {
     try {
       const response = await axios.post('https://i11b210.p.ssafy.io:4443/api/user/sms/confirm', { phone, certificationNumber: verificationCode }, {

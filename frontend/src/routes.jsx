@@ -9,17 +9,25 @@ import Search from "./pages/search/Search";
 import BoardDetail from "./pages/boardDetail/BoardDetail";
 import BoardTemplate from "./pages/boardwriter/BoardTemplate";
 import Chat from "./pages/chat/Chat";
- 
+import ChatTest from "./pages/chatTest/ChatTest";
+import ChatRoom from "./pages/chat/ChatRoom";
+import AudioCall from "./pages/openvidu/AudioCall";
+import AudioTest from "./pages/openvidu/AudioTest";
+
 import PageLayout from "./layouts/PageLayout";
 import usePageStore from "./store/currentPageStore";
 import MyPage from "./pages/myPage/myPage";
 import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
 import MyInfo from "./pages/myInfo/MyInfo";
+
 import KakaoMap from "./pages/kakaoMap/KakaoMap";
 import GeoLocation from "./pages/geoLocation/GeoLocation";
 import Location from "./pages/location/Location";
 import ImageBgRemove from "./pages/imageBgRemove/ImageBgRemove";
+
+import MyTrade from "./pages/myTrade/MyTrade";
+
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -33,11 +41,13 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      <Route path="/test" element={<ChatTest />} />
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/user" element={<PageLayout page={<MyPage />} pageType={"myPage"} />} />
       <Route path="/user/boards" element={<PageLayout page={<MyBoard />} pageType={"myBoard"} />} />
       <Route path="/user/likes" element={<PageLayout page={<MyLike />} pageType={"myLike"} />} />
+      <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
       {/* 테스트용 */}
       <Route path="/kakaomap" element={<KakaoMap />} />
@@ -49,7 +59,7 @@ const AppRoutes = () => {
         element={
           <PageLayout
             page={<Board />}
-            pageType={"board"}
+            pageType={"board"} 
           />
         }
       />
@@ -102,10 +112,29 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
-        path="/chat"
-        element={<PageLayout page={<Chat />} pageType={"chat"} />}
+      <Route path="/room/:roomId" element={<PageLayout page={<Chat />} pageType={"chat"} />} />
+      <Route path="/chat" element={<PageLayout page={<ChatRoom />} pageType={"chat"} />} />
+      <Route path="/audio-call" element={<AudioCall />} />
+      <Route path="/audio-call-test" element={<AudioTest />} />
+      {/* <Route 
+        path="/chat" 
+        element={
+          <PageLayout 
+            page={<ChatRoom />} 
+            pageType={"chat"} 
+          />
+        } 
       />
+      <Route 
+        path="/room/:roomId" 
+        element={
+          <PageLayout 
+            page={<Chat />} 
+            pageType={"chating"} 
+          />
+        } 
+      /> */}
+      {/* <Route path="/room/:roomId" element={<Chat />} /> */}
     </Routes>
   );
 };

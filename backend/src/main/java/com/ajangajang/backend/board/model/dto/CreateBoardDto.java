@@ -11,10 +11,10 @@ import lombok.Setter;
 public class CreateBoardDto {
 
     private String title;
-    private Integer price;
+    private int price;
     private String content;
-    private String deliveryType;
     private String category;
     private Status status;
+    private Long addressId;
 
 }

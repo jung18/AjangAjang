@@ -19,7 +19,8 @@ const PageLayout = ({ page, pageType }) => {
     case "post":
       headerComponent = <PostHeader />;
       break;
-    case "search" || "template":
+    case "search":
+    case "template":
       headerComponent = <SearchHeader />;
       break;
     case "myPage":
@@ -34,7 +35,16 @@ const PageLayout = ({ page, pageType }) => {
     case "myInfo":
       headerComponent = <SearchHeader />;
       break;
+    case "myTrade":
+      headerComponent = <SearchHeader />;
+      break;
+    case "chat":
+      headerComponent = <PostHeader />; 
+      break;
+    case "chating":
+      headerComponent = <SearchHeader />; 
     default:
+      headerComponent = null;
       break;
   }
 

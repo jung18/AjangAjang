@@ -10,6 +10,14 @@
     />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <!-- PWA를 위한 매니페스트 파일 링크 -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA 아이콘 설정 -->
+    <link rel="apple-touch-icon" href="/logo192.png">
+
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=97461c7397262ab297420b6d4513472c&libraries=services,clusterer"
@@ -29,6 +37,20 @@
               }
           }).open();
       }
-  </script>
+    </script>
+
+    <!-- 서비스 워커 등록 스크립트 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(error) {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+            });
+        }
+    </script>
   </body>
 </html>
