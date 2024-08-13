@@ -14,7 +14,6 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const [newMessages, setNewMessages] = useState({});
     const chatBoxRef = useRef(null);
     const stompClientRef = useRef(null);
     const [sendButtonImage, setSendButtonImage] = useState(sentImage); 
@@ -35,54 +34,63 @@ const Chat = () => {
     }, []);
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/chat/messages/${roomId}`);
-                if (Array.isArray(response.data)) {
-                    setMessages(response.data);
-                } else {
+        if (userId) { // userId가 설정된 후에만 WebSocket 연결을 설정합니다.
+            const fetchMessages = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/chat/messages/${roomId}`);
+                    if (Array.isArray(response.data)) {
+                        setMessages(response.data);
+                    } else {
+                        setMessages([]);
+                    }
+                } catch (error) {
+                    console.error('Error fetching messages:', error);
                     setMessages([]);
                 }
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-                setMessages([]);
+            };
+            fetchMessages();
+
+            const socket = new SockJS('http://localhost:8080/ws-stomp');
+            const client = Stomp.over(socket);
+
+            if (stompClientRef.current && stompClientRef.current.connected) {
+                return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
             }
-        };
-        fetchMessages();
 
-        const socket = new SockJS('http://localhost:8080/ws-stomp');
-        const client = Stomp.over(socket);
-
-        if (stompClientRef.current && stompClientRef.current.connected) {
-            return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
-        }
-
-        client.connect({}, () => {
-            stompClientRef.current = client;
-            client.subscribe(`/sub/chat/${roomId}`, (msg) => {
-                const parsedMessage = JSON.parse(msg.body);
-                if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
-                    console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
-                    if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
-                        handleCallAccept(parsedMessage.sessionId);
-                    }
-                } else {
-                    setMessages(prevMessages => [...prevMessages, parsedMessage]);
+            client.connect(
+                {
+                    userId: userId.toString(), // STOMP 연결 시 헤더로 userId 전달
+                    roomId: roomId.toString()  // STOMP 연결 시 헤더로 roomId 전달
+                },
+                () => {
+                    stompClientRef.current = client;
+                    client.subscribe(`/sub/chat/${roomId}`, (msg) => {
+                        const parsedMessage = JSON.parse(msg.body);
+                        if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
+                            console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
+                            if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
+                                handleCallAccept(parsedMessage.sessionId);
+                            }
+                        } else {
+                            setMessages(prevMessages => [...prevMessages, parsedMessage]);
+                        }
+                    });
                 }
-            });
-        });
+            );
 
-        // 알림 읽음 처리: 방에 입장할 때 해당 방의 알림 카운터를 0으로 리셋
-        if (userId) {
-            handleMarkAsRead(roomId);
+            return () => {
+                if (stompClientRef.current) {
+                    // 연결을 종료할 때 필요한 정보를 헤더에 추가하여 서버로 전송
+                    stompClientRef.current.disconnect(() => {
+                        console.log("Disconnected from WebSocket");
+                    }, {
+                        userId: userId.toString(),
+                        roomId: roomId.toString()
+                    });
+                    stompClientRef.current = null;
+                }
+            };
         }
-
-        return () => {
-            if (stompClientRef.current) {
-                stompClientRef.current.disconnect();
-                stompClientRef.current = null;
-            }
-        };
     }, [roomId, userId]);
 
     useEffect(() => {
@@ -150,19 +158,6 @@ const Chat = () => {
         console.log(new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString());
         stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
         setMessage('');
-    };
-
-    // 알림 읽음 처리 로직
-    const handleMarkAsRead = async (roomId) => {
-        try {
-            await apiClient.post(`/api/chat/markAsRead`, { roomId });
-            setNewMessages(prev => ({
-                ...prev,
-                [roomId]: 0 // 알림 카운터를 0으로 설정
-            }));
-        } catch (error) {
-            console.error('Error marking messages as read:', error);
-        }
     };
 
     const shouldShowTime = (currentMessage, previousMessage) => {
