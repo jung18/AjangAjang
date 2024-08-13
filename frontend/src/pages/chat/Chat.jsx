@@ -48,7 +48,7 @@ const Chat = () => {
         if (userId) {
             const fetchMessages = async () => {
                 try {
-                    const response = await axios.get(`https://i11b210.p.ssafy.io:4443/api/chat/messages/${roomId}`);
+                    const response = await apiClient.get(`https://i11b210.p.ssafy.io:4443/api/chat/messages/${roomId}`);
                     if (Array.isArray(response.data)) {
                         setMessages(response.data);
                     } else {
@@ -125,7 +125,7 @@ const Chat = () => {
     const handleCallButtonClick = async () => {
         setLoading(true); // 로딩 상태 시작
         try {
-            const sessionResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/create`);
+            const sessionResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/create`);
             const newSessionId = sessionResponse.data;
             
             const message = {
@@ -134,7 +134,7 @@ const Chat = () => {
             };
             stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
 
-            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
+            const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
             const token = tokenResponse.data;
 
             let newSession = OV.current.initSession();
@@ -177,7 +177,7 @@ const Chat = () => {
             setLoading(true); // 로딩 상태 시작
     
             // 세션 연결을 위한 토큰 요청
-            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
+            const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
             const token = tokenResponse.data;
             console.log('Received token for session:', token); // 토큰 수신 로그 추가
     
