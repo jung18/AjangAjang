@@ -1,16 +1,7 @@
-const webpack = require('webpack');
-
-module.exports = function override(config, env) {
-  config.resolve.fallback = {
-    ...config.resolve.fallback,
-    buffer: require.resolve('buffer/'),
-    process: require.resolve('process/browser'),
-  };
-  config.plugins = (config.plugins || []).concat([
-    new webpack.ProvidePlugin({
-      process: 'process/browser',
-      Buffer: ['buffer', 'Buffer'],
-    }),
-  ]);
-  return config;
+module.exports = {
+  webpack: function (config, env) {
+    config.output.filename = 'static/js/[name].[hash:8].js';
+    config.output.chunkFilename = 'static/js/[name].[hash:8].chunk.js';
+    return config;
+  },
 };
