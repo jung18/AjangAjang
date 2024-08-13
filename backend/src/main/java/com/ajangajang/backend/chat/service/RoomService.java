@@ -4,15 +4,16 @@ import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.repository.BoardRepository;
 import com.ajangajang.backend.chat.dto.RoomResponseDTO;
 import com.ajangajang.backend.chat.dto.UserRoomDTO;
+import com.ajangajang.backend.chat.entity.ChatMessage;
 import com.ajangajang.backend.chat.entity.Room;
 import com.ajangajang.backend.chat.entity.UserRoom;
+import com.ajangajang.backend.chat.repository.ChatMessageRepository;
 import com.ajangajang.backend.chat.repository.RoomRepository;
 import com.ajangajang.backend.chat.repository.UserRoomRepository;
 import com.ajangajang.backend.user.model.entity.User;
-import com.ajangajang.backend.user.model.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,21 +24,20 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRoomRepository userRoomRepository;
-    private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final BoardRepository boardRepository;
 
+    @Transactional
     public Room createRoom(String name, Long boardId, User creator) {
         Room room = new Room();
         room.setName(name);
         room.setLastMessage("");
         room.setLastMessageTime(LocalDateTime.now());
 
-        // Board 엔티티 설정
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
         room.setBoard(board);
 
-        // Create UserRoom entities for the creator (current user) and the post owner (seller)
         UserRoom creatorUserRoom = new UserRoom();
         creatorUserRoom.setUser(creator);
         creatorUserRoom.setRoom(room);
@@ -49,10 +49,29 @@ public class RoomService {
         room.addUserRoom(creatorUserRoom);
         room.addUserRoom(postOwnerUserRoom);
 
-        return roomRepository.save(room);
+        roomRepository.save(room);
+        userRoomRepository.save(creatorUserRoom);
+        userRoomRepository.save(postOwnerUserRoom);
+
+        return room;
     }
 
-    public RoomResponseDTO getRoomResponseDTO(Room room) {
+    @Transactional
+    public void updateLastReadTime(Long roomId, Long userId) {
+        UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID or user ID"));
+
+        LocalDateTime lastReadTime = LocalDateTime.now();
+        userRoom.setLastReadTime(lastReadTime);
+        userRoomRepository.save(userRoom);
+
+        List<ChatMessage> unreadMessages = chatMessageRepository.findByRoomIdAndTimeBeforeAndIsReadFalse(roomId.toString(), lastReadTime);
+        unreadMessages.forEach(message -> message.setRead(true));
+        chatMessageRepository.saveAll(unreadMessages);
+    }
+
+    @Transactional(readOnly = true)
+    public RoomResponseDTO getRoomResponseDTO(Room room, Long userId) {
         RoomResponseDTO dto = new RoomResponseDTO();
         dto.setId(room.getId());
         dto.setName(room.getName());
@@ -68,45 +87,78 @@ public class RoomService {
                     return urDto;
                 })
                 .collect(Collectors.toList());
-
         dto.setUserRooms(userRoomDTOs);
 
-        // Room을 생성한 사용자의 ID 설정
         User creatorUser = room.getUserRooms().stream()
-                .filter(userRoom -> userRoom.getUser().getId().equals(room.getBoard().getWriter().getId()))
+                .filter(userRoom -> room.getBoard() != null && userRoom.getUser().getId().equals(room.getBoard().getWriter().getId()))
                 .findFirst()
                 .map(UserRoom::getUser)
                 .orElse(null);
-        dto.setCreatorUserId(creatorUser.getId());
-        dto.setLongitude(room.getBoard().getAddress().getLongitude());
-        dto.setLatitude(room.getBoard().getAddress().getLatitude());
+        dto.setCreatorUserId(creatorUser != null ? creatorUser.getId() : null);
+
+        if (room.getBoard() != null) {
+            dto.setLongitude(room.getBoard().getAddress().getLongitude());
+            dto.setLatitude(room.getBoard().getAddress().getLatitude());
+        }
+
+        if (userId != null) {
+            UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(userId, room.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid room ID or user ID"));
+
+            LocalDateTime lastReadTime = userRoom.getLastReadTime();
+            if (lastReadTime == null || lastReadTime.equals(LocalDateTime.MIN)) {
+                lastReadTime = LocalDateTime.of(1970, 1, 1, 0, 0);
+            } else {
+                lastReadTime = lastReadTime.plusHours(9);
+            }
+
+            long unreadCount = chatMessageRepository.countByRoomIdAndTimeAfterAndIsReadFalse(room.getId().toString(), lastReadTime);
+            dto.setUnreadCount(unreadCount);
+        }
 
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public List<RoomResponseDTO> getUserRooms(User user) {
+        List<UserRoom> userRooms = userRoomRepository.findByUser(user);
+
+        return userRooms.stream()
+                .map(userRoom -> {
+                    Room room = userRoom.getRoom();
+
+                    LocalDateTime lastReadTime = userRoom.getLastReadTime();
+                    if (lastReadTime == null) {
+                        lastReadTime = LocalDateTime.of(1970, 1, 1, 0, 0);
+                    } else {
+                        lastReadTime = lastReadTime.plusHours(9);
+                    }
+
+                    long unreadCount = chatMessageRepository.countByRoomIdAndTimeAfterAndIsReadFalse(room.getId().toString(), lastReadTime);
+
+                    RoomResponseDTO dto = getRoomResponseDTO(room, user.getId());
+                    dto.setUnreadCount(unreadCount);
+                    dto.setLastReadTime(lastReadTime);
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<RoomResponseDTO> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
         return rooms.stream()
-                .map(this::getRoomResponseDTO)
+                .map(room -> getRoomResponseDTO(room, null))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void updateLastMessage(Long roomId, String lastMessage) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
         room.setLastMessage(lastMessage);
         room.setLastMessageTime(LocalDateTime.now());
         roomRepository.save(room);
-    }
-
-    public List<RoomResponseDTO> getUserRooms(User user) {
-        List<UserRoom> userRooms = userRoomRepository.findByUser(user);
-        List<Room> rooms = userRooms.stream()
-                .map(UserRoom::getRoom)
-                .collect(Collectors.toList());
-
-        // Convert Rooms to RoomResponseDTO list
-        return rooms.stream()
-                .map(this::getRoomResponseDTO)
-                .collect(Collectors.toList());
     }
 }

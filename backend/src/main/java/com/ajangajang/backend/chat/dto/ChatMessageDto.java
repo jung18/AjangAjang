@@ -2,6 +2,8 @@ package com.ajangajang.backend.chat.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @Setter
@@ -17,5 +19,5 @@ public class ChatMessageDto {
     private String roomId;      // 방 번호
     private Long userId;        // 사용자 id
     private String message;     // 메시지
-    private String time;        // 전송 시간
+    private LocalDateTime time;        // 전송 시간
 }

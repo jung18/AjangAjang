@@ -33,17 +33,29 @@ public class RoomController {
                 roomRequestDTO.getBoardId(),
                 creatorUser
         );
-        return roomService.getRoomResponseDTO(room);
+
+        // 방 생성 후 RoomResponseDTO 반환 시 userId를 함께 전달
+        return roomService.getRoomResponseDTO(room, creatorUser.getId());
     }
 
     @GetMapping("/myRooms")
     public List<RoomResponseDTO> getUserRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        User user = userRepository.findByUsername(customOAuth2User.getUsername()).orElse(null);
+        User user = userRepository.findByUsername(customOAuth2User.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return roomService.getUserRooms(user);
     }
 
     @GetMapping
     public List<RoomResponseDTO> getAllRooms() {
         return roomService.getAllRooms();
+    }
+
+    @PostMapping("/{roomId}/read")
+    public void updateLastReadTime(@PathVariable Long roomId,
+                                   @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        User user = userRepository.findByUsername(customOAuth2User.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        roomService.updateLastReadTime(roomId, user.getId());
     }
 }

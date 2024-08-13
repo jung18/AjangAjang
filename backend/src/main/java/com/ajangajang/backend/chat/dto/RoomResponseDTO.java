@@ -14,7 +14,9 @@ public class RoomResponseDTO {
     private String lastMessage;
     private LocalDateTime lastMessageTime;
     private List<UserRoomDTO> userRooms;
-    private Long creatorUserId; // Room 생성자 ID 추가
-    private double longitude; // 경도
-    private double latitude; // 위도
+    private Long creatorUserId;
+    private double longitude;
+    private double latitude;
+    private long unreadCount;
+    private LocalDateTime lastReadTime; // 이 필드를 추가합니다.
 }

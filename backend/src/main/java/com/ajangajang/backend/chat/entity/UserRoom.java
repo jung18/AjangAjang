@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -22,5 +24,6 @@ public class UserRoom {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-}
 
+    private LocalDateTime lastReadTime; // 새로운 필드 추가
+}

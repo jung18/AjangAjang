@@ -2,7 +2,6 @@ package com.ajangajang.backend.user.model.entity;
 
 import com.ajangajang.backend.board.model.entity.Board;
 import com.ajangajang.backend.board.model.entity.BoardLike;
-import com.ajangajang.backend.chat.entity.ChatMessage;
 import com.ajangajang.backend.chat.entity.UserRoom;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,8 +50,6 @@ public class User {
     @JoinColumn(name = "main_address_id")
     private Address mainAddress;
 
-    @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
-    private List<ChatMessage> chatMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, orphanRemoval = true)
     private List<UserRoom> userRooms = new ArrayList<>();
