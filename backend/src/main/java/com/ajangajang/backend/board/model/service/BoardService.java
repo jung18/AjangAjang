@@ -184,6 +184,11 @@ public class BoardService {
     public void increaseRecommendationViewCount(String username, Long boardId) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Long childId = user.getMainChildId();
+
+        if (childId == null) {
+            return;
+        }
+
         Child child = childRepository.findById(childId).orElse(null);
 
         // 대표 자녀가 없으면 작동 안함
