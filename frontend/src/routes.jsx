@@ -19,6 +19,7 @@ import MyInfo from "./pages/myInfo/MyInfo";
 import KakaoMap from "./pages/kakaoMap/KakaoMap";
 import GeoLocation from "./pages/geoLocation/GeoLocation";
 import Location from "./pages/location/Location";
+import ImageBgRemove from "./pages/imageBgRemove/ImageBgRemove";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -42,6 +43,7 @@ const AppRoutes = () => {
       <Route path="/kakaomap" element={<KakaoMap />} />
       <Route path="/gps" element={<GeoLocation />} />
       <Route path="/test2" element={<Location />} />
+      <Route path="/tttest" element={<ImageBgRemove />} />
       <Route
         path="/direct"
         element={
