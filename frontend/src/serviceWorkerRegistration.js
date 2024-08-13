@@ -9,13 +9,14 @@ const isLocalhost = Boolean(
 // 서비스 워커 등록 함수
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
+    // PUBLIC_URL을 HTTPS로 보장
+    const publicUrl = new URL(process.env.PUBLIC_URL.replace(/^http:/, 'https:'), window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       return;
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      const swUrl = `${publicUrl.origin}/service-worker.js`;
 
       if (isLocalhost) {
         checkValidServiceWorker(swUrl, config);
