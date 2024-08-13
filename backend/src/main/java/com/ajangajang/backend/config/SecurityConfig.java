@@ -1,5 +1,6 @@
 package com.ajangajang.backend.config;
 
+import com.ajangajang.backend.oauth.jwt.CustomAuthenticationEntryPoint;
 import com.ajangajang.backend.oauth.jwt.CustomSuccessHandler;
 import com.ajangajang.backend.oauth.jwt.JwtFilter;
 import com.ajangajang.backend.oauth.jwt.JwtUtil;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -64,6 +66,12 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler));
 
+        // 커스텀 EntryPoint 설정
+        httpSecurity
+                .exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint())
+        );
+
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
@@ -90,5 +98,10 @@ public class SecurityConfig {
                 "ROLE_USER > ROLE_GUEST");
 
         return hierarchy;
+    }
+
+    @Bean
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();  // 커스텀 AuthenticationEntryPoint 사용
     }
 }
