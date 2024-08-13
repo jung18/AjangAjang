@@ -5,6 +5,7 @@ import { Stomp } from '@stomp/stompjs';
 import styles from './ChatRoom.module.css';
 import apiClient from '../../api/apiClient';
 import usePageStore from '../../store/currentPageStore'; // 페이지 스토어 import
+import useTokenStore from '../../store/useTokenStore';
 
 const ChatRoom = () => {
     const [rooms, setRooms] = useState([]);
@@ -55,39 +56,47 @@ const ChatRoom = () => {
                 return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
             }
     
-            client.connect({}, () => {
-                console.log("WebSocket에 연결됨");
-                stompClientRef.current = client;
+            const accessToken = useTokenStore.getState().accessToken; // 상태에서 액세스 토큰 가져오기
     
-                rooms.forEach(room => {
-                    client.subscribe(`/sub/chat/${room.id}`, (msg) => {
-                        const message = JSON.parse(msg.body);
-                        const isCurrentRoom = room.id === currentRoomId;
-                        const lastReadTime = new Date(newMessages[room.id]?.lastReadTime || room.lastReadTime);
+            client.connect(
+                { Authorization: accessToken }, // 토큰을 헤더에 추가
+                () => {
+                    console.log("WebSocket에 연결됨");
+                    stompClientRef.current = client;
     
-                        setNewMessages(prev => {
-                            const newUnreadCount = (!isCurrentRoom && new Date(message.time) > lastReadTime) 
-                                ? (prev[room.id]?.unreadCount || 0) + 1 
-                                : prev[room.id]?.unreadCount || 0;
+                    rooms.forEach(room => {
+                        client.subscribe(`/sub/chat/${room.id}`, (msg) => {
+                            const message = JSON.parse(msg.body);
+                            const isCurrentRoom = room.id === currentRoomId;
+                            const lastReadTime = new Date(newMessages[room.id]?.lastReadTime || room.lastReadTime);
     
-                            const updatedMessages = {
-                                ...prev,
-                                [room.id]: {
-                                    ...prev[room.id],
-                                    lastMessage: message.message,
-                                    unreadCount: newUnreadCount
-                                }
-                            };
+                            setNewMessages(prev => {
+                                const newUnreadCount = (!isCurrentRoom && new Date(message.time) > lastReadTime) 
+                                    ? (prev[room.id]?.unreadCount || 0) + 1 
+                                    : prev[room.id]?.unreadCount || 0;
     
-                            // 알림 개수를 콘솔에 출력
-                            console.log(`Room ID: ${room.id}, Unread Count: ${newUnreadCount}`);
+                                const updatedMessages = {
+                                    ...prev,
+                                    [room.id]: {
+                                        ...prev[room.id],
+                                        lastMessage: message.message,
+                                        unreadCount: newUnreadCount
+                                    }
+                                };
     
-                            localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
-                            return updatedMessages;
+                                // 알림 개수를 콘솔에 출력
+                                console.log(`Room ID: ${room.id}, Unread Count: ${newUnreadCount}`);
+    
+                                localStorage.setItem('newMessages', JSON.stringify(updatedMessages));
+                                return updatedMessages;
+                            });
                         });
                     });
-                });
-            });
+                },
+                (error) => {
+                    console.error('WebSocket 연결 오류:', error);
+                }
+            );
     
             return () => {
                 if (stompClientRef.current) {
@@ -98,7 +107,6 @@ const ChatRoom = () => {
         }
     }, [rooms, currentRoomId, newMessages]);
     
-
     const handleRoomClick = async (roomId) => {
         if (!roomId) {
             console.error('roomId가 정의되지 않았거나 null입니다.');
