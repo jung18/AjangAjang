@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -99,7 +100,8 @@ public class UserAddressService {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return addressRepository.findMyAddresses(findUser.getId()).stream()
                 .map(address -> new AddressDto(address.getId(), address.getSido(), address.getSigg(),
-                                            address.getEmd(), address.getFullAddress(), address.getNearType()))
+                                            address.getEmd(), address.getFullAddress(), address.getNearType(),
+                                            address.getId().equals(findUser.getMainAddress().getId())))
                 .collect(Collectors.toList());
     }
 
@@ -109,6 +111,14 @@ public class UserAddressService {
         if (findUserAddress == null) {
             throw new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND);
         }
+        if (Objects.equals(findUser.getMainAddress().getId(), id)) { // 대표 주소는 삭제 불가
+            throw new CustomGlobalException(CustomStatusCode.MAIN_ADDRESS_DELETE_FAIL);
+        }
+        List<UserAddress> userAddressList = userAddressRepository.findByUserId(findUser.getId());
+        if (userAddressList.size() <= 1) { // 하나남은 주소는 삭제 불가
+            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_ADDRESS_REQUIRED);
+        }
+
         userAddressRepository.delete(findUserAddress);
     }
 

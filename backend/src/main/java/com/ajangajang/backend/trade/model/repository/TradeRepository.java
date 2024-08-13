@@ -9,6 +9,9 @@ import java.util.List;
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     @Query("select t from Trade t join fetch t.buyer b where b.id = :userId")
-    List<Trade> findMyTrades(Long userId);
+    List<Trade> findMyBuyingTrades(Long userId);
+
+    @Query("select t from Trade t join fetch t.seller s where s.id = :userId")
+    List<Trade> findMySellingTrades(Long userId);
 
 }

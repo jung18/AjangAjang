@@ -32,6 +32,8 @@ public class ReviewService {
     public Long save(String username, CreateReviewDto dto) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Trade trade = tradeRepository.findById(dto.getTradeId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.TRADE_NOT_FOUND));
+        User seller = trade.getSeller();
+        userRepository.changeUserScoreBySaveReview(seller.getId(), dto.getScore());
         Review review = new Review(dto.getScore(), dto.getContent());
         review.setTrade(trade);
         review.setWriter(writer);
@@ -45,8 +47,9 @@ public class ReviewService {
                              findReview.getCreatedAt(), findReview.getUpdatedAt());
     }
 
-    public List<ReviewDto> findAll() {
-        return reviewRepository.findAll().stream()
+    public List<ReviewDto> findMyReviews(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
+        return reviewRepository.findMyReviews(user.getId()).stream()
                 .map(review -> new ReviewDto(review.getScore(), review.getContent(),
                                             review.getCreatedAt(), review.getUpdatedAt()))
                 .collect(Collectors.toList());
@@ -68,6 +71,8 @@ public class ReviewService {
         if (!username.equals(findReview.getWriter().getUsername())) {
             throw new CustomGlobalException(CustomStatusCode.PERMISSION_DENIED);
         }
+        User seller = findReview.getTrade().getSeller();
+        userRepository.changeUserScoreByDeleteReview(seller.getId(), findReview.getScore());
         reviewRepository.deleteById(id);
     }
 

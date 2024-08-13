@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TradeDto {
 
     private Long tradeId;
+    private Long buyerId;
     private Long sellerId;
     private Long itemId; // 판매글
     private String boardTitle; // 판매글 제목

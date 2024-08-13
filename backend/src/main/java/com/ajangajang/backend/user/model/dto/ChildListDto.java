@@ -17,5 +17,6 @@ public class ChildListDto {
     private String name;
     private LocalDate birthDate;
     private String gender;
+    private boolean isRep;
 
 }

@@ -9,10 +9,7 @@ import com.ajangajang.backend.board.model.service.BoardService;
 import com.ajangajang.backend.board.model.service.FileService;
 import com.ajangajang.backend.exception.CustomGlobalException;
 import com.ajangajang.backend.exception.CustomStatusCode;
-import com.ajangajang.backend.user.model.dto.ChildInputDto;
-import com.ajangajang.backend.user.model.dto.ChildListDto;
-import com.ajangajang.backend.user.model.dto.UserInfoDto;
-import com.ajangajang.backend.user.model.dto.UserInputDto;
+import com.ajangajang.backend.user.model.dto.*;
 import com.ajangajang.backend.user.model.entity.Child;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.ChildRepository;
@@ -45,6 +42,7 @@ public class UserService {
         user.setNickname(userInputDto.getNickname());
         user.setPhone(userInputDto.getPhone());
         user.setRole("ROLE_USER");
+        user.setScore(30);
         userRepository.save(user);
     }
 
@@ -70,7 +68,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), getLevel(user.getScore()));
     }
 
     public List<BoardListDto> findMyLikes(String username) {
@@ -81,16 +79,13 @@ public class UserService {
 
     public List<BoardListDto> findMyBoards(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return boardRepository.findAllByUserId(user.getId()).stream()
-                .map(board -> new BoardListDto(board.getId(), board.getTitle(), board.getPrice(),
-                        board.getCategory().name(), board.getStatus(),
-                        board.getLikedUsers().size(), board.getViewCount()))
-                .collect(Collectors.toList());
+        List<Board> boardList = boardRepository.findAllByUserId(user.getId());
+        return boardService.getBoardListDtos(boardList);
     }
 
     public UserInfoDto findUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), getLevel(user.getScore()));
     }
 
     public void updateMyInfo(String username, UserInputDto userInputDto) {
@@ -140,7 +135,8 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         List<Child> children = user.getChildren();
         return children.stream()
-                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender().name()))
+                .map(child -> new ChildListDto(child.getId(), child.getName(), child.getBirthDate(), child.getGender().name(),
+                                                child.getId().equals(user.getMainChildId())))
                 .collect(Collectors.toList());
     }
 
@@ -154,6 +150,28 @@ public class UserService {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         user.setMainChildId(childId);
+    }
+
+    public int getLevel(int score) {
+        if (score > 92) {
+            return 9;
+        } else if (score > 80) {
+            return 8;
+        } else if (score > 68) {
+            return 7;
+        } else if (score > 56) {
+            return 6;
+        } else if (score > 44) {
+            return 5;
+        } else if (score > 32) {
+            return 4;
+        } else if (score > 20) {
+            return 3;
+        } else if (score > 8) {
+            return 2;
+        } else {
+            return 1;
+        }
     }
 
 }
