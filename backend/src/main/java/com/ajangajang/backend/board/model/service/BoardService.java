@@ -132,9 +132,6 @@ public class BoardService {
                 boardMediaRepository.save(media);
             }
         }
-//        else {
-//            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
-//        }
     }
 
     private void deleteFiles(List<Long> deleteFileIds) {
@@ -163,7 +160,7 @@ public class BoardService {
         return result;
     }
 
-    public @NotNull String getThumbnail(Board board) {
+    public String getThumbnail(Board board) {
         String thumbnail = "";
         List<BoardMedia> mediaList = board.getMediaList();
         // 판매글 썸네일 불러오기
@@ -173,9 +170,6 @@ public class BoardService {
                 break;
             }
         }
-//        if (thumbnail == null || thumbnail.isEmpty()) {
-//            throw new CustomGlobalException(CustomStatusCode.AT_LEAST_ONE_MEDIA_REQUIRED);
-//        }
         return thumbnail;
     }
 
