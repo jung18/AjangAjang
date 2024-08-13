@@ -24,7 +24,7 @@ const EditMyInfo = () => {
   const handleSendSms = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/sms/send",
+        "https://i11b210.p.ssafy.io:4443/api/user/sms/send",
         { phone },
         {
           headers: {
@@ -43,7 +43,7 @@ const EditMyInfo = () => {
   const handleVerifyCode = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/sms/confirm",
+        "https://i11b210.p.ssafy.io:4443/api/user/sms/confirm",
         { phone, certificationNumber: verificationCode },
         {
           headers: {
@@ -78,7 +78,7 @@ const EditMyInfo = () => {
       phone,
     };
 
-    const url = "http://localhost:8080/api/user/my"; // 서버 URL
+    const url = "https://i11b210.p.ssafy.io:4443/api/user/my"; // 서버 URL
 
     const response = await axios.put(url, data, {
       headers: {

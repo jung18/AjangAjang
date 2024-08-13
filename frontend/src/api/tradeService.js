@@ -5,7 +5,7 @@ export const fetchTradeList = async () => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("http://localhost:8080/api/trade/my", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/trade/my", {
       method: "GET",
       headers: {
         "Authorization": `${accessToken}`,
