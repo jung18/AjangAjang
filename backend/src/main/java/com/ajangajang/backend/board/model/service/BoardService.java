@@ -236,6 +236,11 @@ public class BoardService {
     public Category findRecommendationCategory(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Long mainChildId = user.getMainChildId();
+
+        if (mainChildId == null) {
+            throw new CustomGlobalException(CustomStatusCode.MAIN_CHILD_NOT_FOUND);
+        }
+
         Child child = childRepository.findById(mainChildId).orElse(null);
 
         // 대표 자녀가 없는 경우

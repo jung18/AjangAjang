@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecommendationDbSettingService {
 
-    private RecommendationRepository recommendationRepository;
+    private final RecommendationRepository recommendationRepository;
 
     public void databaseSetting() {
         for (AgeGroup ageGroup : AgeGroup.values()) {
