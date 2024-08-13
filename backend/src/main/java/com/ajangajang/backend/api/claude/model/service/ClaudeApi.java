@@ -74,16 +74,34 @@ public class ClaudeApi {
 
     private static String getPromptInput(PromptConditionDto condition) {
 
-        return "당신은 중고 육아용품을 판매하려는 사람입니다. " +
-                "당신의 아기 정보는 " +
-                "아기의 나이: " + condition.getAge() + "\n" +
-                "아기의 성별: " + condition.getGender() + "입니다.\n " +
-                "아래의 키워드들을 포함하고, 물건 정보에 모델명이나 네고 가능같은 과한 부가정보 붙이지 않고, " + condition.getTone() + "으로, " +
-                "판매글의 제목과 내용을 작성해주세요.\n " +
-                "작성 형식은 첫 줄에 제목을 한줄로 작성하고 한줄의 간격을 띄운 뒤 그 아래에 내용을 작성해주세요.\n" +
-                "판매하려는 물건: " + condition.getItem() + "\n" +
-                "판매가격: " + condition.getPrice() + "\n" +
-                "사용기간: " + condition.getUsagePeriod() + "\n" +
-                "물건의상태: " + condition.getItemCondition();
+        return "다음 조건에 맞춰 중고 육아용품 판매 게시글을 작성해 주세요:\n" +
+                "\n" +
+                "1. 작성자 역할: " + condition.getAge() + "개월 " + condition.getGender() + "아기의 부모\n" +
+                "\n" +
+                "2. 대상 독자: 육아용품을 찾는 예비 부모 또는 영유아 부모\n" +
+                "\n" +
+                "3. 제품: " + condition.getItem() + "\n" +
+                "\n" +
+                "4. 가격: " + condition.getPrice() + "원\n" +
+                "\n" +
+                "5. 사용 기간: " + condition.getUsagePeriod() + "\n" +
+                "\n" +
+                "6. 제품 상태: " + condition.getItemCondition() + "\n" +
+                "\n" +
+                "7. 글 구조:\n" +
+                "   - 제목\n" +
+                "   - 제품 소개 (1문단, 공백포함 120자)\n" +
+                "   - 판매 가격\n" +
+                "   - 사용 기간\n" +
+                "   - 제품 상태 설명 (1문단, 공백포함 100자)\n" +
+                "\n" +
+                "8. 톤과 스타일: \n" +
+                "   - " + condition.getTone() + "\n" +
+                "\n" +
+                "9. 추가 지시사항:\n" +
+                "   - 제목 이후 한줄을 띄우세요.\n" +
+                "   - 제목은 \"(제품명) 판매합니다\" 를 기반으로 톤과 스타일을 반영하세요." +
+                "   - 상품이름과 가격을 그대로 사용하세요.\n" +
+                "   - 네고 가능 등과 같이 내용에 영향을 미치는 말은 붙이지 마세요.\n";
     }
 }
