@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { OpenVidu } from 'openvidu-browser';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom'; 
 import dayjs from 'dayjs';
 import styles from './Chat.module.css';
 import apiClient from '../../api/apiClient';
@@ -14,10 +15,18 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const chatBoxRef = useRef(null);
+    const [inCall, setInCall] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [publisher, setPublisher] = useState(null);
+    const [subscribers, setSubscribers] = useState([]);
+    const [incomingCall, setIncomingCall] = useState(false);
+    const [callerSessionId, setCallerSessionId] = useState(null);
+    const OV = useRef(new OpenVidu());
     const stompClientRef = useRef(null);
     const [sendButtonImage, setSendButtonImage] = useState(sentImage); 
     const navigate = useNavigate(); 
+    const sessionRef = useRef(null);
+    const chatBoxRef = useRef(null);
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -34,10 +43,10 @@ const Chat = () => {
     }, []);
 
     useEffect(() => {
-        if (userId) { // userId가 설정된 후에만 WebSocket 연결을 설정합니다.
+        if (userId) {
             const fetchMessages = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/chat/messages/${roomId}`);
+                    const response = await axios.get(`https://i11b210.p.ssafy.io:4443/api/chat/messages/${roomId}`);
                     if (Array.isArray(response.data)) {
                         setMessages(response.data);
                     } else {
@@ -50,37 +59,37 @@ const Chat = () => {
             };
             fetchMessages();
 
-            const socket = new SockJS('http://localhost:8080/ws-stomp');
+            const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
             const client = Stomp.over(socket);
 
             if (stompClientRef.current && stompClientRef.current.connected) {
-                return; // 이미 연결되어 있으면 새로운 연결을 만들지 않음
+                return;
             }
 
             client.connect(
                 {
-                    userId: userId.toString(), // STOMP 연결 시 헤더로 userId 전달
-                    roomId: roomId.toString()  // STOMP 연결 시 헤더로 roomId 전달
+                    userId: userId.toString(),
+                    roomId: roomId.toString(),
                 },
                 () => {
                     stompClientRef.current = client;
                     client.subscribe(`/sub/chat/${roomId}`, (msg) => {
                         const parsedMessage = JSON.parse(msg.body);
                         if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
-                            console.log('거는 쪽 Session ID:', parsedMessage.sessionId);
-                            if (window.confirm('통화 요청이 있습니다. 수락하시겠습니까?')) {
-                                handleCallAccept(parsedMessage.sessionId);
-                            }
+                            setIncomingCall(true);
+                            setCallerSessionId(parsedMessage.sessionId);
                         } else {
                             setMessages(prevMessages => [...prevMessages, parsedMessage]);
                         }
                     });
+                },
+                (error) => {
+                    console.error('Error connecting to WebSocket:', error);
                 }
             );
 
             return () => {
                 if (stompClientRef.current) {
-                    // 연결을 종료할 때 필요한 정보를 헤더에 추가하여 서버로 전송
                     stompClientRef.current.disconnect(() => {
                         console.log("Disconnected from WebSocket");
                     }, {
@@ -115,24 +124,99 @@ const Chat = () => {
     };
 
     const handleCallButtonClick = async () => {
-        const sessionId = await createSession();
-        if (sessionId) {
-            const callMessage = {
-                roomId,
-                userId,
-                sessionId,
-                type: 'CALL_REQUEST',
-                time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
-            };
-            stompClientRef.current.send('/pub/chat/call', {}, JSON.stringify(callMessage));
-            navigate(`/audio-call/${sessionId}`); 
-        } else {
-            alert('통화 세션 생성에 실패했습니다.');
+        setLoading(true);
+        try {
+            const sessionId = await createSession();
+            if (sessionId) {
+                const callMessage = {
+                    sessionId,
+                    type: 'CALL_REQUEST',
+                };
+                stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(callMessage));
+
+                const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${sessionId}/connections`);
+                const token = tokenResponse.data;
+
+                let newSession = OV.current.initSession();
+                sessionRef.current = newSession;
+
+                newSession.on('streamCreated', (event) => {
+                    const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                    setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+                });
+
+                newSession.on('streamDestroyed', (event) => {
+                    setSubscribers((prevSubscribers) =>
+                        prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
+                    );
+                });
+
+                await newSession.connect(token);
+
+                let newPublisher = await OV.current.initPublisherAsync(undefined, {
+                    audioSource: undefined,
+                    videoSource: undefined,
+                    publishAudio: true,
+                    publishVideo: false,
+                });
+
+                newSession.publish(newPublisher);
+
+                setInCall(true);
+                setPublisher(newPublisher);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.error('Error joining session:', error);
+            alert('Failed to join session. Please check your network and server.');
+            setLoading(false);
         }
     };
 
-    const handleCallAccept = (sessionId) => {
-        navigate(`/audio-call/${sessionId}`); 
+    const handleCallAccept = async () => {
+        setLoading(true);
+        try {
+            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
+            const token = tokenResponse.data;
+
+            let newSession = OV.current.initSession();
+            sessionRef.current = newSession;
+
+            newSession.on('streamCreated', (event) => {
+                const subscriber = newSession.subscribe(event.stream, 'subscriber');
+                setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+            });
+
+            newSession.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
+                );
+            });
+
+            await newSession.connect(token);
+
+            let newPublisher = await OV.current.initPublisherAsync(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: false,
+            });
+
+            newSession.publish(newPublisher);
+
+            setInCall(true);
+            setPublisher(newPublisher);
+            setIncomingCall(false);
+        } catch (error) {
+            console.error('Error accepting call:', error);
+            alert('Failed to accept call. Please check your network and server.');
+        }
+        setLoading(false);
+    };
+
+    const handleCallReject = () => {
+        setIncomingCall(false);
+        setCallerSessionId(null);
     };
 
     const sendMessage = () => {
@@ -155,7 +239,6 @@ const Chat = () => {
             message,
             time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
         };
-        console.log(new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString());
         stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
         setMessage('');
     };
@@ -165,6 +248,15 @@ const Chat = () => {
         const currentTime = dayjs(currentMessage.time);
         const previousTime = dayjs(previousMessage.time);
         return !currentTime.isSame(previousTime, 'minute');
+    };
+
+    const leaveSession = () => {
+        if (sessionRef.current) {
+            sessionRef.current.disconnect();
+        }
+        setPublisher(null);
+        setSubscribers([]);
+        setInCall(false);
     };
 
     return (
@@ -217,6 +309,31 @@ const Chat = () => {
                     통화
                 </button>
             </div>
+
+            {inCall && (
+                <div className={styles['call-container']}>
+                    <h3>통화 중...</h3>
+                    {publisher && (
+                        <div id="publisher">
+                            <audio autoPlay={true} ref={(audio) => audio && publisher.addAudioElement(audio)} />
+                        </div>
+                    )}
+                    {subscribers.map((sub, i) => (
+                        <div key={i} id="subscriber">
+                            <audio autoPlay={true} ref={(audio) => audio && sub.addAudioElement(audio)} />
+                        </div>
+                    ))}
+                    <button onClick={leaveSession} className={styles['end-call-button']}>통화 종료</button>
+                </div>
+            )}
+
+            {incomingCall && (
+                <div className={styles['incoming-call-container']}>
+                    <h3>통화 요청이 있습니다.</h3>
+                    <button onClick={handleCallAccept} className={styles['accept-call-button']}>수락</button>
+                    <button onClick={handleCallReject} className={styles['reject-call-button']}>거절</button>
+                </div>
+            )}
         </div>
     );
 };

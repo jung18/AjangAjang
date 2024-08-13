@@ -32,7 +32,7 @@ const SignUp = () => {
 
   const handleSendSms = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/user/sms/send', { phone }, {
+      const response = await axios.post('https://i11b210.p.ssafy.io:4443/api/user/sms/send', { phone }, {
         headers: {
           'Authorization': `${accessToken}`
         }
@@ -47,7 +47,7 @@ const SignUp = () => {
   
   const handleVerifyCode = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/user/sms/confirm', { phone, certificationNumber: verificationCode }, {
+      const response = await axios.post('https://i11b210.p.ssafy.io:4443/api/user/sms/confirm', { phone, certificationNumber: verificationCode }, {
         headers: {
           'Authorization': `${accessToken}`
         }
@@ -75,7 +75,7 @@ const SignUp = () => {
 
     try {
       console.log(addressName);
-      const addressResponse = await axios.post('http://localhost:8080/api/address/name', { addressName }, {
+      const addressResponse = await axios.post('https://i11b210.p.ssafy.io:4443/api/address/name', { addressName }, {
         headers: {
           'Authorization': `${accessToken}`,
           'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ const SignUp = () => {
         main_address_id
       };
 
-      const url = 'http://localhost:8080/sign-up'; // 서버 URL
+      const url = 'https://i11b210.p.ssafy.io:4443/sign-up'; // 서버 URL
 
       const response = await axios.post(url, data, {
         headers: {
