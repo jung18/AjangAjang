@@ -21,6 +21,7 @@ import MyLike from "./pages/myLike/MyLike";
 import MyReview from "./pages/myReview/MyReview";
 import MyInfo from "./pages/myInfo/MyInfo";
 import MyTrade from "./pages/myTrade/MyTrade";
+import EditMyInfo from "./pages/myInfo/EditMyInfo";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -42,6 +43,7 @@ const AppRoutes = () => {
       <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/reviews" element={<PageLayout page={<MyReview />} pageType={"myBoard"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
+      <Route path="/user/myinfo/edit" element={<PageLayout page={<EditMyInfo />} pageType={"myInfo"} />} />
       <Route
         path="/direct"
         element={

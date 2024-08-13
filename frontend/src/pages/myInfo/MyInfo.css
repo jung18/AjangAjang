@@ -1,0 +1,80 @@
+button {
+  border: none;
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.board-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff879e;
+  padding-left: 20px;
+  padding-top: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.myPage {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  overflow-y: auto;
+}
+
+.myPage .page-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px;
+}
+
+.myPage .page-top .profile {
+  display: flex;
+  align-items: center;
+}
+
+.myPage .page-top .profile img {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #ff8796;
+}
+
+.myPage .page-top .profile .profile-info {
+  margin-left: 8px;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top .profile-nickname {
+  font-weight: 900;
+  font-size: 17px;
+  margin-right: 8px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top .profile-level {
+  background-color: blanchedalmond;
+  border-radius: 4px;
+  color: rgb(83, 83, 83);
+  padding: 0 5px;
+}
+
+.myPage .page-top button {
+  font-size: 18px;
+  padding: 10px 13px;
+}
