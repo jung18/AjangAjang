@@ -7,7 +7,6 @@ import SockJS from 'sockjs-client';
 import styles from './Chat.module.css';
 import sentImage from '../../assets/icons/sent.png'; 
 import sentActiveImage from '../../assets/icons/sent-active.png';
-import loadingSpinner from '../../assets/icons/loading-spinner.gif';
 
 const Chat = () => {
     const { roomId } = useParams(); 
@@ -240,7 +239,7 @@ const Chat = () => {
                     style={{ cursor: message.trim() ? 'pointer' : 'not-allowed' }} 
                 />
                 {loading ? (
-                    <img src={loadingSpinner} alt="Loading" className={styles['loading-spinner']} />
+                    <div className={styles['loading-spinner']} />
                 ) : (
                     <button onClick={handleCallButtonClick} className={styles['call-button']}>통화</button>
                 )}
