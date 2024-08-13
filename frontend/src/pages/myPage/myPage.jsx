@@ -61,6 +61,10 @@ function MyPage() {
     navigate('/');
   };
 
+  const handleClickDeleteUser = () => {
+    alert('탈퇴 호출 api 작성하세요');
+  }
+
   // 프로필 이미지 변경 로직
   const handleProfileChange = (event) => {
     const file = event.target.files[0];
@@ -122,6 +126,9 @@ function MyPage() {
         </div>
         <div className={styles.menuitemcontainer}>
           <div className={styles.myInfo} onClick={handleClickLogOut}>로그 아웃</div>
+        </div>
+        <div className={styles.menuitemcontainer}>
+          <div className={styles.myInfo} onClick={handleClickDeleteUser}>회원 탈퇴</div>
         </div>
       </div>
     </div>

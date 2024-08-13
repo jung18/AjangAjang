@@ -1,0 +1,236 @@
+button {
+  border: none;
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.board-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff879e;
+  padding-left: 20px;
+  padding-top: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.myPage {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  overflow-y: auto;
+}
+
+.myPage .page-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px;
+}
+
+.myPage .page-top .profile {
+  display: flex;
+  align-items: center;
+}
+
+.myPage .page-top .profile img {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #ff8796;
+}
+
+.myPage .page-top .profile .profile-info {
+  margin-left: 8px;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top .profile-nickname {
+  font-weight: 900;
+  font-size: 17px;
+  margin-right: 8px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.myPage .page-top .profile .profile-info .profile-info-top .profile-level {
+  background-color: blanchedalmond;
+  border-radius: 4px;
+  color: rgb(83, 83, 83);
+  padding: 0 5px;
+}
+
+.myPage .page-top button {
+  font-size: 18px;
+  padding: 10px 13px;
+}
+
+.myPage .address {
+  margin-top: 40px;
+}
+
+.myPage .address .address-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 15px;
+}
+
+.myPage .address .address-header .address-title {
+  color: #ff8796;
+  font-size: 20px;
+}
+
+.myPage .address .address-header .address-btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.myPage .address .address-header .address-btns .change-rep {
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+}
+
+.myPage .address .address-header .address-btns .add-address {
+  width: 35px;
+  height: 35px;
+}
+
+.myPage .address .address-list {
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  font-family: "GmarketSansMedium", sans-serif;
+  height: 190px;
+  overflow-y: auto;
+}
+
+.myPage .address .address-list:hover {
+  transform: translateY(-5px);
+}
+
+.myPage .address .address-list .address-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 8px 0;
+  align-items: center;
+}
+
+.myPage .address .address-list .address-item .address-content {
+  width: 230px;
+  word-wrap: break-word; 
+  overflow-wrap: break-word;
+}
+
+.myPage .address .address-list .address-item .address-item-btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.myPage .address .address-list .address-item .address-item-btns .address-type-set {
+  color: #ff8796;
+  margin-right: 5px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.myPage .address .address-list .address-item .address-item-btns img {
+  width: 23px;
+}
+
+.myPage .children {
+  margin-top: 40px;
+}
+
+.myPage .children .children-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 15px;
+}
+
+.myPage .children .children-header .children-title {
+  color: #ff8796;
+  font-size: 20px;
+}
+
+.myPage .children .children-header .children-btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.myPage .children .children-header .children-btns .change-rep {
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+}
+
+.myPage .children .children-header .children-btns .add-children {
+  width: 35px;
+  height: 35px;
+}
+
+.myPage .children .children-list {
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  font-family: "GmarketSansMedium", sans-serif;
+  height: 190px;
+  overflow-y: auto;
+}
+
+.myPage .children .children-list:hover {
+  transform: translateY(-5px);
+}
+
+.myPage .children .children-list .children-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 8px 0;
+  align-items: center;
+}
+
+.myPage .children .children-list .children-item .children-content {
+  width: 230px;
+  word-wrap: break-word; 
+  overflow-wrap: break-word;
+}
+
+.myPage .children .children-list .children-item img {
+  width: 23px;
+}
