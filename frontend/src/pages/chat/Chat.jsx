@@ -133,35 +133,43 @@ const Chat = () => {
                 type: 'CALL_REQUEST',
             };
             stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
-
+    
             const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
             const token = tokenResponse.data;
-
+    
             let newSession = OV.current.initSession();
             sessionRef.current = newSession;
-
+    
             newSession.on('streamCreated', (event) => {
                 const subscriber = newSession.subscribe(event.stream, 'subscriber');
                 setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
             });
-
+    
             newSession.on('streamDestroyed', (event) => {
                 setSubscribers((prevSubscribers) =>
                     prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
                 );
             });
-
+    
             await newSession.connect(token);
-
+    
             let newPublisher = await OV.current.initPublisherAsync(undefined, {
                 audioSource: undefined,
                 videoSource: undefined,
                 publishAudio: true,
                 publishVideo: false,
             });
-
+    
+            console.log('Initialized Publisher:', newPublisher); // 퍼블리셔 객체 로그 추가
+    
+            if (!newPublisher || typeof newPublisher.addAudioElement !== 'function') {
+                console.error('Publisher object is invalid or does not have addAudioElement function');
+                setLoading(false); // 로딩 상태 종료
+                return;
+            }
+    
             newSession.publish(newPublisher);
-
+    
             setInCall(true);
             setPublisher(newPublisher);
             setLoading(false); // 로딩 상태 종료
@@ -171,6 +179,7 @@ const Chat = () => {
             setLoading(false); // 로딩 상태 종료
         }
     };
+    
 
     const handleCallAccept = async () => {
         try {
