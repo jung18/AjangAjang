@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ChatMessageDto {
 
     public enum MessageType {
-        ENTER, TALK, QUIT
+        ENTER, TALK, QUIT, CALL_REQUEST
     }
 
     private MessageType type;   // 메시지 타입 (ENTER, TALK, QUIT 등)

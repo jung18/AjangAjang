@@ -23,6 +23,11 @@ public class ChatController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto message) {
+        // CALL_REQUEST 왔을 때,
+        if (message.getType() == ChatMessageDto.MessageType.CALL_REQUEST) {
+            messagingTemplate.convertAndSend("/sub/chat/" + message.getRoomId(), message);
+            return; // 추가 작업을 하지 않고 종료합니다.
+        }
         chatService.sendChatMessage(message);
         chatService.updateReadTime(message);
         Long roomId = Long.parseLong(message.getRoomId());
