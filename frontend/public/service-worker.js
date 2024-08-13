@@ -51,13 +51,20 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(url.href, { cache: "no-store" }) // 네트워크 요청 우선, 캐시 사용 안함
+    fetch(url.href, { cache: "no-store" })
       .then((response) => {
-        // 네트워크 요청이 성공하면 최신 응답을 캐시에 저장
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, response.clone());
+        // 올바른 Response 객체만 캐시에 저장
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
+        }
+
+        // 네트워크 요청이 성공하면 최신 응답을 캐시에 저장
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
         });
+
+        return response;
       })
       .catch(() => {
         // 네트워크 요청이 실패하면 캐시에서 응답 제공
