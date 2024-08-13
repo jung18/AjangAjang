@@ -47,7 +47,9 @@ public class BoardApiController {
     @GetMapping("/board/{id}")
     public ResponseEntity<?> getBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                       @PathVariable("id") Long id) {
+        log.info(customOAuth2User.toString());
         String username = customOAuth2User.getUsername();
+        log.info(username);
         boardService.increaseRecommendationViewCount(username, id);
         boardService.increaseViewCount(id);
         BoardDto result = boardService.findById(id);

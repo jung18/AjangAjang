@@ -46,7 +46,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("https://i11b210.p.ssafy.io"));
+                        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -84,11 +84,11 @@ public class SecurityConfig {
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll());
-//                        .requestMatchers("/reissue").permitAll()
-//                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .anyRequest().hasRole("USER"));
+//                        .anyRequest().permitAll());
+                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
         httpSecurity
