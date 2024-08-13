@@ -1,5 +1,3 @@
-const webpack = require('webpack');
-
 module.exports = {
   webpack: function (config, env) {
     config.output.filename = 'static/js/[name].[hash:8].js';
