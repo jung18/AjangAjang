@@ -53,15 +53,6 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
-        path="/parcel"
-        element={
-          <PageLayout
-            page={<Board />}
-            pageType={"board"}
-          />
-        }
-      />
        <Route
         path="/post"
         element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
