@@ -8,8 +8,10 @@ import styles from './Chat.module.css';
 import apiClient from '../../api/apiClient';
 import sentImage from '../../assets/icons/sent.png'; 
 import sentActiveImage from '../../assets/icons/sent-active.png';
+import usePageStore from '../../store/currentPageStore';
 
 const Chat = () => {
+    const setCurrentPage = usePageStore((state) => state.setCurrentPage);
     const { roomId } = useParams(); 
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
@@ -304,8 +306,15 @@ const Chat = () => {
         audioElement.play();
     };
 
+    const navigateToPage = () => {
+        setCurrentPage('chat');
+        const url = "/room/" + roomId + "/recommend";
+        navigate(url);
+    }
+
     return (
         <div className={styles['chat-room-container']}>
+            <button type='button' onClick={navigateToPage}>넘어가기</button>
             <div className={styles['chat-box']} ref={chatBoxRef}>
                 {Array.isArray(messages) ? (
                     messages.map((msg, index) => {
