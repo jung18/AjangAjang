@@ -32,83 +32,55 @@ function Location() {
   const [loading, setLoading] = useState(true); // 로딩 상태
   const { roomId } = useParams(); // URL 경로에서 roomId를 가져옴
 
-  // 채팅방 정보
-     const getRoomData = async () => {
-      try {
-        console.log("getRoomData")
-        const data = await fetchRoomData(roomId);
-        setRoomData(data);
-        const creatorUserId = data.creatorUserId;
-        console.log("===================")
-        console.log(roomData)
-        
-        data.userRooms.forEach(room => {
-          if (room.userId === creatorUserId) {
-            setSellerId(room.userId);
-          } else {
-              setBuyerId(room.userId);
-          }
-        });
-
-        setCenter({ lat: data.latitude, lng: data.longitude })
-      } catch (error) {
-        console.log("에러에러")
-        console.error(error);
-      }};
-
-     const getBuyerData = async () => {
-        try {
-          const data = await fetchUserData(buyerId);
-          setBuyerData(data);
-          console.log("buyerData")
-          console.log(buyerData)
-          setBuyerLocation(data.mainAddressName);
-        } catch (error) {
-          console.error(error);
+  const getRoomData = async () => {
+    try {
+      console.log("getRoomData");
+      const data = await fetchRoomData(roomId);
+      setRoomData(data);
+  
+      const creatorUserId = data.creatorUserId;
+      console.log("===================");
+      console.log(roomData);
+  
+      let buyerId = '';
+      let sellerId = '';
+  
+      // roomData를 기반으로 buyerId와 sellerId 설정
+      data.userRooms.forEach(room => {
+        if (room.userId === creatorUserId) {
+          sellerId = room.userId;
+        } else {
+          buyerId = room.userId;
         }
-     };
+      });
 
-     const getSellerData = async () => {
-      try {
-        const data = await fetchUserData(sellerId);
-        setSellerLocation(data.mainAddressName)
-        setSellerData(data)
-        console.log("sellerData")
-        console.log(sellerData)
-      } catch (error) {
-        console.error(error);
+      console.log("buyerId", buyerId);
+      console.log("sellerId", sellerId);
+  
+      // buyerId와 sellerId가 모두 설정되면 해당 데이터 가져오기
+      if (buyerId) {
+        const buyerData = await fetchUserData(buyerId);
+        setBuyerData(buyerData);
+        setBuyerLocation(buyerData.mainAddressName);
       }
-   };
-
-   const waitForId = (idVariable) => {
-    return new Promise((resolve) => {
-      const checkInterval = setInterval(() => {
-        if (idVariable) {
-          clearInterval(checkInterval);
-          resolve();
-        }
-      }, 100); // 100ms마다 확인
-    });
+  
+      if (sellerId) {
+        const sellerData = await fetchUserData(sellerId);
+        setSellerData(sellerData);
+        setSellerLocation(sellerData.mainAddressName);
+      }
+  
+      // 지도 중심 설정
+      setCenter({ lat: data.latitude, lng: data.longitude });
+    } catch (error) {
+      console.log("에러 발생:", error);
+      console.error(error);
+    }
   };
   
   const recommendDataInit = async () => {
     try {
       await getRoomData();
-  
-      if (!buyerId) {
-        await waitForId(buyerId);
-      }
-      if (!sellerId) {
-        await waitForId(sellerId);
-      }
-  
-      // buyerId와 sellerId가 설정된 이후에만 실행
-      if (buyerId) {
-        await getBuyerData();
-      }
-      if (sellerId) {
-        await getSellerData();
-      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -116,11 +88,10 @@ function Location() {
     }
   };
   
-  
-
   useEffect(() => {
     recommendDataInit();
-}, []); // 초기 데이터 로드
+  }, []); // 초기 데이터 로드
+  
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend(); // 비동기로 호출하고 기다림
