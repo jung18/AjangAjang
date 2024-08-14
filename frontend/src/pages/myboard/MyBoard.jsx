@@ -17,27 +17,8 @@ const MyBoard = () => {
     useEffect(() => {
         const getBoards = async () => {
           try {
-            //const boardList = await fetchMyBoardList();
-            //setBoards(boardList);
-
-            setBoards([{
-              "category": "유모차",
-              "title": "유모차 팔아요",
-              "price": 12312312,
-              "likeCount": 10,
-            }, 
-            {
-              "category": "장난감",
-              "title": "장난감 팔아요",
-              "price": 12312312,
-              "likeCount": 10,
-            }, 
-            {
-              "category": "카시트",
-              "title": "카시트 팔아요",
-              "price": 12312312,
-              "likeCount": 10,
-            }]);
+            const boardList = await fetchMyBoardList();
+            setBoards(boardList);
           } catch (error) {
             console.error("Failed to fetch my boards", error);
           } finally {

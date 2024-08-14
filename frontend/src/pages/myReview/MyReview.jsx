@@ -10,41 +10,7 @@ function MyReview() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchReviewList();
-      //setReviews(response.data);
-      setReviews([
-        {
-          score: 5,
-          content: "좋아요",
-        },
-        {
-          score: 4,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-        {
-          score: 3,
-          content: "좋아요",
-        },
-      ]);
+      setReviews(response.data);
       console.log(reviews);
       setIsLoading(false);
     };

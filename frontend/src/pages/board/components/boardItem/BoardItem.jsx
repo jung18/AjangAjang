@@ -24,7 +24,7 @@ function BoardItem({ board }) {
   return (
     <div className="board-card" onClick={handleClick}>
       <div className="board-img">
-        <img alt="test" src="https://picsum.photos/200" />
+        <img alt="test" src={board.thumbnailUrl} />
       </div>
       <div className="info">
         <span className="location">지역 정보</span>
@@ -33,15 +33,9 @@ function BoardItem({ board }) {
       <div className="title">{board.title}</div>
       <div className="second-info">
         <div className="price">{formattedPrice}원</div>
-        <div className="like-chat">
-          <div className="like">
-            <img alt="like" src={LikeIcon} />
-            <div>{board.likeCount}</div>
-          </div>
-          <div className="chat">
-            <img alt="chat" src={ChatIcon} />
-            <div>0</div>
-          </div>
+        <div className="like">
+          <img alt="like" src={LikeIcon} />
+          <div>{board.likeCount}</div>
         </div>
       </div>
     </div>

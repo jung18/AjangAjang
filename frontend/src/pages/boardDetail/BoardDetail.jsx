@@ -89,7 +89,7 @@ function BoardDetail() {
 
   return (
     <div className="board-detail-page">
-      <img alt="board-img" src="https://picsum.photos/200" />
+      <img alt="board-img" src={boardDetail.thumbnailUrl} />
       <div className="img-btns">
         <img
           className="like-btn"
@@ -106,7 +106,7 @@ function BoardDetail() {
       </div>
       <div className="profile-bar">
         <div className="writer-profile">
-          <img alt="작성자 프로필" src="https://picsum.photos/200" />
+          <img alt="작성자 프로필" src={boardDetail.writer.nickname} />
           <div className="writer-info">
             <div className="writer-name">{boardDetail.writer.nickname}</div>
             <div className="other-info">
@@ -144,8 +144,7 @@ function BoardDetail() {
         <div className="post-main-content">{boardDetail.content}</div>
         <div className="post-last-info">
           <span>관심 {boardDetail.likeCount}</span>
-          <span>채팅 수</span>
-          <span>조회 수</span>
+          <span>조회 {boardDetail.viewCount}</span>
         </div>
       </div>
 
