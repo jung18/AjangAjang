@@ -17,7 +17,7 @@ const MyBoard = () => {
     useEffect(() => {
         const getBoards = async () => {
           try {
-            const boardList = await fetchMyBoardList();
+            const boardList = await fetchMyBoardList().data;
             setBoards(boardList);
           } catch (error) {
             console.error("Failed to fetch my boards", error);
