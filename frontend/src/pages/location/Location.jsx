@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk"; // Polyline 추가
+import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 import UseKakaoLoader from "./UseKakaoLoader";
 import useTokenStore from "../../store/useTokenStore";
 import { fetchUserData, fetchRoomData } from "../../api/locationService";
@@ -10,32 +10,27 @@ import "./Location.css";
 function Location() {
   UseKakaoLoader();
 
-  const [locations, setLocations] = useState([
-    { title: "", latlng: { lat: null, lng: null } }
-  ]);
+  const [locations, setLocations] = useState([]);
   const [center, setCenter] = useState({ lat: null, lng: null });
   const [level, setLevel] = useState(5);
-  const [pointLatLng, setPointLatLng] = useState({ lat: null, lng: null });
-  const [markerList, setMarkerList] = useState([]);
-  const accessToken = useTokenStore((state) => state.accessToken);
-  const [recommendType, setRecommendType] = useState(''); 
+  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null);
+  const [sellerLatLng, setSellerLatLng] = useState({ lat: null, lng: null });
+  const [buyerLatLng, setBuyerLatLng] = useState({ lat: null, lng: null });
+  const [sellerRoute, setSellerRoute] = useState({ distance: null, duration: null, path: [] });
+  const [buyerRoute, setBuyerRoute] = useState({ distance: null, duration: null, path: [] });
   const [sellerLocation, setSellerLocation] = useState('');
   const [buyerLocation, setBuyerLocation] = useState('');
   const [buyerId, setBuyerId] = useState('');
   const [sellerId, setSellerId] = useState('');
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [recommendType, setRecommendType] = useState(''); 
   const [roomData, setRoomData] = useState(null);
   const [buyerData, setBuyerData] = useState(null);
   const [sellerData, setSellerData] = useState(null);
+  const [markerList, setMarkerList] = useState([]); // markerList 상태 추가
   const [loading, setLoading] = useState(true);
   const { roomId } = useParams();
-  const [sellerLatLng, setSellerLatLng] = useState({ lat: null, lng: null });
-  const [buyerLatLng, setBuyerLatLng] = useState({ lat: null, lng: null });
   
-  // 추가된 상태
-  const [sellerRoute, setSellerRoute] = useState({ distance: null, duration: null, path: [] });
-  const [buyerRoute, setBuyerRoute] = useState({ distance: null, duration: null, path: [] });
-
   const getRoomData = async () => {
     try {
       const data = await fetchRoomData(roomId);
@@ -92,7 +87,7 @@ function Location() {
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend();
-    setMarkerList(data);
+    setMarkerList(data); // 추천된 장소 목록 설정
     setLocations(data);
     setCenter(data[0]?.latlng || center);
   };
@@ -102,18 +97,23 @@ function Location() {
     setRecommendType(selectedValue);
   };
 
-  const handleMarkerClick = async (latlng, title) => {
-    setCenter(latlng);
-    setSelectedMarker(title);
+  const toggleMarker = async (index, latlng) => {
+    if (selectedMarkerIndex === index) {
+      setSelectedMarkerIndex(null); // 선택 해제
+      setSellerRoute({ distance: null, duration: null, path: [] });
+      setBuyerRoute({ distance: null, duration: null, path: [] });
+    } else {
+      setSelectedMarkerIndex(index); // 새로운 마커 선택
 
-    if (sellerLatLng.lat && sellerLatLng.lng) {
-      const sellerRouteData = await getRouteData(sellerLatLng, latlng);
-      setSellerRoute(sellerRouteData);
-    }
+      if (sellerLatLng.lat && sellerLatLng.lng) {
+        const sellerRouteData = await getRouteData(sellerLatLng, latlng);
+        setSellerRoute(sellerRouteData);
+      }
 
-    if (buyerLatLng.lat && buyerLatLng.lng) {
-      const buyerRouteData = await getRouteData(buyerLatLng, latlng);
-      setBuyerRoute(buyerRouteData);
+      if (buyerLatLng.lat && buyerLatLng.lng) {
+        const buyerRouteData = await getRouteData(buyerLatLng, latlng);
+        setBuyerRoute(buyerRouteData);
+      }
     }
   };
 
@@ -131,7 +131,7 @@ function Location() {
         body: JSON.stringify(recodata)
       });
   
-      const data = await response.json(); // 여기서 .json()을 사용해야 합니다.
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error("Error fetching my like list", error);
@@ -147,12 +147,7 @@ function Location() {
         longitude: sellerData.longitude,
         latitude: sellerData.latitude
       };
-      console.log("buyerId", createTradeDto.buyerId)
-      console.log("recommendType", createTradeDto.recommendType)
-      console.log("longitude", createTradeDto.longitude)
-      console.log("latitude", createTradeDto.latitude)
       const response = await fetchData(createTradeDto);
-      console.log(response);
       const dataList = response.data.map((item, idx) => ({
         title: item.placeName,
         latlng: {
@@ -168,7 +163,6 @@ function Location() {
     }
   };
 
-  // 경로 데이터를 가져오는 함수 추가
   const getRouteData = async (origin, destination) => {
     try {
       const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${origin.lng},${origin.lat}&destination=${destination.lng},${destination.lat}&priority=RECOMMEND`;
@@ -176,7 +170,7 @@ function Location() {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `KakaoAK 429a317e8b573f6ae550bebbd54536d5`,
+          'Authorization': `KakaoAK YOUR_KAKAO_REST_API_KEY`,
         },
       });
 
@@ -189,7 +183,7 @@ function Location() {
       );
 
       return {
-        distance: (data.routes[0].summary.distance / 1000).toFixed(2), // 거리를 킬로미터로 변환
+        distance: (data.routes[0].summary.distance / 1000).toFixed(2),
         duration: formatDuration(data.routes[0].summary.duration),
         path,
       };
@@ -199,7 +193,6 @@ function Location() {
     }
   };
 
-  // 시간을 시, 분으로 변환하는 함수
   const formatDuration = (durationInSeconds) => {
     const hours = Math.floor(durationInSeconds / 3600);
     const minutes = Math.floor((durationInSeconds % 3600) / 60);
@@ -228,43 +221,42 @@ function Location() {
           center={center}
           style={{ width: "100%", height: "100%" }}
           level={level}
-          onClick={(_, mouseEvent) => {
-            const pointLatLng = mouseEvent.latLng;
-            setPointLatLng({ lat: pointLatLng.getLat(), lng: pointLatLng.getLng() });
-          }}
         >
-          {locations.map((loc, idx) => (
-            <MapMarker
-              key={`${loc.title}-${loc.latlng}`}
-              position={loc.latlng}
-              image={{
-                src: selectedMarker === loc.title
-                  ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
-                  : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-                size: { width: 24, height: 35 }
-              }}
-              title={loc.title}
-              onClick={() => handleMarkerClick(loc.latlng, loc.title)}
-            />
+          {/* 추천 마커 및 토글 기능 */}
+          {markerList.map((loc, idx) => (
+            (selectedMarkerIndex === null || selectedMarkerIndex === idx) && (
+              <MapMarker
+                key={`${loc.title}-${loc.latlng}`}
+                position={loc.latlng}
+                image={{
+                  src: selectedMarkerIndex === idx
+                    ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
+                    : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
+                  size: { width: 24, height: 35 }
+                }}
+                title={loc.title}
+                onClick={() => toggleMarker(idx, loc.latlng)}
+              />
+            )
           ))}
 
           {/* 판매자와의 경로 */}
-          {sellerRoute.path.length > 0 && (
+          {selectedMarkerIndex !== null && sellerRoute.path.length > 0 && (
             <Polyline
               path={sellerRoute.path}
               strokeWeight={5}
-              strokeColor="#FF0000"
+              strokeColor="#FF0000" // 빨간색
               strokeOpacity={0.7}
               strokeStyle="solid"
             />
           )}
 
           {/* 구매자와의 경로 */}
-          {buyerRoute.path.length > 0 && (
+          {selectedMarkerIndex !== null && buyerRoute.path.length > 0 && (
             <Polyline
               path={buyerRoute.path}
               strokeWeight={5}
-              strokeColor="#0000FF"
+              strokeColor="#0000FF" // 파란색
               strokeOpacity={0.7}
               strokeStyle="solid"
             />
@@ -272,39 +264,40 @@ function Location() {
         </Map>
       </div>
 
-      <div className="location-inputs">
+      <div className="location-inputs-horizontal">
         <div className="location-input">
           판매자 위치
-          <input value={sellerLocation} readOnly />
+          <textarea
+            value={`${sellerLocation}\n거리: ${sellerRoute.distance || 'N/A'} km\n시간: ${sellerRoute.duration || 'N/A'}`}
+            readOnly
+            style={{ color: "#FF0000" }} // 텍스트 색상 빨간색
+            rows="3"
+          />
         </div>
         <div className="location-input">
           구매자 위치
-          <input value={buyerLocation} readOnly />
+          <textarea
+            value={`${buyerLocation}\n거리: ${buyerRoute.distance || 'N/A'} km\n시간: ${buyerRoute.duration || 'N/A'}`}
+            readOnly
+            style={{ color: "#0000FF" }} // 텍스트 색상 파란색
+            rows="3"
+          />
         </div>
       </div>
-
-      {sellerRoute.distance && sellerRoute.duration && (
-        <div>
-          <h4>판매자와의 경로</h4>
-          <p>거리: {sellerRoute.distance} km</p>
-          <p>시간: {sellerRoute.duration}</p>
-        </div>
-      )}
-
-      {buyerRoute.distance && buyerRoute.duration && (
-        <div>
-          <h4>구매자와의 경로</h4>
-          <p>거리: {buyerRoute.distance} km</p>
-          <p>시간: {buyerRoute.duration}</p>
-        </div>
-      )}
 
       {markerList.length > 0 && (
         <div className="location-list">
           추천 장소
           <div className="location-items location-scroll">
             {markerList.map((item, idx) => (
-              <div key={idx} className="location-item" onClick={() => handleMarkerClick(item.latlng, item.title)}>
+              <div
+                key={idx}
+                className="location-item"
+                onClick={() => toggleMarker(idx, item.latlng)}
+                style={{
+                  backgroundColor: selectedMarkerIndex === idx ? "#ddd" : "#fff",
+                }}
+              >
                 {item.title}
               </div>
             ))}
