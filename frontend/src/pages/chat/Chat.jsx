@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -73,14 +72,14 @@ const Chat = () => {
                 },
                 () => {
                     stompClientRef.current = client;
-                    console.log('WebSocket connected successfully'); // WebSocket 연결 성공 로그 추가
+                    console.log('WebSocket connected successfully');
             
                     client.subscribe(`/sub/chat/${roomId}`, (msg) => {
                         const parsedMessage = JSON.parse(msg.body);
-                        console.log('Received message:', parsedMessage); // 수신한 메시지 로그 추가
+                        console.log('Received message:', parsedMessage);
             
                         if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
-                            console.log('Received CALL_REQUEST with sessionId:', parsedMessage.sessionId); // CALL_REQUEST 메시지 로그 추가
+                            console.log('Received CALL_REQUEST with sessionId:', parsedMessage.sessionId);
                             setIncomingCall(true);
                             setCallerSessionId(parsedMessage.sessionId);
                         } else {
@@ -89,7 +88,7 @@ const Chat = () => {
                     });
                 },
                 (error) => {
-                    console.error('Error connecting to WebSocket:', error); // WebSocket 연결 오류 로그 추가
+                    console.error('Error connecting to WebSocket:', error);
                 }
             );
             
@@ -119,7 +118,6 @@ const Chat = () => {
         setSendButtonImage(message.trim() ? sentActiveImage : sentImage);
     }, [message]);
 
-    
     const handleCallButtonClick = async () => {
         setLoading(true); // 로딩 상태 시작
         try {
@@ -130,7 +128,7 @@ const Chat = () => {
                 sessionId: newSessionId,
                 type: 'CALL_REQUEST',
             };
-            console.log(":::::::::::::::::::::::::::::::",message.type);
+            console.log("Sending CALL_REQUEST message:", message);
             stompClientRef.current.send(`/pub/chat/message`, {}, JSON.stringify(message));
     
             const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
@@ -152,18 +150,31 @@ const Chat = () => {
     
             await newSession.connect(token);
     
-            let newPublisher = await OV.current.initPublisherAsync(undefined, {
-                audioSource: undefined,
-                videoSource: undefined,
-                publishAudio: true,
-                publishVideo: false,
-            });
+            let newPublisher;
+            try {
+                newPublisher = await OV.current.initPublisherAsync(undefined, {
+                    audioSource: undefined,
+                    videoSource: undefined,
+                    publishAudio: true,
+                    publishVideo: false,
+                });
+
+                if (!newPublisher) {
+                    throw new Error('Failed to initialize Publisher');
+                }
+
+                console.log('Initialized Publisher:', newPublisher);
+            } catch (error) {
+                console.error('Error initializing Publisher:', error);
+                setLoading(false);
+                return;
+            }
     
-            console.log('Initialized Publisher:', newPublisher); // 퍼블리셔 객체 로그 추가
-    
-            if (!newPublisher || typeof newPublisher.addAudioElement !== 'function') {
+            if (newPublisher && typeof newPublisher.addAudioElement === 'function') {
+                newPublisher.addAudioElement(document.createElement('audio'));
+            } else {
                 console.error('Publisher object is invalid or does not have addAudioElement function');
-                setLoading(false); // 로딩 상태 종료
+                setLoading(false);
                 return;
             }
     
@@ -178,76 +189,79 @@ const Chat = () => {
             setLoading(false); // 로딩 상태 종료
         }
     };
-    
 
     const handleCallAccept = async () => {
         try {
             setLoading(true); // 로딩 상태 시작
     
-            // 세션 연결을 위한 토큰 요청
             const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${callerSessionId}/connections`);
             const token = tokenResponse.data;
-            console.log('Received token for session:', token); // 토큰 수신 로그 추가
+            console.log('Received token for session:', token);
     
-            // 새로운 세션 초기화
             let newSession = OV.current.initSession();
             sessionRef.current = newSession;
     
-            // 스트림이 생성되었을 때의 이벤트 핸들러
             newSession.on('streamCreated', (event) => {
-                console.log('Stream created:', event); // 스트림 생성 로그 추가
+                console.log('Stream created:', event);
                 const subscriber = newSession.subscribe(event.stream, 'subscriber');
                 setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
-                console.log('Subscriber added:', subscriber); // 구독자 추가 로그 추가
+                console.log('Subscriber added:', subscriber);
             });
     
-            // 스트림이 제거되었을 때의 이벤트 핸들러
             newSession.on('streamDestroyed', (event) => {
-                console.log('Stream destroyed:', event.stream.streamManager); // 스트림 제거 로그 추가
+                console.log('Stream destroyed:', event.stream.streamManager);
                 setSubscribers((prevSubscribers) =>
                     prevSubscribers.filter((sub) => sub !== event.stream.streamManager)
                 );
             });
     
-            // 세션 연결 시도
             await newSession.connect(token);
-            console.log('Session connected successfully'); // 세션 연결 성공 로그 추가
+            console.log('Session connected successfully');
     
-            // 퍼블리셔 초기화
-            let newPublisher = await OV.current.initPublisherAsync(undefined, {
-                audioSource: undefined, // 기본 오디오 소스 사용
-                videoSource: undefined, // 기본 비디오 소스 사용
-                publishAudio: true, // 오디오 발신 허용
-                publishVideo: false, // 비디오 발신 비활성화
-            });
-    
-            console.log('Publisher initialized:', newPublisher); // 퍼블리셔 초기화 로그 추가
-    
-            if (!newPublisher || typeof newPublisher.addAudioElement !== 'function') {
-                console.error('Publisher object is invalid or does not have addAudioElement function');
-                setLoading(false); // 로딩 상태 종료
+            let newPublisher;
+            try {
+                newPublisher = await OV.current.initPublisherAsync(undefined, {
+                    audioSource: undefined,
+                    videoSource: undefined,
+                    publishAudio: true,
+                    publishVideo: false,
+                });
+
+                if (!newPublisher) {
+                    throw new Error('Failed to initialize Publisher');
+                }
+
+                console.log('Publisher initialized:', newPublisher);
+            } catch (error) {
+                console.error('Error initializing Publisher:', error);
+                setLoading(false);
                 return;
             }
     
-            // 세션에 퍼블리셔 발행
+            if (newPublisher && typeof newPublisher.addAudioElement === 'function') {
+                newPublisher.addAudioElement(document.createElement('audio'));
+            } else {
+                console.error('Publisher object is invalid or does not have addAudioElement function');
+                setLoading(false);
+                return;
+            }
+    
             newSession.publish(newPublisher);
-            console.log('Publisher published to session'); // 퍼블리셔 발행 로그 추가
+            console.log('Publisher published to session');
     
             setInCall(true);
             setPublisher(newPublisher);
-            setIncomingCall(false); // 통화 요청 상태 초기화
-            setLoading(false); // 로딩 상태 종료
+            setIncomingCall(false);
+            setLoading(false);
     
         } catch (error) {
-            console.error('Error accepting call:', error); // 에러 로그 추가
+            console.error('Error accepting call:', error);
             alert('Failed to accept call. Please check your network and server.');
-            setLoading(false); // 로딩 상태 종료
+            setLoading(false);
         }
     };
-    
 
     const handleCallReject = () => {
-        // 통화 요청 거절 처리
         setIncomingCall(false);
         setCallerSessionId(null);
     };
@@ -270,7 +284,7 @@ const Chat = () => {
             roomId,
             userId,
             message,
-            time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
+            time: new Date().toISOString(),
         };
         stompClientRef.current.send('/pub/chat/message', {}, JSON.stringify(chatMessage));
         setMessage('');
@@ -282,7 +296,6 @@ const Chat = () => {
         const previousTime = dayjs(previousMessage.time);
         return !currentTime.isSame(previousTime, 'minute');
     };
-
 
     const leaveSession = () => {
         if (sessionRef.current) {
