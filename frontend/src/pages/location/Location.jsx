@@ -81,9 +81,9 @@ function Location() {
 
    const recommendDataInit = async () => {
     try {
-      getRoomData();
-      getBuyerData();
-      getSellerData();
+      await getRoomData();
+      await getBuyerData();
+      await getSellerData();
     } catch (error) {
       console.error(error);
     } finally {
