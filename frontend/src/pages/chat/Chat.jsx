@@ -140,6 +140,7 @@ const Chat = () => {
             newSession.on('streamCreated', (event) => {
                 const subscriber = newSession.subscribe(event.stream, 'subscriber');
                 setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+                addAudioElement(subscriber.stream);
             });
     
             newSession.on('streamDestroyed', (event) => {
@@ -170,14 +171,7 @@ const Chat = () => {
                 return;
             }
     
-            if (newPublisher && typeof newPublisher.addAudioElement === 'function') {
-                newPublisher.addAudioElement(document.createElement('audio'));
-            } else {
-                console.error('Publisher object is invalid or does not have addAudioElement function');
-                setLoading(false);
-                return;
-            }
-    
+            addAudioElement(newPublisher.stream);
             newSession.publish(newPublisher);
     
             setInCall(true);
@@ -205,6 +199,7 @@ const Chat = () => {
                 console.log('Stream created:', event);
                 const subscriber = newSession.subscribe(event.stream, 'subscriber');
                 setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+                addAudioElement(subscriber.stream);
                 console.log('Subscriber added:', subscriber);
             });
     
@@ -238,14 +233,7 @@ const Chat = () => {
                 return;
             }
     
-            if (newPublisher && typeof newPublisher.addAudioElement === 'function') {
-                newPublisher.addAudioElement(document.createElement('audio'));
-            } else {
-                console.error('Publisher object is invalid or does not have addAudioElement function');
-                setLoading(false);
-                return;
-            }
-    
+            addAudioElement(newPublisher.stream);
             newSession.publish(newPublisher);
             console.log('Publisher published to session');
     
@@ -306,6 +294,13 @@ const Chat = () => {
         setInCall(false);
     };
 
+    const addAudioElement = (stream) => {
+        const audioElement = document.createElement('audio');
+        audioElement.srcObject = stream.getMediaStream();
+        document.body.appendChild(audioElement);
+        audioElement.play();
+    };
+
     return (
         <div className={styles['chat-room-container']}>
             <div className={styles['chat-box']} ref={chatBoxRef}>
@@ -363,10 +358,8 @@ const Chat = () => {
                     {publisher && (
                         <div id="publisher">
                             <audio autoPlay={true} ref={(audio) => {
-                                if (audio && typeof publisher.addAudioElement === 'function') {
-                                    publisher.addAudioElement(audio);
-                                } else {
-                                    console.error('Failed to add audio element: Invalid Publisher object or addAudioElement is not a function');
+                                if (audio) {
+                                    addAudioElement(publisher.stream);
                                 }
                             }} />
                         </div>
@@ -374,10 +367,8 @@ const Chat = () => {
                     {subscribers.map((sub, i) => (
                         <div key={i} id="subscriber">
                             <audio autoPlay={true} ref={(audio) => {
-                                if (audio && typeof sub.addAudioElement === 'function') {
-                                    sub.addAudioElement(audio);
-                                } else {
-                                    console.error('Failed to add audio element: Invalid Subscriber object or addAudioElement is not a function');
+                                if (audio) {
+                                    addAudioElement(sub.stream);
                                 }
                             }} />
                         </div>
