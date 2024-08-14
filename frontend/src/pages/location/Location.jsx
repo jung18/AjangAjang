@@ -141,7 +141,7 @@ function Location() {
       };
 
       const response = await fetchData(createTradeDto);
-
+      console.log(response);
       const dataList = response.data.map((item, idx) => ({
         title: item.placeName,
         latlng: {
