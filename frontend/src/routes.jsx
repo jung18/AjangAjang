@@ -20,10 +20,15 @@ import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
 import MyReview from "./pages/myReview/MyReview";
 import MyInfo from "./pages/myInfo/MyInfo";
+
+import GeoLocation from "./pages/geoLocation/GeoLocation";
+import Location from "./pages/location/Location";
+
 import MyTrade from "./pages/myTrade/MyTrade";
 import EditMyInfo from "./pages/myInfo/EditMyInfo";
 
 import BoardEditor from "./pages/boardEditor/BoardEditor";
+
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -45,7 +50,12 @@ const AppRoutes = () => {
       <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/reviews" element={<PageLayout page={<MyReview />} pageType={"myBoard"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
+
+      <Route path="/gps" element={<GeoLocation />} />
+      <Route path="/room/:roomId/recommend" element={<PageLayout page={<Location />} pageType={"recommendLocation"} />} />
+
       <Route path="/user/myinfo/edit" element={<PageLayout page={<EditMyInfo />} pageType={"myInfo"} />} />
+
       <Route
         path="/direct"
         element={
