@@ -115,7 +115,10 @@ public class UserService {
             throw new CustomGlobalException(CustomStatusCode.INVALID_BIRTHDATE);
         }
         Child child = new Child(childInputDto.getName(), birthDate, Gender.valueOf(childInputDto.getGender()), user);
-        childRepository.save(child);
+        Child savedChild = childRepository.save(child);
+        if (user.getMainChildId() == null) {
+            user.setMainChildId(savedChild.getId());
+        }
     }
 
     public void deleteChild(String username, Long childId) {
