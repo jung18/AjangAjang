@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk"; // Polyline 추가
 import UseKakaoLoader from "./UseKakaoLoader";
-import axios from "axios";
 import useTokenStore from "../../store/useTokenStore";
 import { fetchUserData, fetchRoomData } from "../../api/locationService";
 import { useParams } from "react-router-dom";
-import apiClient from "../../api/apiClient";
 
 import "./Location.css";
 
@@ -17,35 +15,37 @@ function Location() {
   ]);
   const [center, setCenter] = useState({ lat: null, lng: null });
   const [level, setLevel] = useState(5);
-  const [pointLatLng, setPointLatLng] = useState({ lat: null, lng: null }); // 클릭한 곳의 위도경도
+  const [pointLatLng, setPointLatLng] = useState({ lat: null, lng: null });
   const [markerList, setMarkerList] = useState([]);
   const accessToken = useTokenStore((state) => state.accessToken);
-  const [recommendType, setRecommendType] = useState(''); // 추천 위치 타입
-  const [sellerLocation, setSellerLocation] = useState(''); // 판매자 위치 (게시글에 설정된 위치)
-  const [buyerLocation, setBuyerLocation] = useState(''); // 구매자 위치
-  const [buyerId, setBuyerId] = useState(''); // 구매자 아이디
-  const [sellerId, setSellerId] = useState(''); // 판매자 아이디
-  const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커
-  const [roomData, setRoomData] = useState(null); // 채팅방 정보
-  const [buyerData, setBuyerData] = useState(null); // 구매자 정보
-  const [sellerData, setSellerData] = useState(null); // 판매자 정보
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const { roomId } = useParams(); // URL 경로에서 roomId를 가져옴
+  const [recommendType, setRecommendType] = useState(''); 
+  const [sellerLocation, setSellerLocation] = useState('');
+  const [buyerLocation, setBuyerLocation] = useState('');
+  const [buyerId, setBuyerId] = useState('');
+  const [sellerId, setSellerId] = useState('');
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [roomData, setRoomData] = useState(null);
+  const [buyerData, setBuyerData] = useState(null);
+  const [sellerData, setSellerData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { roomId } = useParams();
+  const [sellerLatLng, setSellerLatLng] = useState({ lat: null, lng: null });
+  const [buyerLatLng, setBuyerLatLng] = useState({ lat: null, lng: null });
+  
+  // 추가된 상태
+  const [sellerRoute, setSellerRoute] = useState({ distance: null, duration: null, path: [] });
+  const [buyerRoute, setBuyerRoute] = useState({ distance: null, duration: null, path: [] });
 
   const getRoomData = async () => {
     try {
-      console.log("getRoomData");
       const data = await fetchRoomData(roomId);
       setRoomData(data);
-  
+
       const creatorUserId = data.creatorUserId;
-      console.log("===================");
-      console.log(roomData);
-  
+      
       let buyerId = '';
       let sellerId = '';
-  
-      // roomData를 기반으로 buyerId와 sellerId 설정
+
       data.userRooms.forEach(room => {
         if (room.userId === creatorUserId) {
           sellerId = room.userId;
@@ -54,30 +54,26 @@ function Location() {
         }
       });
 
-      console.log("buyerId", buyerId);
-      console.log("sellerId", sellerId);
-  
-      // buyerId와 sellerId가 모두 설정되면 해당 데이터 가져오기
       if (buyerId) {
         const buyerData = await fetchUserData(buyerId);
         setBuyerData(buyerData);
         setBuyerLocation(buyerData.mainAddressName);
+        setBuyerLatLng({ lat: buyerData.latitude, lng: buyerData.longitude });
       }
-  
+
       if (sellerId) {
         const sellerData = await fetchUserData(sellerId);
         setSellerData(sellerData);
         setSellerLocation(sellerData.mainAddressName);
+        setSellerLatLng({ lat: sellerData.latitude, lng: sellerData.longitude });
       }
-  
-      // 지도 중심 설정
+
       setCenter({ lat: data.latitude, lng: data.longitude });
     } catch (error) {
-      console.log("에러 발생:", error);
       console.error(error);
     }
   };
-  
+
   const recommendDataInit = async () => {
     try {
       await getRoomData();
@@ -87,17 +83,16 @@ function Location() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     recommendDataInit();
-  }, []); // 초기 데이터 로드
-  
+  }, []);
 
   const confirmBtnClickHandler = async () => {
-    const data = await handleRecommend(); // 비동기로 호출하고 기다림
-    setMarkerList(data); // 결과를 상태에 설정
-    setLocations(data); // location도 업데이트
-    setCenter(data[0]?.latlng || center); // 첫 번째 위치로 맵 상태를 업데이트
+    const data = await handleRecommend();
+    setMarkerList(data);
+    setLocations(data);
+    setCenter(data[0]?.latlng || center);
   };
 
   const handleRecommendChange = (event) => {
@@ -105,12 +100,22 @@ function Location() {
     setRecommendType(selectedValue);
   };
 
-  const handleMarkerClick = (latlng, title) => {
-    setCenter(latlng); // 지도 중심 이동
-    setSelectedMarker(title); // 선택된 마커의 title로 상태 업데이트
+  const handleMarkerClick = async (latlng, title) => {
+    setCenter(latlng);
+    setSelectedMarker(title);
+
+    if (sellerLatLng.lat && sellerLatLng.lng) {
+      const sellerRouteData = await getRouteData(sellerLatLng, latlng);
+      setSellerRoute(sellerRouteData);
+    }
+
+    if (buyerLatLng.lat && buyerLatLng.lng) {
+      const buyerRouteData = await getRouteData(buyerLatLng, latlng);
+      setBuyerRoute(buyerRouteData);
+    }
   };
 
-  const fetchData = async (recodata) => { // 내 찜 목록
+  const fetchData = async (recodata) => {
     try {
       const { accessToken } = useTokenStore.getState();
   
@@ -124,7 +129,7 @@ function Location() {
         body: JSON.stringify(recodata)
       });
   
-      const data = await response.data;
+      const data = await response.json(); // 여기서 .json()을 사용해야 합니다.
       return data;
     } catch (error) {
       console.error("Error fetching my like list", error);
@@ -154,12 +159,50 @@ function Location() {
       return dataList;
     } catch (error) {
       console.log(error);
-      return []; // 에러가 발생하면 빈 배열 반환
+      return []; 
     }
   };
 
+  // 경로 데이터를 가져오는 함수 추가
+  const getRouteData = async (origin, destination) => {
+    try {
+      const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${origin.lng},${origin.lat}&destination=${destination.lng},${destination.lat}&priority=RECOMMEND`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `KakaoAK 429a317e8b573f6ae550bebbd54536d5`,
+        },
+      });
+
+      const data = await response.json();
+      const path = data.routes[0].sections[0].roads.flatMap(road =>
+        road.vertexes.reduce((acc, val, idx, arr) => {
+          if (idx % 2 === 0) acc.push({ lat: arr[idx + 1], lng: arr[idx] });
+          return acc;
+        }, [])
+      );
+
+      return {
+        distance: (data.routes[0].summary.distance / 1000).toFixed(2), // 거리를 킬로미터로 변환
+        duration: formatDuration(data.routes[0].summary.duration),
+        path,
+      };
+    } catch (error) {
+      console.error('Error fetching route:', error);
+      return { distance: null, duration: null, path: [] };
+    }
+  };
+
+  // 시간을 시, 분으로 변환하는 함수
+  const formatDuration = (durationInSeconds) => {
+    const hours = Math.floor(durationInSeconds / 3600);
+    const minutes = Math.floor((durationInSeconds % 3600) / 60);
+    return `${hours > 0 ? `${hours}시간 ` : ''}${minutes}분`;
+  };
+
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+    return <div>Loading...</div>;
   }
 
   return (
@@ -169,7 +212,7 @@ function Location() {
           탐색
         </button>
         <select className="safe-location" defaultValue="" onChange={handleRecommendChange}>
-        <option value="" disabled>추천 기준</option>
+          <option value="" disabled>추천 기준</option>
           <option value="SELLER">판매자 가까운 쪽</option>
           <option value="BUYER">구매자 가까운 쪽</option>
           <option value="MIDDLE">중간 위치</option>
@@ -182,7 +225,7 @@ function Location() {
           level={level}
           onClick={(_, mouseEvent) => {
             const pointLatLng = mouseEvent.latLng;
-            setPointLatLng({lat: pointLatLng.getLat(),  lng: pointLatLng.getLng()});
+            setPointLatLng({ lat: pointLatLng.getLat(), lng: pointLatLng.getLng() });
           }}
         >
           {locations.map((loc, idx) => (
@@ -190,17 +233,40 @@ function Location() {
               key={`${loc.title}-${loc.latlng}`}
               position={loc.latlng}
               image={{
-                src: selectedMarker === loc.title 
-                      ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png" 
-                      : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
+                src: selectedMarker === loc.title
+                  ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
+                  : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
                 size: { width: 24, height: 35 }
               }}
               title={loc.title}
               onClick={() => handleMarkerClick(loc.latlng, loc.title)}
             />
           ))}
+
+          {/* 판매자와의 경로 */}
+          {sellerRoute.path.length > 0 && (
+            <Polyline
+              path={sellerRoute.path}
+              strokeWeight={5}
+              strokeColor="#FF0000"
+              strokeOpacity={0.7}
+              strokeStyle="solid"
+            />
+          )}
+
+          {/* 구매자와의 경로 */}
+          {buyerRoute.path.length > 0 && (
+            <Polyline
+              path={buyerRoute.path}
+              strokeWeight={5}
+              strokeColor="#0000FF"
+              strokeOpacity={0.7}
+              strokeStyle="solid"
+            />
+          )}
         </Map>
       </div>
+
       <div className="location-inputs">
         <div className="location-input">
           판매자 위치
@@ -211,17 +277,34 @@ function Location() {
           <input value={buyerLocation} readOnly />
         </div>
       </div>
-      {markerList.length > 0 && (
-      <div className="location-list">
-        추천 장소
-        <div className="location-items location-scroll">
-          {markerList.map((item, idx) => (
-            <div key={idx} className="location-item" onClick={() => handleMarkerClick(item.latlng, item.title)}>
-              {item.title}
-            </div>
-          ))}
+
+      {sellerRoute.distance && sellerRoute.duration && (
+        <div>
+          <h4>판매자와의 경로</h4>
+          <p>거리: {sellerRoute.distance} km</p>
+          <p>시간: {sellerRoute.duration}</p>
         </div>
-      </div>
+      )}
+
+      {buyerRoute.distance && buyerRoute.duration && (
+        <div>
+          <h4>구매자와의 경로</h4>
+          <p>거리: {buyerRoute.distance} km</p>
+          <p>시간: {buyerRoute.duration}</p>
+        </div>
+      )}
+
+      {markerList.length > 0 && (
+        <div className="location-list">
+          추천 장소
+          <div className="location-items location-scroll">
+            {markerList.map((item, idx) => (
+              <div key={idx} className="location-item" onClick={() => handleMarkerClick(item.latlng, item.title)}>
+                {item.title}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
