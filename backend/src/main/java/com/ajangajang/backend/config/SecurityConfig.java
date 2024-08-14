@@ -66,11 +66,11 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler));
 
-//        // 커스텀 EntryPoint 설정
-//        httpSecurity
-//                .exceptionHandling(exceptionHandling ->
-//                exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint())
-//        );
+        // 커스텀 EntryPoint 설정
+        httpSecurity
+                .exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint())
+        );
 
         // 경로별 인가 작업
         httpSecurity
@@ -100,8 +100,8 @@ public class SecurityConfig {
         return hierarchy;
     }
 
-//    @Bean
-//    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
-//        return new CustomAuthenticationEntryPoint();  // 커스텀 AuthenticationEntryPoint 사용
-//    }
+    @Bean
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();  // 커스텀 AuthenticationEntryPoint 사용
+    }
 }
