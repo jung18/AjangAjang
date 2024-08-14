@@ -117,10 +117,11 @@ function Location() {
       const response = await fetch("https://i11b210.p.ssafy.io:4443/api/address/recommend", {
         method: "POST",
         headers: {
-          "Authorization": `${accessToken}`
+          "Authorization": `${accessToken}`,
+          "Content-Type": "application/json"
         },
         credentials: 'include',
-        body: recodata,
+        body: JSON.stringify(recodata)
       });
   
       const data = await response.data;
@@ -140,13 +141,7 @@ function Location() {
         latitude: sellerData.latitude
       };
 
-      const response = await fetchData(createTradeDto, {
-        method: "GET",
-        headers: {
-          "Authorization": `${accessToken}`,
-          "Content-Type": "application/json"
-        },
-      });
+      const response = await fetchData(createTradeDto);
       console.log(response);
       const dataList = response.data.map((item, idx) => ({
         title: item.placeName,
