@@ -11,6 +11,7 @@ import LikeIcon from "../../assets/icons/like-inactive.png";
 import LikeActiveIcon from "../../assets/icons/like-active.png";
 import VideoIcon from "../../assets/icons/video.png";
 import CloseIcon from "../../assets/icons/close.png";
+import ImageNotFound from "../../assets/icons/image-not-found.png";
 
 import "./BoardDetetail.css";
 
@@ -113,7 +114,7 @@ function BoardDetail() {
 
   return (
     <div className="board-detail-page">
-      <img alt="board-img" src={boardDetail.thumbnailUrl} />
+      <img alt="board-img" src={boardDetail.thumbnailUrl || ImageNotFound} />
       <div className="img-btns">
         <img
           className="like-btn"
@@ -130,7 +131,7 @@ function BoardDetail() {
       </div>
       <div className="profile-bar">
         <div className="writer-profile">
-          <img alt="작성자 프로필" src={boardDetail.writer.profileImage} />
+          <img alt="작성자 프로필" src={boardDetail.writer.profileImage || ImageNotFound} />
           <div className="writer-info">
             <div className="writer-name">{boardDetail.writer.nickname}</div>
             <div className="other-info">
