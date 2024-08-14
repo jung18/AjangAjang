@@ -33,7 +33,7 @@ const BoardWrite = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await apiClient.get("`http://localhost:8080/api/user/my");
+        const response = await apiClient.get("`https://i11b210.p.ssafy.io:4443/api/user/my");
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user data", error);
@@ -43,7 +43,7 @@ const BoardWrite = () => {
     const fetchAddress = async () => {
       console.log("1. 사용자 정보 : " + user);
       try {
-        const response = await apiClient.get("`http://localhost:8080/api/address/my");
+        const response = await apiClient.get("`https://i11b210.p.ssafy.io:4443/api/address/my");
         console.log("2. 사용자 주소 목록 : " + response.data);
 
         if (
