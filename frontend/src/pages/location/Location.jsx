@@ -5,6 +5,7 @@ import axios from "axios";
 import useTokenStore from "../../store/useTokenStore";
 import { fetchUserData, fetchRoomData } from "../../api/locationService";
 import { useParams } from "react-router-dom";
+import apiClient from "../../api/apiClient";
 
 import "./Location.css";
 
@@ -81,9 +82,9 @@ function Location() {
 
    const recommendDataInit = async () => {
     try {
-      getRoomData();
-      getBuyerData();
-      getSellerData();
+      await getRoomData();
+      await getBuyerData();
+      await getSellerData();
     } catch (error) {
       console.error(error);
     } finally {
@@ -93,8 +94,7 @@ function Location() {
 
   useEffect(() => {
     recommendDataInit();
-    // handleRecommend();
-  }, []); // 빈 배열을 추가하여 한 번만 호출되도록 설정
+}, []); // 초기 데이터 로드
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend(); // 비동기로 호출하고 기다림
@@ -122,14 +122,9 @@ function Location() {
         latitude: sellerData.latitude
       };
 
-      const url = "https://i11b210.p.ssafy.io:4443/api/address/recommend";
+      const url = "/api/address/recommend";
 
-      const response = await axios.post(url, createTradeDto, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${accessToken}`
-        }
-      });
+      const response = await apiClient.post(url, createTradeDto);
 
       const recommendDto = response.data;
       const dataList = recommendDto.data.map((item, idx) => ({

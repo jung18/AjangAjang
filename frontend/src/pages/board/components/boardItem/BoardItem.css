@@ -17,44 +17,38 @@
   border-radius: 10px;
 }
 
-.board-card .info {
-  color: #00000073;
-  font-size: 12px;
-  font-weight: 500;
+.board-card .board-content {
   margin-top: 6px;
 }
 
-.board-card .info .location {
-  height: 14px;
-  align-items: center;
-}
-
-.board-card .info .category {
+.board-card .board-content .category {
+  color: #00000073;
+  font-size: 12px;
   border-radius: 2px;
-  margin-left: 8px;
+  width: fit-content;
   height: 14px;
   align-items: center;
   background-color: #feedb1;
 }
 
-.board-card .title {
+.board-card .board-content .title {
   font-size: 17px;
 }
 
-.board-card .second-info {
+.board-card .board-content .second-info {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
 
-.board-card .second-info .price {
+.board-card .board-content .second-info .price {
   display: flex;
   align-items: flex-end;
   font-size: 12px;
   height: 18px;
 }
 
-.board-card .second-info .like {
+.board-card .board-content .second-info .like {
   font-size: 11px;
   height: 18px;
   color: #ffca00;
@@ -62,11 +56,11 @@
   align-items: center;
 }
 
-.board-card .second-info .like > img {
+.board-card .board-content .second-info .like > img {
   height: 15px;
 }
 
-.board-card .second-info .like > div {
+.board-card .board-content .second-info .like > div {
   height: 18px;
   display: flex;
   align-items: flex-end;

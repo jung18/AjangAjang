@@ -27,6 +27,7 @@
   right: 0;
   top: 370px;
   padding: 0 15px;
+  z-index: 3; 
 }
 
 .board-detail-page .img-btns img {
@@ -131,9 +132,6 @@
   margin: 10px 15px;
 }
 
-.board-detail-page .post-content .post-content-info .info-left {
-
-}
 
 .board-detail-page .post-content .post-content-info .info-left .post-title {
   font-size: 19px;
@@ -202,4 +200,35 @@
   position: relative;
   width: 80%;
   max-width: 800px;
+}
+
+.slider {
+  position: relative;
+  z-index: 1; /* 다른 요소들보다 위에 위치 */
+}
+
+.prev-btn,
+.next-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(132, 132, 132, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2; /* 이미지 위로 올라오게 설정 */
+  font-size: 40px;
+}
+
+.prev-btn {
+  left: 10px; /* 왼쪽 버튼 위치 */
+}
+
+.next-btn {
+  right: 10px; /* 오른쪽 버튼 위치 */
+}
+
+.board-detail-page .video-modal {
+  z-index: 1000; /* 모든 요소들보다 위에 위치 */
 }

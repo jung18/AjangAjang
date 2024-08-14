@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";  // axios를 사용하여 API 요청을 처리합니다.
+import axios from "axios"; // axios를 사용하여 API 요청을 처리합니다.
 
 import { deleteMyBoard } from "../../api/boardService";
 import { fetchBoardDetail } from "../../api/boardDetailService";
@@ -24,6 +24,8 @@ function BoardDetail() {
   const [formattedPrice, setFormattedPrice] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+  const [formattedDate, setFormattedDate] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 이미지 인덱스를 추적
 
   const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
@@ -40,37 +42,41 @@ function BoardDetail() {
 
   const getCategoryLabel = (category) => {
     switch (category) {
-      case 'DAILY_SUPPLIES':
-        return '일상 용품';
-      case 'BABY_CARRIAGE':
-        return '유모차';
-      case 'FURNITURE':
-        return '아기가구';
-      case 'BABY_CLOTHES':
-        return '아기옷';
-      case 'TOY':
-        return '장난감';
-      case 'CAR_SEAT':
-        return '카시트';
+      case "DAILY_SUPPLIES":
+        return "일상 용품";
+      case "BABY_CARRIAGE":
+        return "유모차";
+      case "FURNITURE":
+        return "아기가구";
+      case "BABY_CLOTHES":
+        return "아기옷";
+      case "TOY":
+        return "장난감";
+      case "CAR_SEAT":
+        return "카시트";
       default:
-        return '기타';
+        return "기타";
+    }
+  };
+
+  const getBoardDetail = async () => {
+    try {
+      const data = await fetchBoardDetail(id); // id를 사용해 fetchBoardDetail 호출
+      setBoardDetail(data);
+      setFormattedPrice(new Intl.NumberFormat("en-US").format(data.price));
+      setIsLiked(data.liked); // 초기 찜 상태를 설정
+      const formattedDate = String(
+        new Date(data.createdAt).toISOString().split("T")[0]
+      );
+      setFormattedDate(formattedDate);
+    } catch (error) {
+      console.error("Failed to fetch board details:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const getBoardDetail = async () => {
-      try {
-        const data = await fetchBoardDetail(id); // id를 사용해 fetchBoardDetail 호출
-        setBoardDetail(data);
-        setFormattedPrice(new Intl.NumberFormat("en-US").format(data.price));
-        setIsLiked(data.liked);  // 초기 찜 상태를 설정
-      } catch (error) {
-        console.error("Failed to fetch board details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getBoardDetail();
   }, [id]); // boardId가 변경될 때마다 useEffect 재실행
 
@@ -80,12 +86,12 @@ function BoardDetail() {
         // 찜하기 취소 요청
         await apiClient.delete(`api/board/${id}/likes`);
         setIsLiked(false); // 찜 상태 업데이트
-        alert("좋아요를 취소했습니다.")
+        alert("좋아요를 취소했습니다.");
       } else {
         // 찜하기 요청
         await apiClient.post(`api/board/${id}/likes`);
         setIsLiked(true); // 찜 상태 업데이트
-        alert("좋아요를 눌렀습니다.")
+        alert("좋아요를 눌렀습니다.");
       }
     } catch (error) {
       console.error("Failed to toggle like status:", error);
@@ -113,6 +119,17 @@ function BoardDetail() {
       console.error("채팅방 생성 실패:", error);
       alert("채팅방을 생성할 수 없습니다. 다시 시도해 주세요.");
     }
+
+  const handlePreviousImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === filteredImages.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
   if (loading) {
@@ -127,9 +144,16 @@ function BoardDetail() {
     );
   }
 
+  //이미지 슬라이더에 사용할 이미지 필터링 (VIDEO는 제외)
+  const filteredImages = boardDetail.mediaList.filter(
+    (media) => media.mediaType === "IMAGE"
+  );
+
   const videoBtnClickHandler = () => {
-    // VIDEO 타입의 미디어를 찾는다
-    const videoMedia = boardDetail.mediaList.find((media) => media.mediaType === "VIDEO");
+    //VIDEO 타입의 미디어를 찾는다
+    const videoMedia = boardDetail.mediaList.find(
+      (media) => media.mediaType === "VIDEO"
+    );
 
     const url = videoMedia ? videoMedia.mediaUrl : "";
 
@@ -144,13 +168,30 @@ function BoardDetail() {
 
   return (
     <div className="board-detail-page">
-      <img alt="board-img" src={boardDetail.thumbnailUrl || ImageNotFound} />
+      <div className="image-slider">
+        {filteredImages.length > 0 ? (
+          <div className="slider">
+            <img
+              alt="board-img"
+              src={filteredImages[currentImageIndex].mediaUrl || ImageNotFound}
+            />
+            <button className="prev-btn" onClick={handlePreviousImage}>
+              &#8249; {/* 이전 화살표 */}
+            </button>
+            <button className="next-btn" onClick={handleNextImage}>
+              &#8250; {/* 다음 화살표 */}
+            </button>
+          </div>
+        ) : (
+          <img alt="board-img" src={ImageNotFound} />
+        )}
+      </div>
       <div className="img-btns">
         <img
           className="like-btn"
           alt="like"
           src={isLiked ? LikeActiveIcon : LikeIcon}
-          onClick={toggleLikeStatus}  // 클릭 시 찜 상태를 토글
+          onClick={toggleLikeStatus} // 클릭 시 찜 상태를 토글
         />
         <img
           className="video-btn"
@@ -161,12 +202,15 @@ function BoardDetail() {
       </div>
       <div className="profile-bar">
         <div className="writer-profile">
-          <img alt="작성자 프로필" src={boardDetail.writer.profileImage || ImageNotFound} />
+          <img
+            alt="작성자 프로필"
+            src={boardDetail.writer.profileImage || ImageNotFound}
+          />
           <div className="writer-info">
             <div className="writer-name">{boardDetail.writer.nickname}</div>
             <div className="other-info">
-              <span className="level">레벨 정보</span>
-              <span>지역</span>
+              <span className="level">{boardDetail.writer.level}</span>
+              <span>{boardDetail.address}</span>
             </div>
           </div>
         </div>
@@ -190,8 +234,10 @@ function BoardDetail() {
           <div className="info-left">
             <div className="post-title">{boardDetail.title}</div>
             <div className="post-other-info">
-              <span className="post-category">{getCategoryLabel(boardDetail.category)}</span>
-              <span>작성 시각</span>
+              <span className="post-category">
+                {getCategoryLabel(boardDetail.category)}
+              </span>
+              <span>{formattedDate}</span>
             </div>
           </div>
           <div className="post-price">{formattedPrice}원</div>

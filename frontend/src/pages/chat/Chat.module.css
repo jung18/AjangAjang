@@ -11,6 +11,13 @@
   padding-top: 13%;
 }
 
+.location-btn {
+  position: fixed;
+  top: 60px;
+  right: 45px;
+  width: 30px;
+}
+
 .chat-box {
   flex: 1;
   overflow-y: auto;
