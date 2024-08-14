@@ -72,10 +72,6 @@ public class AddressApiController {
 
     @PostMapping("/recommend")
     public ResponseEntity<?> getRecommendAddresses(@RequestBody CreateRecommendDto dto) {
-        log.info("buyerId = " + String.valueOf(dto.getBuyerId()));
-        log.info("recommendType = " + dto.getRecommendType().name());
-        log.info("latitude = " + String.valueOf(dto.getLatitude()));
-        log.info("longitude = " + String.valueOf(dto.getLongitude()));
         List<RecommendDto> result = userAddressService.getRecommendLocations(dto);
         return new ResponseEntity<>(Map.of("data", result), HttpStatus.OK);
     }
