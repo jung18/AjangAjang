@@ -36,6 +36,25 @@ function BoardDetail() {
     deleteMyBoard(id);
   };
 
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case 'DAILY_SUPPLIES':
+        return '일상 용품';
+      case 'BABY_CARRIAGE':
+        return '유모차';
+      case 'FURNITURE':
+        return '아기가구';
+      case 'BABY_CLOTHES':
+        return '아기옷';
+      case 'TOY':
+        return '장난감';
+      case 'CAR_SEAT':
+        return '카시트';
+      default:
+        return '기타';
+    }
+  };
+
   useEffect(() => {
     // 데이터를 가져오는 비동기 함수
     const getBoardDetail = async () => {
@@ -110,7 +129,7 @@ function BoardDetail() {
       </div>
       <div className="profile-bar">
         <div className="writer-profile">
-          <img alt="작성자 프로필" src={boardDetail.writer.nickname} />
+          <img alt="작성자 프로필" src={boardDetail.writer.profileImage} />
           <div className="writer-info">
             <div className="writer-name">{boardDetail.writer.nickname}</div>
             <div className="other-info">
@@ -139,7 +158,7 @@ function BoardDetail() {
           <div className="info-left">
             <div className="post-title">{boardDetail.title}</div>
             <div className="post-other-info">
-              <span className="post-category">{boardDetail.category}</span>
+              <span className="post-category">{getCategoryLabel(boardDetail.category)}</span>
               <span>작성 시각</span>
             </div>
           </div>
