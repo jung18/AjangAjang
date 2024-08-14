@@ -11,5 +11,6 @@ public class UserProfileDto {
     private Long userId;
     private String nickname;
     private String profileImage;
+    private String level;
 
 }

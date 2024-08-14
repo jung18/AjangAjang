@@ -21,6 +21,7 @@ public class BoardDto {
     private String content;
     private String category;
     private Status status;
+    private String address;
     private List<BoardMediaDto> mediaList = new ArrayList<>();
     private int likeCount;
     private int viewCount;

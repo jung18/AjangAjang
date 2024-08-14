@@ -13,6 +13,7 @@ import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.AddressRepository;
 import com.ajangajang.backend.user.model.repository.ChildRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
+import com.ajangajang.backend.user.model.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -36,11 +37,12 @@ public class BoardService {
     private final BoardMediaRepository boardMediaRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final ChildRepository childRepository;
+    private final RecommendationRepository recommendationRepository;
 
     private final FileService fileService;
     private final KakaoApiService kakaoApiService;
-    private final ChildRepository childRepository;
-    private final RecommendationRepository recommendationRepository;
+    private final UserService userService;
 
     public Board save(String username, CreateBoardDto dto, List<MultipartFile> files) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -63,10 +65,12 @@ public class BoardService {
                 .collect(Collectors.toList());
 
         User findWriter = findBoard.getWriter();
-        UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg());
+        UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg(),
+                userService.getLevel(findWriter.getScore()));
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
                             findBoard.getContent(), findBoard.getCategory().name(), findBoard.getStatus(),
+                            findBoard.getAddress().getSigg() + " " + findBoard.getAddress().getEmd(),
                             mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getViewCount(),
                             findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
@@ -152,7 +156,7 @@ public class BoardService {
             User writer = board.getWriter();
             String thumbnail = getThumbnail(board);
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
-                    writer.getProfileImg());
+                    writer.getProfileImg(), userService.getLevel(writer.getScore()));
             result.add(new BoardListDto(board.getId(), thumbnail, profile, board.getTitle(), board.getPrice(),
                     board.getCategory().name(),
                     board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
