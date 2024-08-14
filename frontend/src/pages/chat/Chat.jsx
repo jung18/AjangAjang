@@ -363,7 +363,7 @@ const Chat = () => {
           sellerId = room.userId;
         } else {
           buyerId = room.userId;
-          boardId = room.boardId;
+          boardId = roomData.boardId;
         }
       });
 
