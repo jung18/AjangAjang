@@ -130,7 +130,8 @@ const Chat = () => {
                 sessionId: newSessionId,
                 type: 'CALL_REQUEST',
             };
-            stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
+            console.log(":::::::::::::::::::::::::::::::",message.type);
+            stompClientRef.current.send(`/pub/chat/message`, {}, JSON.stringify(message));
     
             const tokenResponse = await apiClient.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
             const token = tokenResponse.data;
