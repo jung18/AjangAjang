@@ -10,11 +10,13 @@ import com.ajangajang.backend.chat.repository.UserRoomRepository;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -25,6 +27,7 @@ public class ChatService {
     private final UserRoomRepository userRoomRepository;
 
     public void sendChatMessage(ChatMessageDto messageDto) {
+        log.info("Service message type: {}", messageDto.getType());
         // CALL_REQUEST 메시지는 저장하지 않기
         if (messageDto.getType() == ChatMessageDto.MessageType.CALL_REQUEST) {
             return; // 메시지 저장 넘김
