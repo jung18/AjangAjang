@@ -110,6 +110,27 @@ function Location() {
     setSelectedMarker(title); // 선택된 마커의 title로 상태 업데이트
   };
 
+  const fetchData = async (recodata) => { // 내 찜 목록
+    try {
+      const { accessToken } = useTokenStore.getState();
+  
+      const response = await fetch("https://i11b210.p.ssafy.io:4443/api/address/recommend", {
+        method: "POST",
+        headers: {
+          "Authorization": `${accessToken}`
+        },
+        credentials: 'include',
+        body: recodata,
+      });
+  
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      console.error("Error fetching my like list", error);
+      throw error;
+    }
+  };
+
   const handleRecommend = async () => {
     try {
       const createTradeDto = {
@@ -119,9 +140,7 @@ function Location() {
         latitude: sellerData.latitude
       };
 
-      const url = "/api/address/recommend";
-
-      const response = await apiClient.post(url, createTradeDto);
+      const response = await fetchData(createTradeDto);
 
       const recommendDto = response.data;
       const dataList = recommendDto.data.map((item, idx) => ({
