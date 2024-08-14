@@ -30,9 +30,6 @@ const Tabbar = () => {
       case "/direct":
         navigate("/direct");
         break;
-      case "/parcel":
-        navigate("/parcel");
-        break;
       case "/post":
         navigate("/post");
         break;
@@ -61,14 +58,6 @@ const Tabbar = () => {
           showText={true}
           isActive={currentPage.startsWith("/direct")}
           click={() => setActiveTab("/direct")}
-        />
-        <IconButton className="icon-btn"
-          activeIcon={ActiveBoxIcon}
-          inactiveIcon={boxIcon}
-          label="택배거래"
-          showText={true}
-          isActive={currentPage.startsWith("/parcel")}
-          click={() => setActiveTab("/parcel")}
         />
         <IconButton className="icon-btn"
           activeIcon={ActivePostIcon}
