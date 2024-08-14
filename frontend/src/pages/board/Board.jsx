@@ -52,7 +52,7 @@ const Board = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await apiClient.get("http://localhost:8080/api/user/my");
+        const response = await apiClient.get("https://i11b210.p.ssafy.io:4443/api/user/my");
         setUser(response.data); // 사용자 정보를 상태에 저장
       } catch (error) {
         console.error("Failed to fetch user data", error);

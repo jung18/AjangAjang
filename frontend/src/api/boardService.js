@@ -70,7 +70,7 @@ export const deleteMyBoard = async (id) => { // 내 찜 목록
   try {
     const { accessToken } = useTokenStore.getState();
 
-    await fetch("http://localhost:8080/api/board/" + id, {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/board/" + id, {
       method: "DELETE",
       headers: {
         "Authorization": `${accessToken}`

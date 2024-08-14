@@ -5,7 +5,7 @@ export const fetchMyAddressList = async () => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("http://localhost:8080/api/address/my", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/address/my", {
       method: "GET",
       headers: {
         Authorization: `${accessToken}`,
@@ -27,7 +27,7 @@ export const fetchMyChildrenList = async () => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("http://localhost:8080/api/user/child", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/user/child", {
       method: "GET",
       headers: {
         Authorization: `${accessToken}`,
@@ -49,7 +49,7 @@ export const updateAddressRep = async (id) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("http://localhost:8080/api/address/main", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/address/main", {
       method: "POST",
       headers: {
         Authorization: `${accessToken}`,
@@ -73,7 +73,7 @@ export const addAddress = async (address) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("http://localhost:8080/api/address/name", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/address/name", {
       method: "POST",
       headers: {
         Authorization: `${accessToken}`,
@@ -96,7 +96,7 @@ export const deleteAddress = async (id) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    await fetch("http://localhost:8080/api/address/my/" + JSON.stringify(id), {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/address/my/" + JSON.stringify(id), {
       method: "DELETE",
       headers: {
         Authorization: `${accessToken}`,
@@ -116,7 +116,7 @@ export const setNearType = async (type) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    await fetch("http://localhost:8080/api/address/main/range", {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/address/main/range", {
       method: "POST",
       headers: {
         Authorization: `${accessToken}`,
@@ -136,7 +136,7 @@ export const updateChildrenRep = async (id) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    await fetch("http://localhost:8080/api/user/child/" + JSON.stringify(id), {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/user/child/" + JSON.stringify(id), {
       method: "POST",
       headers: {
         Authorization: `${accessToken}`,
@@ -156,7 +156,7 @@ export const addChild = async (child) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    await fetch("http://localhost:8080/api/user/child", {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/user/child", {
       method: "POST",
       headers: {
         Authorization: `${accessToken}`,
@@ -176,7 +176,7 @@ export const deleteChild = async (id) => {
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    await fetch("http://localhost:8080/api/user/child/" + JSON.stringify(id), {
+    await fetch("https://i11b210.p.ssafy.io:4443/api/user/child/" + JSON.stringify(id), {
       method: "DELETE",
       headers: {
         Authorization: `${accessToken}`,
