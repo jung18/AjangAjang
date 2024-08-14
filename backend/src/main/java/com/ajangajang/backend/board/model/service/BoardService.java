@@ -197,16 +197,15 @@ public class BoardService {
         }
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
-        String category = board.getCategory().name();
+        Category category = board.getCategory();
 
         // 카테고리가 없거나 '기타'면 카운트 안함
         if (category == null || category.equals("ETC")) {
             return;
         }
 
-        String ageGroup = searchAgeGroup(child.getBirthDate()).name();
-        String gender = child.getGender().name();
-
+        AgeGroup ageGroup = searchAgeGroup(child.getBirthDate());
+        Gender gender = child.getGender();
         recommendationRepository.increaseRecommendationViewCount(ageGroup, gender, category);
     }
 
@@ -248,8 +247,8 @@ public class BoardService {
             throw new CustomGlobalException(CustomStatusCode.MAIN_CHILD_NOT_FOUND);
         }
 
-        String ageGroup = searchAgeGroup(child.getBirthDate()).name();
-        String gender = child.getGender().name();
+        AgeGroup ageGroup = searchAgeGroup(child.getBirthDate());
+        Gender gender = child.getGender();
 
         return recommendationRepository.findRecommendationCategory(ageGroup, gender);
     }

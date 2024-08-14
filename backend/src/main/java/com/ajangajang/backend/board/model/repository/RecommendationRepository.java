@@ -1,6 +1,8 @@
 package com.ajangajang.backend.board.model.repository;
 
+import com.ajangajang.backend.board.model.entity.AgeGroup;
 import com.ajangajang.backend.board.model.entity.Category;
+import com.ajangajang.backend.board.model.entity.Gender;
 import com.ajangajang.backend.board.model.entity.Recommendation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,10 +13,10 @@ public interface RecommendationRepository extends JpaRepository<Recommendation, 
     @Modifying
     @Query("UPDATE Recommendation r SET r.viewCount = r.viewCount + 1 " +
             "WHERE r.ageGroup = :ageGroup AND r.gender = :gender AND r.category = :category")
-    void increaseRecommendationViewCount(String ageGroup, String gender, String category);
+    void increaseRecommendationViewCount(AgeGroup ageGroup, Gender gender, Category category);
 
     @Query("SELECT r.category FROM Recommendation r " +
             "WHERE r.ageGroup = :ageGroup AND r.gender = :gender " +
             "ORDER BY r.viewCount DESC LIMIT 1 ")
-    Category findRecommendationCategory(String ageGroup, String gender);
+    Category findRecommendationCategory(AgeGroup ageGroup, Gender gender);
 }
