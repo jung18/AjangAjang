@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import usePageStore from "../../../../store/currentPageStore";
 
 import LikeIcon from "../../../../assets/icons/like.png";
-import ChatIcon from "../../../../assets/icons/chat.png";
+import CameraIcon from "../../../../assets/camera.png";
 
 import "./BoardItem.css";
 
@@ -43,7 +43,7 @@ function BoardItem({ board }) {
   return (
     <div className="board-card" onClick={handleClick}>
       <div className="board-img">
-        <img alt="test" src={board.thumbnailUrl} />
+        <img alt="test" src={board.thumbnailUrl || CameraIcon} />
       </div>
       <div className="info">
         <span className="location">지역 정보</span>
