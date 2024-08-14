@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchBoardList } from "../../api/boardService";
 import useTokenStore from '../../store/useTokenStore'; // 경로 수정
+import useUserStore from "../../store/useUserStore";
+
+import apiClient from "../../api/apiClient";
 
 import BoardList from "./components/boardList/BoardList";
 import SelectBox from "../../components/SelectBox";
@@ -18,6 +21,9 @@ const Board = () => {
   const setRefreshToken = useTokenStore((state) => state.setRefreshToken);
   const accessToken = useTokenStore((state) => state.accessToken);
   const refreshToken = useTokenStore((state) => state.refreshToken);
+
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     const getBoards = async () => {
@@ -43,6 +49,16 @@ const Board = () => {
       const totalHeight = window.innerHeight;
       setMaxHeight(totalHeight - 170);
     };
+
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get("http://localhost:8080/api/user/my");
+        setUser(response.data); // 사용자 정보를 상태에 저장
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
 
     getBoards();
     calculateMaxHeight();
@@ -73,10 +89,17 @@ const Board = () => {
     console.log('Access Token from Cookie:', accessTokenFromCookie);
     console.log('Refresh Token from Cookie:', refreshTokenFromCookie);
 
+    // 사용자 상태가 없으면 사용자 정보를 불러옴
+    if (!user) {
+      fetchUserData();
+    }
+
+    console.log(user);
+
     return () => {
       window.removeEventListener("resize", calculateMaxHeight);
     };
-  }, [setAccessToken, setRefreshToken, accessToken, refreshToken]);
+  }, [setAccessToken, setRefreshToken, accessToken, refreshToken, user, setUser]);
 
   if (isLoading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용

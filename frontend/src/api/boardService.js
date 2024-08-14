@@ -65,3 +65,21 @@ export const fetchMyLikeList = async () => { // 내 찜 목록
     throw error;
   }
 };
+
+export const deleteMyBoard = async (id) => { // 내 찜 목록
+  try {
+    const { accessToken } = useTokenStore.getState();
+
+    await fetch("http://localhost:8080/api/board/" + id, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `${accessToken}`
+      },
+      credentials: 'include'
+    });
+
+  } catch (error) {
+    console.error("Error delete", error);
+    throw error;
+  }
+};

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { deleteMyBoard } from "../../api/boardService";
 import { fetchBoardDetail } from "../../api/boardDetailService";
 import useStore from "../../store/store";
+import useUserStore from "../../store/useUserStore"; // useUserStore 가져오기
+import usePageStore from "../../store/currentPageStore";
 
 import LikeIcon from "../../assets/icons/like-inactive.png";
 import LikeActiveIcon from "../../assets/icons/like-active.png";
@@ -19,6 +23,18 @@ function BoardDetail() {
   const [formattedPrice, setFormattedPrice] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+
+  const user = useUserStore((state) => state.user);
+  const navigate = useNavigate();
+  
+  const handleEditButtonClick = () => {
+    usePageStore.getState().setCurrentPage(`/board/${id}`); // 현재 페이지 정보 저장
+    navigate(`/edit/${id}`, { state: { boardDetail: boardDetail } }); // 수정 페이지로 이동
+  };
+
+  const handleDeleteButtonClick = () => {
+    deleteMyBoard(id);
+  };
 
   useEffect(() => {
     // 데이터를 가져오는 비동기 함수
@@ -99,9 +115,20 @@ function BoardDetail() {
             </div>
           </div>
         </div>
-        <button className="chat-btn" onClick={handleChatButtonClick}>
-          채팅
-        </button>
+        {user?.id === boardDetail.writer.id ? (
+          <div className="btns">
+            <button className="edit-btn" onClick={handleEditButtonClick}>
+              수정
+            </button>
+            <button className="delete-btn" onClick={handleDeleteButtonClick}>
+              삭제
+            </button>
+          </div>
+        ) : (
+          <button className="chat-btn" onClick={handleChatButtonClick}>
+            채팅
+          </button>
+        )}
       </div>
       <div className="post-content">
         <div className="post-content-info">
