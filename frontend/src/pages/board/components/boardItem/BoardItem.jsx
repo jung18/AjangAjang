@@ -21,6 +21,25 @@ function BoardItem({ board }) {
     navigate(`/board/${board.boardId}`); // 단일 경로로 변경
   };
 
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case 'DAILY_SUPPLIES':
+        return '일상 용품';
+      case 'BABY_CARRIAGE':
+        return '유모차';
+      case 'FURNITURE':
+        return '아기가구';
+      case 'BABY_CLOTHES':
+        return '아기옷';
+      case 'TOY':
+        return '장난감';
+      case 'CAR_SEAT':
+        return '카시트';
+      default:
+        return '기타';
+    }
+  };
+
   return (
     <div className="board-card" onClick={handleClick}>
       <div className="board-img">
@@ -28,7 +47,7 @@ function BoardItem({ board }) {
       </div>
       <div className="info">
         <span className="location">지역 정보</span>
-        <span className="category">{board.category}</span>
+        <span className="category">{getCategoryLabel(board.category)}</span>
       </div>
       <div className="title">{board.title}</div>
       <div className="second-info">
