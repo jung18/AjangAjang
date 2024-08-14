@@ -31,53 +31,53 @@ const BoardWrite = () => {
   const location = useLocation(); // 상태를 받기 위해 useLocation 사용
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await apiClient.get("/api/user/my");
-        setUser(response.data);
-      } catch (error) {
-        console.error("Failed to fetch user data", error);
-      }
-    };
+    // const fetchUserData = async () => {
+    //   try {
+    //     const response = await apiClient.get("`http://localhost:8080/api/user/my");
+    //     setUser(response.data);
+    //   } catch (error) {
+    //     console.error("Failed to fetch user data", error);
+    //   }
+    // };
 
-    const fetchAddress = async () => {
-      console.log("1. 사용자 정보 : " + user);
-      try {
-        const response = await apiClient.get("/api/address/my");
-        console.log("2. 사용자 주소 목록 : " + response.data);
+    // const fetchAddress = async () => {
+    //   console.log("1. 사용자 정보 : " + user);
+    //   try {
+    //     const response = await apiClient.get("`http://localhost:8080/api/address/my");
+    //     console.log("2. 사용자 주소 목록 : " + response.data);
 
-        if (
-          response.data &&
-          response.data.data &&
-          response.data.data.length > 0
-        ) {
-          const addressData = response.data.data;
+    //     if (
+    //       response.data &&
+    //       response.data.data &&
+    //       response.data.data.length > 0
+    //     ) {
+    //       const addressData = response.data.data;
 
-          let mainAddressIndex = -1;
-          addressData.forEach((address, index) => {
-            if (address.addressId === user.mainAddressId) {
-              mainAddressIndex = index;
-              setRegion(address.fullAddress); // region을 fullAddress로 설정
-            }
-          });
+    //       let mainAddressIndex = -1;
+    //       addressData.forEach((address, index) => {
+    //         if (address.addressId === user.mainAddressId) {
+    //           mainAddressIndex = index;
+    //           setRegion(address.fullAddress); // region을 fullAddress로 설정
+    //         }
+    //       });
 
-          if (mainAddressIndex === -1 && addressData.length > 0) {
-            setMainAddress(0);
-            setRegion(addressData[0].fullAddress); // 첫 번째 주소를 기본값으로 설정
-          }
+    //       if (mainAddressIndex === -1 && addressData.length > 0) {
+    //         setMainAddress(0);
+    //         setRegion(addressData[0].fullAddress); // 첫 번째 주소를 기본값으로 설정
+    //       }
 
-          setAddressList(addressData); // 전체 주소 목록을 상태에 저장
-        }
-      } catch (error) {
-        console.error("Failed to fetch address data", error);
-      }
-    };
+    //       setAddressList(addressData); // 전체 주소 목록을 상태에 저장
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to fetch address data", error);
+    //   }
+    // };
 
     const initialize = async () => {
-      if (!user) {
-        await fetchUserData();
-      }
-      await fetchAddress();
+      // if (!user) {
+      //   await fetchUserData();
+      // }
+      // // await fetchAddress();
       setIsLoading(false);
     };
 
@@ -148,7 +148,7 @@ const BoardWrite = () => {
       content,
       category,
       status,
-      // addressId,
+      addressId: 1,
     };
 
     const formData = new FormData();
@@ -174,7 +174,7 @@ const BoardWrite = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      usePageStore.getState().setCurrentPage(`/post`); 
+      console.log("작성 완료");
       navigate("/direct"); // 전송이 완료되면 리다이렉션
     } catch (error) {
       console.error("Error submitting the form", error);
