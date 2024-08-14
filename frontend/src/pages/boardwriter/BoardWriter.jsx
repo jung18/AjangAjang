@@ -169,12 +169,12 @@ const BoardWrite = () => {
     const url = "/api/board";
 
     try {
-      const response = await apiClient.post(url, formData, {
+      await apiClient.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Response:", response.data);
+      usePageStore.getState().setCurrentPage(`/post`); 
       navigate("/direct"); // 전송이 완료되면 리다이렉션
     } catch (error) {
       console.error("Error submitting the form", error);
