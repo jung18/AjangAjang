@@ -9,13 +9,26 @@
   margin: 0 auto;
   max-width: 100%;
   padding-top: 13%;
+  position: fixed;
+  top: 100px;
+}
+
+.finish-btn {
+  position: fixed;
+  top: 70px;
+  right: 100px;
+  width: 70px;
+  height: 30px;
+  align-items: center;
 }
 
 .location-btn {
   position: fixed;
-  top: 60px;
-  right: 45px;
-  width: 30px;
+  top: 70px;
+  right: 20px;
+  width: 70px;
+  height: 30px;
+  align-items: center;
 }
 
 .chat-box {
