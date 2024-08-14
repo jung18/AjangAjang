@@ -81,9 +81,9 @@ function Location() {
 
    const recommendDataInit = async () => {
     try {
-      getRoomData();
-      getBuyerData();
-      getSellerData();
+      await getRoomData();
+      await getBuyerData();
+      await getSellerData();
     } catch (error) {
       console.error(error);
     } finally {
@@ -93,8 +93,19 @@ function Location() {
 
   useEffect(() => {
     recommendDataInit();
-    // handleRecommend();
-  }, []); // 빈 배열을 추가하여 한 번만 호출되도록 설정
+}, []); // 초기 데이터 로드
+
+useEffect(() => {
+    if (buyerId) {
+        getBuyerData();
+    }
+}, [buyerId]);
+
+useEffect(() => {
+    if (sellerId) {
+        getSellerData();
+    }
+}, [sellerId]);
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend(); // 비동기로 호출하고 기다림

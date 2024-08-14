@@ -23,20 +23,20 @@ function BoardItem({ board }) {
 
   const getCategoryLabel = (category) => {
     switch (category) {
-      case 'DAILY_SUPPLIES':
-        return '일상 용품';
-      case 'BABY_CARRIAGE':
-        return '유모차';
-      case 'FURNITURE':
-        return '아기가구';
-      case 'BABY_CLOTHES':
-        return '아기옷';
-      case 'TOY':
-        return '장난감';
-      case 'CAR_SEAT':
-        return '카시트';
+      case "DAILY_SUPPLIES":
+        return "일상 용품";
+      case "BABY_CARRIAGE":
+        return "유모차";
+      case "FURNITURE":
+        return "아기가구";
+      case "BABY_CLOTHES":
+        return "아기옷";
+      case "TOY":
+        return "장난감";
+      case "CAR_SEAT":
+        return "카시트";
       default:
-        return '기타';
+        return "기타";
     }
   };
 
@@ -45,16 +45,15 @@ function BoardItem({ board }) {
       <div className="board-img">
         <img alt="test" src={board.thumbnailUrl || CameraIcon} />
       </div>
-      <div className="info">
-        <span className="location">지역 정보</span>
-        <span className="category">{getCategoryLabel(board.category)}</span>
-      </div>
-      <div className="title">{board.title}</div>
-      <div className="second-info">
-        <div className="price">{formattedPrice}원</div>
-        <div className="like">
-          <img alt="like" src={LikeIcon} />
-          <div>{board.likeCount}</div>
+      <div className="board-content">
+        <div className="category">{getCategoryLabel(board.category)}</div>
+        <div className="title">{board.title}</div>
+        <div className="second-info">
+          <div className="price">{formattedPrice}원</div>
+          <div className="like">
+            <img alt="like" src={LikeIcon} />
+            <div>{board.likeCount}</div>
+          </div>
         </div>
       </div>
     </div>
