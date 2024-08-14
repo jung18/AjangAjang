@@ -3,6 +3,7 @@ package com.ajangajang.backend.chat.handler;
 import com.ajangajang.backend.chat.repository.UserRoomRepository;
 import com.ajangajang.backend.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 public class StompHandler implements ChannelInterceptor {
 
     private final UserRoomRepository userRoomRepository;
+
+    @Lazy
     private final ChatService chatService;
 
     @Override
