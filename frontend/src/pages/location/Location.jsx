@@ -96,18 +96,6 @@ function Location() {
     recommendDataInit();
 }, []); // 초기 데이터 로드
 
-useEffect(() => {
-    if (buyerId) {
-        getBuyerData();
-    }
-}, [buyerId]);
-
-useEffect(() => {
-    if (sellerId) {
-        getSellerData();
-    }
-}, [sellerId]);
-
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend(); // 비동기로 호출하고 기다림
     setMarkerList(data); // 결과를 상태에 설정
