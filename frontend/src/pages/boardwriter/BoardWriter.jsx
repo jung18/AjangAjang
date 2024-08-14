@@ -203,8 +203,8 @@ const BoardWrite = () => {
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
+    setIsBgRemoved(images.includes(bgRemovedImage) && image === bgRemovedImage);
     setBgRemovedImage(null);
-    setIsBgRemoved(false);
   };
 
   const handleApply = () => {
@@ -214,9 +214,6 @@ const BoardWrite = () => {
           img === selectedImage ? bgRemovedImage : img
         )
       );
-      setUploadedUrls([...uploadedFiles, { url: bgRemovedImage }]);
-    } else {
-      setUploadedUrls([...uploadedFiles, { url: URL.createObjectURL(selectedImage) }]);
     }
   };
 
@@ -352,21 +349,6 @@ const BoardWrite = () => {
           </button>
         </div>
       )}
-      <div className="camera-section">
-        <div className="image-preview">
-          {uploadedFiles.map((data, index) => (
-            <div key={index} className="image-container">
-              <img src={data.url} alt={`Preview ${index}`} className="image-thumbnail" />
-              <img
-                src={deleteIcon}
-                alt="Delete Icon"
-                className="delete-icon"
-                onClick={() => setUploadedUrls(uploadedFiles.filter((_, i) => i !== index))}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
     </form>
   );
 };
