@@ -29,6 +29,7 @@ const BoardWrite = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isBgRemoved, setIsBgRemoved] = useState(false);
   const [bgRemovedImage, setBgRemovedImage] = useState(null);
+  const [savedBgRemovedImage, setSavedBgRemovedImage] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
@@ -94,7 +95,7 @@ const BoardWrite = () => {
   const handleCheckboxChange = async () => {
     if (!selectedImage) return;
 
-    if (!isBgRemoved) {
+    if (!savedBgRemovedImage) {
       try {
         const formData = new FormData();
         formData.append('files', selectedImage);
@@ -107,14 +108,16 @@ const BoardWrite = () => {
         });
 
         const newImage = response.data.data[0];
+        setSavedBgRemovedImage(newImage.url);
         setBgRemovedImage(newImage.url);
+        setIsBgRemoved(true);
       } catch (error) {
         console.error('Error removing background', error);
       }
     } else {
-      setBgRemovedImage(null);
+      setIsBgRemoved((prev) => !prev);
+      setBgRemovedImage(isBgRemoved ? null : savedBgRemovedImage);
     }
-    setIsBgRemoved((prev) => !prev);
   };
 
   const handleTitleChange = (e) => {
@@ -203,8 +206,8 @@ const BoardWrite = () => {
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
-    setIsBgRemoved(images.includes(bgRemovedImage) && image === bgRemovedImage);
-    setBgRemovedImage(null);
+    setIsBgRemoved(image === savedBgRemovedImage);
+    setBgRemovedImage(savedBgRemovedImage && image === savedBgRemovedImage ? savedBgRemovedImage : null);
   };
 
   const handleApply = () => {
