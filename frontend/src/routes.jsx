@@ -21,13 +21,13 @@ import MyLike from "./pages/myLike/MyLike";
 import MyReview from "./pages/myReview/MyReview";
 import MyInfo from "./pages/myInfo/MyInfo";
 
-import KakaoMap from "./pages/kakaoMap/KakaoMap";
 import GeoLocation from "./pages/geoLocation/GeoLocation";
 import Location from "./pages/location/Location";
-import ImageBgRemove from "./pages/imageBgRemove/ImageBgRemove";
 
 import MyTrade from "./pages/myTrade/MyTrade";
 import EditMyInfo from "./pages/myInfo/EditMyInfo";
+
+import BoardEditor from "./pages/boardEditor/BoardEditor";
 
 
 const AppRoutes = () => {
@@ -50,27 +50,18 @@ const AppRoutes = () => {
       <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/reviews" element={<PageLayout page={<MyReview />} pageType={"myBoard"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
-      {/* 테스트용 */}
-      <Route path="/kakaomap" element={<KakaoMap />} />
+
       <Route path="/gps" element={<GeoLocation />} />
-      <Route path="/test2" element={<Location />} />
-      <Route path="/tttest" element={<ImageBgRemove />} />
+      <Route path="/room/:roomId/recommend" element={<PageLayout page={<Location />} pageType={"recommendLocation"} />} />
+
       <Route path="/user/myinfo/edit" element={<PageLayout page={<EditMyInfo />} pageType={"myInfo"} />} />
+
       <Route
         path="/direct"
         element={
           <PageLayout
             page={<Board />}
             pageType={"board"} 
-          />
-        }
-      />
-      <Route
-        path="/parcel"
-        element={
-          <PageLayout
-            page={<Board />}
-            pageType={"board"}
           />
         }
       />
@@ -84,24 +75,6 @@ const AppRoutes = () => {
         element={<PageLayout page={<Search />} pageType={"search"} />}
       />
       <Route
-        path="/direct/:id"
-        element={
-          <PageLayout
-            page={<BoardDetail />}
-            pageType={"boardDetail"}
-          />
-        }
-      />
-      <Route
-        path="/parcel/:id"
-        element={
-          <PageLayout
-            page={<BoardDetail />}
-            pageType={"boardDetail"}
-          />
-        }
-      />
-      <Route
         path="/post/template"
         element={<PageLayout page={<BoardTemplate />} pageType={"template"} />}
       />
@@ -111,6 +84,15 @@ const AppRoutes = () => {
           <PageLayout
             page={<BoardDetail />}
             pageType={"boardDetail"}
+          />
+        }
+      />
+      <Route
+        path="/edit/:id"
+        element={
+          <PageLayout
+            page={<BoardEditor />}
+            pageType={"search"}
           />
         }
       />

@@ -29,55 +29,6 @@ function Search() {
     removeSearchTerm,
   } = useContext(SearchHistoryContext);
 
-  // 더미 데이터 생성
-  const dummyData = [
-    {
-      boardId: 1,
-      thumbnailUrl: "https://example.com/image1.jpg",
-      writer: {
-        userId: 101,
-        username: "user1",
-        profileImage: "https://example.com/user1.jpg",
-      },
-      title: "Awesome Baby Stroller",
-      price: 100000,
-      category: "유모차",
-      status: "AVAILABLE",
-      likeCount: 10,
-      viewCount: 100,
-    },
-    {
-      boardId: 2,
-      thumbnailUrl: "https://example.com/image2.jpg",
-      writer: {
-        userId: 102,
-        username: "user2",
-        profileImage: "https://example.com/user2.jpg",
-      },
-      title: "Baby Car Seat - Like New",
-      price: 50000,
-      category: "카시트",
-      status: "SOLD",
-      likeCount: 5,
-      viewCount: 50,
-    },
-    {
-      boardId: 3,
-      thumbnailUrl: "https://example.com/image3.jpg",
-      writer: {
-        userId: 103,
-        username: "user3",
-        profileImage: "https://example.com/user3.jpg",
-      },
-      title: "Gently Used Baby Clothes",
-      price: 30000,
-      category: "아기옷",
-      status: "AVAILABLE",
-      likeCount: 8,
-      viewCount: 80,
-    },
-  ];
-
   // max-height 계산
   useEffect(() => {
     const calculateMaxHeight = () => {
@@ -201,7 +152,7 @@ function Search() {
                 </div>
               </div>
             )}
-            {dummyData.length === 0 ? (
+            {searchResults.content.length === 0 ? (
               //searchResults.content.length === 0
               <div className="no-search-result">검색 결과가 없습니다.</div>
             ) : (
@@ -210,7 +161,7 @@ function Search() {
                 className="search-result-list"
                 style={{ maxHeight: `${maxHeight2}px` }}
               >
-                <BoardList boards={dummyData} />
+                <BoardList boards={searchResults.content} />
               </div>
             )}
           </>

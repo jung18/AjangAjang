@@ -1,6 +1,6 @@
 .location-page {
   position: fixed;
-  top: 50px;
+  top: 60px;
   left: 0;
   right: 0;
   width: 100%;
@@ -32,6 +32,13 @@
   color: #ff879e;
 }
 
+.buyer-location {
+  width: auto;
+  margin: 0 15px;
+  font-size: 16px;
+  color: #ff879e;
+}
+
 .location-page .location-options .safe-location input {
   margin-left: 10px;
   transform: scale(1.5);
@@ -54,7 +61,7 @@
 }
 
 .location-page .location-inputs .location-input input {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ff879e;
@@ -78,6 +85,5 @@
 .location-scroll {
   max-height: 300px; /* 스크롤을 적용할 최대 높이 설정 */
   overflow-y: scroll; /* 세로 스크롤 추가 */
-  border: 1px solid #ccc; /* 스크롤 영역을 구분하기 위한 경계선 */
   padding: 10px; /* 내부 여백 */
 }

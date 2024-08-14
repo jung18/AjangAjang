@@ -54,39 +54,19 @@
   height: 18px;
 }
 
-.board-card .second-info .like-chat {
+.board-card .second-info .like {
   font-size: 11px;
   height: 18px;
   color: #ffca00;
   display: flex;
-}
-
-.board-card .second-info .like-chat .like {
-  display: flex;
   align-items: center;
 }
 
-.board-card .second-info .like-chat .like > img {
+.board-card .second-info .like > img {
   height: 15px;
 }
 
-.board-card .second-info .like-chat .like > div {
-  height: 18px;
-  display: flex;
-  align-items: flex-end;
-}
-
-.board-card .second-info .like-chat .chat {
-  margin-left: 5px;
-  display: flex;
-  align-items: center;
-}
-
-.board-card .second-info .like-chat .chat > img {
-  height: 15px;
-}
-
-.board-card .second-info .like-chat .chat > div {
+.board-card .second-info .like > div {
   height: 18px;
   display: flex;
   align-items: flex-end;

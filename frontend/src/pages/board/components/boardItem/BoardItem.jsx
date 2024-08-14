@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import usePageStore from "../../../../store/currentPageStore";
 
 import LikeIcon from "../../../../assets/icons/like.png";
-import ChatIcon from "../../../../assets/icons/chat.png";
+import CameraIcon from "../../../../assets/camera.png";
 
 import "./BoardItem.css";
 
@@ -21,27 +21,40 @@ function BoardItem({ board }) {
     navigate(`/board/${board.boardId}`); // 단일 경로로 변경
   };
 
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case 'DAILY_SUPPLIES':
+        return '일상 용품';
+      case 'BABY_CARRIAGE':
+        return '유모차';
+      case 'FURNITURE':
+        return '아기가구';
+      case 'BABY_CLOTHES':
+        return '아기옷';
+      case 'TOY':
+        return '장난감';
+      case 'CAR_SEAT':
+        return '카시트';
+      default:
+        return '기타';
+    }
+  };
+
   return (
     <div className="board-card" onClick={handleClick}>
       <div className="board-img">
-        <img alt="test" src="https://picsum.photos/200" />
+        <img alt="test" src={board.thumbnailUrl || CameraIcon} />
       </div>
       <div className="info">
         <span className="location">지역 정보</span>
-        <span className="category">{board.category}</span>
+        <span className="category">{getCategoryLabel(board.category)}</span>
       </div>
       <div className="title">{board.title}</div>
       <div className="second-info">
         <div className="price">{formattedPrice}원</div>
-        <div className="like-chat">
-          <div className="like">
-            <img alt="like" src={LikeIcon} />
-            <div>{board.likeCount}</div>
-          </div>
-          <div className="chat">
-            <img alt="chat" src={ChatIcon} />
-            <div>0</div>
-          </div>
+        <div className="like">
+          <img alt="like" src={LikeIcon} />
+          <div>{board.likeCount}</div>
         </div>
       </div>
     </div>

@@ -18,9 +18,9 @@
     <!-- PWA 아이콘 설정 -->
     <link rel="apple-touch-icon" href="/logo192.png">
 
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="http://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=97461c7397262ab297420b6d4513472c&libraries=services,clusterer"
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=97461c7397262ab297420b6d4513472c&libraries=services,clusterer"
 ></script>
     <title>아장아장</title>
   </head>
@@ -36,6 +36,17 @@
                   window.setAddressName(address);
               }
           }).open();
+      }
+
+      function findAddr2() {
+        return new Promise((resolve) => {
+          new daum.Postcode({
+            oncomplete: function(data) {
+              const address = data.address;
+                resolve(address);  // Promise를 resolve하여 address 값을 반환
+              }
+            }).open();
+         });
       }
     </script>
 

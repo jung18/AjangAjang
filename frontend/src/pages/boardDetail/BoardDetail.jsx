@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { deleteMyBoard } from "../../api/boardService";
 import { fetchBoardDetail } from "../../api/boardDetailService";
 import useStore from "../../store/store";
+import useUserStore from "../../store/useUserStore"; // useUserStore 가져오기
+import usePageStore from "../../store/currentPageStore";
 
 import LikeIcon from "../../assets/icons/like-inactive.png";
 import LikeActiveIcon from "../../assets/icons/like-active.png";
 import VideoIcon from "../../assets/icons/video.png";
 import CloseIcon from "../../assets/icons/close.png";
+import ImageNotFound from "../../assets/icons/image-not-found.png";
 
 import "./BoardDetetail.css";
 
@@ -19,6 +24,38 @@ function BoardDetail() {
   const [formattedPrice, setFormattedPrice] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+
+  const user = useUserStore((state) => state.user);
+  const navigate = useNavigate();
+
+  const handleEditButtonClick = () => {
+    usePageStore.getState().setCurrentPage(`/board/${id}`); // 현재 페이지 정보 저장
+    navigate(`/edit/${id}`, { state: { boardDetail: boardDetail } }); // 수정 페이지로 이동
+  };
+
+  const handleDeleteButtonClick = () => {
+    deleteMyBoard(id);
+    navigate(`/direct`);
+  };
+
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case 'DAILY_SUPPLIES':
+        return '일상 용품';
+      case 'BABY_CARRIAGE':
+        return '유모차';
+      case 'FURNITURE':
+        return '아기가구';
+      case 'BABY_CLOTHES':
+        return '아기옷';
+      case 'TOY':
+        return '장난감';
+      case 'CAR_SEAT':
+        return '카시트';
+      default:
+        return '기타';
+    }
+  };
 
   useEffect(() => {
     // 데이터를 가져오는 비동기 함수
@@ -53,9 +90,13 @@ function BoardDetail() {
   const isLiked = likedBoards[id] || false;
 
   const videoBtnClickHandler = () => {
-    // 예시로 사용한 비디오 URL, 실제로는 API에서 가져온다거나 하는 방법으로 설정
-    const url =
-      boardDetail.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4"; // videoUrl은 백엔드에서 받아온 비디오 URL
+    // VIDEO 타입의 미디어를 찾는다
+    const videoMedia = boardDetail.mediaList.find((media) => media.mediaType === "VIDEO");
+
+    // VIDEO 타입의 미디어가 있으면 그 mediaUrl을 사용, 없으면 기본 URL을 사용
+    const url = videoMedia
+      ? videoMedia.mediaUrl
+      : "";
 
     if (!url) {
       alert("영상이 존재하지 않습니다.");
@@ -73,7 +114,7 @@ function BoardDetail() {
 
   return (
     <div className="board-detail-page">
-      <img alt="board-img" src="https://picsum.photos/200" />
+      <img alt="board-img" src={boardDetail.thumbnailUrl || ImageNotFound} />
       <div className="img-btns">
         <img
           className="like-btn"
@@ -90,7 +131,7 @@ function BoardDetail() {
       </div>
       <div className="profile-bar">
         <div className="writer-profile">
-          <img alt="작성자 프로필" src="https://picsum.photos/200" />
+          <img alt="작성자 프로필" src={boardDetail.writer.profileImage || ImageNotFound} />
           <div className="writer-info">
             <div className="writer-name">{boardDetail.writer.nickname}</div>
             <div className="other-info">
@@ -99,16 +140,27 @@ function BoardDetail() {
             </div>
           </div>
         </div>
-        <button className="chat-btn" onClick={handleChatButtonClick}>
-          채팅
-        </button>
+        {user?.id === boardDetail.writer.id ? (
+          <div className="btns">
+            <button className="edit-btn" onClick={handleEditButtonClick}>
+              수정
+            </button>
+            <button className="delete-btn" onClick={handleDeleteButtonClick}>
+              삭제
+            </button>
+          </div>
+        ) : (
+          <button className="chat-btn" onClick={handleChatButtonClick}>
+            채팅
+          </button>
+        )}
       </div>
       <div className="post-content">
         <div className="post-content-info">
           <div className="info-left">
             <div className="post-title">{boardDetail.title}</div>
             <div className="post-other-info">
-              <span className="post-category">{boardDetail.category}</span>
+              <span className="post-category">{getCategoryLabel(boardDetail.category)}</span>
               <span>작성 시각</span>
             </div>
           </div>
@@ -117,8 +169,7 @@ function BoardDetail() {
         <div className="post-main-content">{boardDetail.content}</div>
         <div className="post-last-info">
           <span>관심 {boardDetail.likeCount}</span>
-          <span>채팅 수</span>
-          <span>조회 수</span>
+          <span>조회 {boardDetail.viewCount}</span>
         </div>
       </div>
 
