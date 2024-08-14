@@ -21,10 +21,8 @@ import MyBoard from "./pages/myboard/MyBoard";
 import MyLike from "./pages/myLike/MyLike";
 import MyInfo from "./pages/myInfo/MyInfo";
 
-import KakaoMap from "./pages/kakaoMap/KakaoMap";
 import GeoLocation from "./pages/geoLocation/GeoLocation";
 import Location from "./pages/location/Location";
-import ImageBgRemove from "./pages/imageBgRemove/ImageBgRemove";
 
 import MyTrade from "./pages/myTrade/MyTrade";
 
@@ -49,11 +47,8 @@ const AppRoutes = () => {
       <Route path="/user/likes" element={<PageLayout page={<MyLike />} pageType={"myLike"} />} />
       <Route path="/user/trades" element={<PageLayout page={<MyTrade />} pageType={"myTrade"} />} />
       <Route path="/user/myinfo" element={<PageLayout page={<MyInfo />} pageType={"myInfo"} />} />
-      {/* 테스트용 */}
-      <Route path="/kakaomap" element={<KakaoMap />} />
       <Route path="/gps" element={<GeoLocation />} />
-      <Route path="/test2" element={<Location />} />
-      <Route path="/tttest" element={<ImageBgRemove />} />
+      <Route path="/room/:roomId/recommend" element={<PageLayout page={<Location />} pageType={"recommendLocation"} />} />
       <Route
         path="/direct"
         element={
