@@ -34,21 +34,24 @@ function Location() {
   // 채팅방 정보
      const getRoomData = async () => {
       try {
+        console.log("getRoomData")
         const data = await fetchRoomData(roomId);
         setRoomData(data);
-        setSellerLocation(data.sellerAddress)
         const creatorUserId = data.creatorUserId;
+        console.log("===================")
+        console.log(roomData)
         
         data.userRooms.forEach(room => {
           if (room.userId === creatorUserId) {
-            setBuyerId(room.userId);
+            setSellerId(room.userId);
           } else {
-              setSellerId(room.userId);
+              setBuyerId(room.userId);
           }
         });
 
         setCenter({ lat: data.latitude, lng: data.longitude })
       } catch (error) {
+        console.log("에러에러")
         console.error(error);
       }};
 
@@ -56,6 +59,8 @@ function Location() {
         try {
           const data = await fetchUserData(buyerId);
           setBuyerData(data);
+          console.log("buyerData")
+          console.log(buyerData)
           setBuyerLocation(data.mainAddressName);
         } catch (error) {
           console.error(error);
@@ -65,7 +70,10 @@ function Location() {
      const getSellerData = async () => {
       try {
         const data = await fetchUserData(sellerId);
+        setSellerLocation(data.mainAddressName)
         setSellerData(data)
+        console.log("sellerData")
+        console.log(sellerData)
       } catch (error) {
         console.error(error);
       }
@@ -110,8 +118,8 @@ function Location() {
       const createTradeDto = {
         buyerId: buyerId,
         recommendType: recommendType,
-        longitude: roomData.longitude,
-        latitude: roomData.latitude
+        longitude: sellerData.longitude,
+        latitude: sellerData.latitude
       };
 
       const url = "https://i11b210.p.ssafy.io:4443/api/address/recommend";
