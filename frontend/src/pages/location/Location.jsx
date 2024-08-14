@@ -140,7 +140,13 @@ function Location() {
         latitude: sellerData.latitude
       };
 
-      const response = await fetchData(createTradeDto);
+      const response = await fetchData(createTradeDto, {
+        method: "GET",
+        headers: {
+          "Authorization": `${accessToken}`,
+          "Content-Type": "application/json"
+        },
+      });
       console.log(response);
       const dataList = response.data.map((item, idx) => ({
         title: item.placeName,

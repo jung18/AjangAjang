@@ -14,7 +14,7 @@ export const fetchBoardList = async () => {
       credentials: 'include',
       body : JSON.stringify({
         "page":0,
-        "size":10
+        "size":100
       })
     });
 
