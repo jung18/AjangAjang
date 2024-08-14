@@ -14,11 +14,15 @@ function MyTrade() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchTradeList();
-      setBuyList(response.data.buyingTrades);
-      setSellList(response.data.sellingTrades);
-      
-      setIsLoading(false);
+      try {
+        const response = await fetchTradeList();
+        setBuyList(response.data.buyingTrades);
+        setSellList(response.data.sellingTrades);
+      } catch (error) {
+        console.error("Failed to fetch trade list:", error);
+      } finally {
+        setIsLoading(false); // 데이터 로드가 완료되었을 때 로딩 상태 해제
+      }
     };
 
     fetchData();
