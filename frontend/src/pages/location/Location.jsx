@@ -29,12 +29,12 @@ function Location() {
   const [buyerData, setBuyerData] = useState(null); // 구매자 정보
   const [sellerData, setSellerData] = useState(null); // 판매자 정보
   const [loading, setLoading] = useState(true); // 로딩 상태
-  const { id } = useParams(); // URL 경로에서 roomId를 가져옴
+  const { roomId } = useParams(); // URL 경로에서 roomId를 가져옴
 
   // 채팅방 정보
      const getRoomData = async () => {
       try {
-        const data = await fetchRoomData(id);
+        const data = await fetchRoomData(roomId);
         setRoomData(data);
         setSellerLocation(data.sellerAddress)
         const creatorUserId = data.creatorUserId;
