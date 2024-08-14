@@ -3,13 +3,14 @@ import styles from "./myPage.module.css";
 import { useNavigate } from 'react-router-dom';
 import usePageStore from "../../store/currentPageStore";
 import apiClient from "../../api/apiClient";
+import ImageNotFound from "../../assets/icons/image-not-found.png";
 
 function MyPage() {
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
 
   const [nickname, setNickname] = useState('');
-  const [profileImage, setProfileImage] = useState('https://via.placeholder.com/100');
+  const [profileImage, setProfileImage] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
 
   // 사용자 정보 가져오기
@@ -21,7 +22,7 @@ function MyPage() {
           setNickname(response.data.nickname);
           console.log("Nickname:", response.data.nickname);
           console.log("Profile Image URL:", response.data.profileImg);
-          setProfileImage(response.data.profileImg || 'https://via.placeholder.com/100'); // 프로필 이미지 URL 설정
+          setProfileImage(response.data.profileImg || ImageNotFound); // 프로필 이미지 URL 설정
         }
       } catch (error) {
         console.error('Error fetching user info:', error);
