@@ -78,12 +78,12 @@ function BoardDetail() {
     try {
       if (isLiked) {
         // 찜하기 취소 요청
-        await apiClient.delete(`http://localhost:8080/api/board/${id}/likes`);
+        await apiClient.delete(`api/board/${id}/likes`);
         setIsLiked(false); // 찜 상태 업데이트
         alert("좋아요를 취소했습니다.")
       } else {
         // 찜하기 요청
-        await apiClient.post(`http://localhost:8080/api/board/${id}/likes`);
+        await apiClient.post(`api/board/${id}/likes`);
         setIsLiked(true); // 찜 상태 업데이트
         alert("좋아요를 눌렀습니다.")
       }
