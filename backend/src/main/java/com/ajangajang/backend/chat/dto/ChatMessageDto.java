@@ -20,4 +20,5 @@ public class ChatMessageDto {
     private Long userId;        // 사용자 id
     private String message;     // 메시지
     private LocalDateTime time;        // 전송 시간
+    private String sessionId;
 }
