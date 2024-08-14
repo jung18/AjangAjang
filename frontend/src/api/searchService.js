@@ -1,6 +1,28 @@
 import useTokenStore from "../store/useTokenStore";
 
 export const fetchSearchResults = async (searchTerm, searchCategory, isRetry) => {
+
+  const getCategoryString = (category) => {
+    switch (category) {
+      case '전체':
+        return '';
+      case '유모차':
+        return 'BABY_CARRIAGE';
+      case '장난감':
+        return 'TOY';
+      case '아기옷':
+        return 'BABY_CLOTHES';
+      case '카시트':
+        return "CAR_SEAT";
+      case '생활용품':
+        return "DAILY_SUPPLIES";
+      case '가구':
+        return "FURNITURE";
+      default:
+        return '';
+    }
+  };
+  
   try {
     console.log(searchTerm + " " + searchCategory + " " + isRetry);
     const { accessToken } = useTokenStore.getState();
@@ -17,7 +39,7 @@ export const fetchSearchResults = async (searchTerm, searchCategory, isRetry) =>
         page: 0,
         size: 10,
         title: searchTerm,
-        category: searchCategory,
+        category: getCategoryString(searchCategory),
         retry: isRetry,
       }),
     });
