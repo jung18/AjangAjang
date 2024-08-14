@@ -78,7 +78,7 @@ const Chat = () => {
                         const parsedMessage = JSON.parse(msg.body);
                         console.log('Received message:', parsedMessage);
             
-                        if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId) {
+                        if (parsedMessage.type === 'CALL_REQUEST' && parsedMessage.sessionId && parsedMessage.userId !== userId) {
                             console.log('Received CALL_REQUEST with sessionId:', parsedMessage.sessionId);
                             setIncomingCall(true);
                             setCallerSessionId(parsedMessage.sessionId);
@@ -128,6 +128,7 @@ const Chat = () => {
                 sessionId: newSessionId,
                 type: 'CALL_REQUEST',
                 roomId,
+                userId, // 추가된 부분
 
             };
             console.log("Sending CALL_REQUEST message:", message);
@@ -357,24 +358,6 @@ const Chat = () => {
             {inCall && (
                 <div className={styles['call-container']}>
                     <h3>통화 중...</h3>
-                    {publisher && (
-                        <div id="publisher">
-                            <audio autoPlay={true} ref={(audio) => {
-                                if (audio) {
-                                    addAudioElement(publisher.stream);
-                                }
-                            }} />
-                        </div>
-                    )}
-                    {subscribers.map((sub, i) => (
-                        <div key={i} id="subscriber">
-                            <audio autoPlay={true} ref={(audio) => {
-                                if (audio) {
-                                    addAudioElement(sub.stream);
-                                }
-                            }} />
-                        </div>
-                    ))}
                     <button onClick={leaveSession} className={styles['end-call-button']}>통화 종료</button>
                 </div>
             )}
