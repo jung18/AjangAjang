@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";  // axios를 사용하여 API 요청을 처리합니다.
 
 import { deleteMyBoard } from "../../api/boardService";
 import { fetchBoardDetail } from "../../api/boardDetailService";
-import useStore from "../../store/store";
-import useUserStore from "../../store/useUserStore"; // useUserStore 가져오기
+import useUserStore from "../../store/useUserStore";
 import usePageStore from "../../store/currentPageStore";
 
 import LikeIcon from "../../assets/icons/like-inactive.png";
@@ -14,13 +14,13 @@ import CloseIcon from "../../assets/icons/close.png";
 import ImageNotFound from "../../assets/icons/image-not-found.png";
 
 import "./BoardDetetail.css";
+import apiClient from "../../api/apiClient";
 
 function BoardDetail() {
   const { id } = useParams(); // URL 경로에서 boardId를 가져옴
   const [boardDetail, setBoardDetail] = useState(null); // Board 상세 정보를 저장할 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
-  const likedBoards = useStore((state) => state.likedBoards);
-  const toggleLike = useStore((state) => state.toggleLike);
+  const [isLiked, setIsLiked] = useState(false); // 찜 상태를 관리하는 상태
   const [formattedPrice, setFormattedPrice] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
@@ -58,13 +58,12 @@ function BoardDetail() {
   };
 
   useEffect(() => {
-    // 데이터를 가져오는 비동기 함수
     const getBoardDetail = async () => {
       try {
-        const data = await fetchBoardDetail(id); // id를 사용해 fetchBoardList 호출
-        console.dir(data);
+        const data = await fetchBoardDetail(id); // id를 사용해 fetchBoardDetail 호출
         setBoardDetail(data);
         setFormattedPrice(new Intl.NumberFormat("en-US").format(data.price));
+        setIsLiked(data.liked);  // 초기 찜 상태를 설정
       } catch (error) {
         console.error("Failed to fetch board details:", error);
       } finally {
@@ -74,6 +73,25 @@ function BoardDetail() {
 
     getBoardDetail();
   }, [id]); // boardId가 변경될 때마다 useEffect 재실행
+
+  const toggleLikeStatus = async () => {
+    try {
+      if (isLiked) {
+        // 찜하기 취소 요청
+        await apiClient.delete(`http://localhost:8080/api/board/${id}/likes`);
+        setIsLiked(false); // 찜 상태 업데이트
+        alert("좋아요를 취소했습니다.")
+      } else {
+        // 찜하기 요청
+        await apiClient.post(`http://localhost:8080/api/board/${id}/likes`);
+        setIsLiked(true); // 찜 상태 업데이트
+        alert("좋아요를 눌렀습니다.")
+      }
+    } catch (error) {
+      console.error("Failed to toggle like status:", error);
+      alert("자신의 글은 찜을 할 수 없습니다.");
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
@@ -87,16 +105,11 @@ function BoardDetail() {
     );
   }
 
-  const isLiked = likedBoards[id] || false;
-
   const videoBtnClickHandler = () => {
     // VIDEO 타입의 미디어를 찾는다
     const videoMedia = boardDetail.mediaList.find((media) => media.mediaType === "VIDEO");
 
-    // VIDEO 타입의 미디어가 있으면 그 mediaUrl을 사용, 없으면 기본 URL을 사용
-    const url = videoMedia
-      ? videoMedia.mediaUrl
-      : "";
+    const url = videoMedia ? videoMedia.mediaUrl : "";
 
     if (!url) {
       alert("영상이 존재하지 않습니다.");
@@ -108,7 +121,6 @@ function BoardDetail() {
   };
 
   const handleChatButtonClick = () => {
-    // 채팅 기능 구현
     alert("채팅 시작");
   };
 
@@ -120,7 +132,7 @@ function BoardDetail() {
           className="like-btn"
           alt="like"
           src={isLiked ? LikeActiveIcon : LikeIcon}
-          onClick={() => toggleLike(id)}
+          onClick={toggleLikeStatus}  // 클릭 시 찜 상태를 토글
         />
         <img
           className="video-btn"
@@ -140,7 +152,7 @@ function BoardDetail() {
             </div>
           </div>
         </div>
-        {user?.id === boardDetail.writer.id ? (
+        {user?.id === boardDetail.writer.userId ? (
           <div className="btns">
             <button className="edit-btn" onClick={handleEditButtonClick}>
               수정
