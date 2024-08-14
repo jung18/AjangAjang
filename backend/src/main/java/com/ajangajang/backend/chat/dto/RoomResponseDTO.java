@@ -15,6 +15,7 @@ public class RoomResponseDTO {
     private LocalDateTime lastMessageTime;
     private List<UserRoomDTO> userRooms;
     private Long creatorUserId;
+    private Long boardId;
     private double longitude;
     private double latitude;
     private String sellerAddress; // 판매글 주소 추가

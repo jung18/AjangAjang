@@ -90,6 +90,7 @@ public class RoomService {
         dto.setName(room.getName());
         dto.setLastMessage(room.getLastMessage());
         dto.setLastMessageTime(room.getLastMessageTime());
+        dto.setBoardId(room.getBoard().getId());
 
         List<UserRoomDTO> userRoomDTOs = room.getUserRooms().stream()
                 .map(userRoom -> {
