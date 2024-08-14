@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchBoardList } from "../../api/boardService";
+import { fetchBoardList } from "../../api/boardService"; // 기본 게시판 목록을 가져오는 함수
 import { updateAddressRep } from "../../api/myInfoService";
 
 import useTokenStore from "../../store/useTokenStore";
@@ -12,11 +12,8 @@ import "./Board.css";
 const Board = () => {
   const [boards, setBoards] = useState([]);
   const [addressList, setAddressList] = useState([]);
-
   const [combinedAddressList, setCombinedAddressList] = useState([]);
-
   const [repAddressIdx, setRepAddressIdx] = useState(0);
-
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
   const [autoRecommend, setAutoRecommend] = useState(false);
@@ -117,9 +114,9 @@ const Board = () => {
   ]);
 
   const handleChange = (e) => {
-    console.log(addressList);
-    console.log(repAddressIdx);
-    console.log(e.target.value);
+    console.log("Address List:", addressList);
+    console.log("Current Rep Address Index:", repAddressIdx);
+    console.log("Selected Value:", e.target.value);
     const id = addressList[e.target.value].addressId;
     updateAddressRep(id);
     setRepAddressIdx(e.target.value); // 선택된 주소를 업데이트
@@ -135,10 +132,15 @@ const Board = () => {
           page: 0,
           size: 100,
         });
-        setBoards(response.data.content || []);
+        console.log("Recommendation API Response:", response); // 전체 응답을 콘솔에 출력
+
+        const recommendedBoards = response.data.searchResult.content;
+        console.log("Recommended boards before setting state:", recommendedBoards);
+
+        setBoards(recommendedBoards || []);
       } catch (error) {
         if (error.response && error.response.status === 404) {
-          alert("대표 자녀가 등록되지 않았습니다.");
+          alert("추천 게시판을 불러올 수 없습니다.");
           setAutoRecommend(false); // 체크박스 해제
         } else {
           console.error("Failed to fetch recommended boards", error);
@@ -148,6 +150,11 @@ const Board = () => {
       getBoards(); // 자동 추천이 해제되면 원래의 게시판 목록을 가져옵니다
     }
   };
+
+  // 상태 변경 후의 boards 값을 확인하기 위해 useEffect 사용
+  useEffect(() => {
+    console.log("Boards state changed:", boards);
+  }, [boards]);
 
   if (isLoading) {
     return <div>Loading...</div>;
