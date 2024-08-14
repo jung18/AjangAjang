@@ -144,6 +144,7 @@ public class BoardService {
             for (String url : imageUrls) {
                 BoardMedia media = new BoardMedia(MediaType.IMAGE, url);
                 board.addMedia(media);
+                System.out.println(media.getMediaUrl());
                 boardMediaRepository.save(media);
             }
         }

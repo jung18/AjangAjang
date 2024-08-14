@@ -37,7 +37,7 @@ public class BoardApiController {
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
                                        @RequestPart(value = "media", required = false) List<MultipartFile> files,
-                                       @RequestParam(value = "imageUrls", required = false) List<String> imageUrls) {
+                                       @RequestPart(value = "imageUrls", required = false) List<String> imageUrls) {
         String username = customOAuth2User.getUsername();
         Board board = boardService.save(username, createBoardDto, files, imageUrls);
         boardSearchService.save(board);
