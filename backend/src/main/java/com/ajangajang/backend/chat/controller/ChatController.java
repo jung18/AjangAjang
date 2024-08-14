@@ -29,6 +29,7 @@ public class ChatController {
         log.info("message.getType() == ChatMessageDto.MessageType.CALL_REQUEST => {}", message.getType() == ChatMessageDto.MessageType.CALL_REQUEST);
         // CALL_REQUEST 왔을 때,
         if (message.getType() == ChatMessageDto.MessageType.CALL_REQUEST) {
+            log.info("Processing CALL_REQUEST message: {}", message);
             messagingTemplate.convertAndSend("/sub/chat/" + message.getRoomId(), message);
             return; // 추가 작업을 하지 않고 종료합니다.
         }
