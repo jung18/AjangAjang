@@ -12,6 +12,7 @@ function MyPage() {
   const [nickname, setNickname] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [level, setLevel] = useState('');
 
   // 사용자 정보 가져오기
   useEffect(() => {
@@ -23,6 +24,7 @@ function MyPage() {
           console.log("Nickname:", response.data.nickname);
           console.log("Profile Image URL:", response.data.profileImg);
           setProfileImage(response.data.profileImg || ImageNotFound); // 프로필 이미지 URL 설정
+          setLevel(response.data.level);
         }
       } catch (error) {
         console.error('Error fetching user info:', error);
@@ -111,7 +113,7 @@ function MyPage() {
       </div>
       <div className={styles.profileInfo}>
         <h3>닉네임: {nickname}</h3>
-        <p>레벨</p>
+        <p>{level}</p>
       </div>
       <div className={styles.menu}>
         <div className={styles.menuitemcontainer}>
