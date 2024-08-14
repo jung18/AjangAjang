@@ -35,8 +35,8 @@ public class SignUpController {
         userService.signUp(username, userInputDto);
 
         // 새로운 access 토큰 발급
-        String newAccess = jwtUtil.createJwt("access", username, "ROLE_USER", 10 * 60 * 1000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, "ROLE_USER", 24 * 60 * 60 * 1000L);
+        String newAccess = jwtUtil.createJwt("access", username, "ROLE_USER", 24 * 60 * 60 * 1000L);
+        String newRefresh = jwtUtil.createJwt("refresh", username, "ROLE_USER", 7 * 24 * 60 * 60 * 1000L);
 
         // access 토큰 헤더에 담아서 응답
         response.setHeader("Authorization", "Bearer/" + newAccess);

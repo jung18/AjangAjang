@@ -53,7 +53,7 @@ public class ReissueController {
         String role = jwtUtil.getRole(token);
 
         // 새로운 토큰 발급
-        String newAccess = jwtUtil.createJwt("access", username, role, 10 * 60 * 1000L);
+        String newAccess = jwtUtil.createJwt("access", username, role, 24 * 60 * 60 * 1000L);
 
         // 토큰을 헤더에 담아서 응답
         response.setHeader("Authorization", "Bearer/" + newAccess);
