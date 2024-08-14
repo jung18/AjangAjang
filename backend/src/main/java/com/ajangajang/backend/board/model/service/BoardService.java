@@ -46,17 +46,18 @@ public class BoardService {
     private final KakaoApiService kakaoApiService;
     private final LevelService levelService;
 
-    public Board save(String username, CreateBoardDto dto, List<MultipartFile> files) {
+    public Board save(String username, CreateBoardDto dto, List<MultipartFile> files, List<String> imageUrls) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board board = new Board(dto.getTitle(), dto.getPrice(), dto.getContent(), dto.getStatus(), Category.valueOf(dto.getCategory()));
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.ADDRESS_NOT_FOUND));
 
         board.setAddress(address);
-        setBoardMedia(files, board); // file upload, media save
+        setBoardMedia(files, imageUrls, board); // file upload and URL save
         writer.addMyBoard(board);
 
         return boardRepository.save(board);
     }
+
 
     public BoardDto findById(String username, Long id) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -111,7 +112,7 @@ public class BoardService {
             deleteFiles(updateParam.getDeleteFileIds());
         }
         // 새 파일 추가
-        setBoardMedia(files, findBoard);
+        setBoardMedia(files, new ArrayList<>(), findBoard);
     }
 
     public void delete(Long id, String username) {
@@ -130,9 +131,8 @@ public class BoardService {
         return getBoardListDtos(boards);
     }
 
-    private void setBoardMedia(List<MultipartFile> files, Board board) {
+    private void setBoardMedia(List<MultipartFile> files, List<String> imageUrls, Board board) {
         if (files != null && !files.isEmpty()) {
-            // Url + fileName, mediaType
             Map<String, MediaType> filesInfo = fileService.uploadFiles(files);
             for (Map.Entry<String, MediaType> entry : filesInfo.entrySet()) {
                 BoardMedia media = new BoardMedia(entry.getValue(), entry.getKey());
@@ -140,7 +140,15 @@ public class BoardService {
                 boardMediaRepository.save(media);
             }
         }
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            for (String url : imageUrls) {
+                BoardMedia media = new BoardMedia(MediaType.IMAGE, url);
+                board.addMedia(media);
+                boardMediaRepository.save(media);
+            }
+        }
     }
+
 
     private void deleteFiles(List<Long> deleteFileIds) {
         if (!deleteFileIds.isEmpty()) {

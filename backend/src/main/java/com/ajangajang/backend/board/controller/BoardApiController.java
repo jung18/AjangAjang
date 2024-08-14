@@ -36,13 +36,15 @@ public class BoardApiController {
     @PostMapping("/board")
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
-                                       @RequestPart(value = "media", required = false) List<MultipartFile> files) {
+                                       @RequestPart(value = "media", required = false) List<MultipartFile> files,
+                                       @RequestParam(value = "imageUrls", required = false) List<String> imageUrls) {
         String username = customOAuth2User.getUsername();
-        Board board = boardService.save(username, createBoardDto, files);
+        Board board = boardService.save(username, createBoardDto, files, imageUrls);
         boardSearchService.save(board);
         Long boardId = board.getId();
         return ResponseEntity.ok(Map.of("boardId", boardId));
     }
+
 
     @GetMapping("/board/{id}")
     public ResponseEntity<?> getBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
