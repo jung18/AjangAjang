@@ -99,6 +99,27 @@ function BoardDetail() {
     }
   };
 
+  const handleChatButtonClick = async () => {
+    if (user?.id === boardDetail.writer.userId) {
+      alert("자신의 글에는 채팅을 걸 수 없습니다.");
+      return;
+    }
+
+    try {
+      // 방을 생성하는 API 요청
+      const response = await apiClient.post(`/api/rooms`, {
+        name: boardDetail.title,
+        boardId: id,
+      });
+
+      const roomId = response.data.id;
+      // 채팅방으로 네비게이트
+      navigate(`/room/${roomId}`);
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+      alert("채팅방을 생성할 수 없습니다. 다시 시도해 주세요.");
+    }
+
   const handlePreviousImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1
@@ -143,10 +164,6 @@ function BoardDetail() {
 
     setVideoUrl(url);
     setIsVideoPlaying(true);
-  };
-
-  const handleChatButtonClick = () => {
-    alert("채팅 시작");
   };
 
   return (
