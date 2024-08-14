@@ -145,7 +145,10 @@ function Location() {
         longitude: sellerData.longitude,
         latitude: sellerData.latitude
       };
-
+      console.log("buyerId", createTradeDto.buyerId)
+      console.log("recommendType", createTradeDto.recommendType)
+      console.log("longitude", createTradeDto.longitude)
+      console.log("latitude", createTradeDto.latitude)
       const response = await fetchData(createTradeDto);
       console.log(response);
       const dataList = response.data.map((item, idx) => ({
