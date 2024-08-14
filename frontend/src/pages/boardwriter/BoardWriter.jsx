@@ -172,12 +172,12 @@ const BoardWrite = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!isFormValid()) {
       alert("제목, 가격, 내용은 반드시 입력해야 합니다.");
       return;
     }
-
+  
     const createBoardDto = {
       title,
       price: parseInt(price),
@@ -186,16 +186,22 @@ const BoardWrite = () => {
       status,
       addressId: 1,
     };
-
+  
     const formData = new FormData();
     formData.append(
       "board",
       new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
     );
+  
     images.forEach((image) => {
-      formData.append("media", image.isBgRemoved ? image.bgRemovedImage : image.original);
+      if (image.isBgRemoved) {
+        // 누끼 딴 이미지 URL을 폼 데이터에 추가
+        formData.append("media", image.bgRemovedImage);
+      } else {
+        formData.append("media", image.original);
+      }
     });
-
+  
     try {
       await apiClient.post("/api/board", formData, {
         headers: {
@@ -207,6 +213,7 @@ const BoardWrite = () => {
       console.error("Error submitting the form", error);
     }
   };
+  
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
