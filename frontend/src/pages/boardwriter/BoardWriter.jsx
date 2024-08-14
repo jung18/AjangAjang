@@ -25,11 +25,8 @@ const BoardWrite = () => {
   const [status, setStatus] = useState("FOR_SALE");
 
   const [images, setImages] = useState([]);
-  const [originalImages, setOriginalImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isBgRemoved, setIsBgRemoved] = useState(false);
-  const [bgRemovedImage, setBgRemovedImage] = useState(null);
-  const [savedBgRemovedImage, setSavedBgRemovedImage] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
@@ -95,10 +92,12 @@ const BoardWrite = () => {
   const handleCheckboxChange = async () => {
     if (!selectedImage) return;
 
-    if (!savedBgRemovedImage) {
+    const selectedIndex = images.findIndex(img => img.id === selectedImage.id);
+
+    if (!images[selectedIndex].bgRemovedImage) {
       try {
         const formData = new FormData();
-        formData.append('files', selectedImage);
+        formData.append('files', selectedImage.original);
 
         const response = await axios.post("https://i11b210.p.ssafy.io:3443/api/remove-background", formData, {
           headers: {
@@ -108,15 +107,15 @@ const BoardWrite = () => {
         });
 
         const newImage = response.data.data[0];
-        setSavedBgRemovedImage(newImage.url);
-        setBgRemovedImage(newImage.url);
+        const updatedImages = [...images];
+        updatedImages[selectedIndex].bgRemovedImage = newImage.url;
+        setImages(updatedImages);
         setIsBgRemoved(true);
       } catch (error) {
         console.error('Error removing background', error);
       }
     } else {
       setIsBgRemoved((prev) => !prev);
-      setBgRemovedImage(isBgRemoved ? null : savedBgRemovedImage);
     }
   };
 
@@ -142,9 +141,12 @@ const BoardWrite = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
+      const newFiles = Array.from(e.target.files).map((file, index) => ({
+        id: `${file.name}-${Date.now()}`,
+        original: file,
+        bgRemovedImage: null,
+      }));
       setImages([...images, ...newFiles]);
-      setOriginalImages([...originalImages, ...newFiles]);
     }
   };
 
@@ -163,7 +165,6 @@ const BoardWrite = () => {
 
   const handleDeleteImage = (index) => {
     setImages(images.filter((_, i) => i !== index));
-    setOriginalImages(originalImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -189,7 +190,7 @@ const BoardWrite = () => {
       new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
     );
     images.forEach((image) => {
-      formData.append("media", image);
+      formData.append("media", image.bgRemovedImage || image.original);
     });
 
     try {
@@ -206,17 +207,15 @@ const BoardWrite = () => {
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
-    setIsBgRemoved(image === savedBgRemovedImage);
-    setBgRemovedImage(savedBgRemovedImage && image === savedBgRemovedImage ? savedBgRemovedImage : null);
+    setIsBgRemoved(!!image.bgRemovedImage);
   };
 
   const handleApply = () => {
-    if (bgRemovedImage) {
-      setImages((prevImages) =>
-        prevImages.map((img) =>
-          img === selectedImage ? bgRemovedImage : img
-        )
+    if (isBgRemoved) {
+      const updatedImages = images.map(img =>
+        img.id === selectedImage.id ? { ...img, bgRemovedImage: selectedImage.bgRemovedImage } : img
       );
+      setImages(updatedImages);
     }
   };
 
@@ -303,7 +302,7 @@ const BoardWrite = () => {
           {images.map((image, index) => (
             <div key={index} className="image-container">
               <img
-                src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+                src={isBgRemoved && selectedImage && selectedImage.id === image.id && image.bgRemovedImage ? image.bgRemovedImage : URL.createObjectURL(image.original)}
                 alt={`Preview ${index}`}
                 className="image-thumbnail"
                 onClick={() => handleImageClick(image)}
@@ -331,7 +330,7 @@ const BoardWrite = () => {
       {selectedImage && (
         <div className="selected-image-container">
           <img
-            src={bgRemovedImage ? bgRemovedImage : (typeof selectedImage === 'string' ? selectedImage : URL.createObjectURL(selectedImage))}
+            src={isBgRemoved && selectedImage.bgRemovedImage ? selectedImage.bgRemovedImage : URL.createObjectURL(selectedImage.original)}
             alt="Selected Preview"
             className="selected-image"
           />
