@@ -17,7 +17,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "where a.addressCode in :codes order by b.updatedAt desc")
     List<Board> findAllInRange(List<String> codes);
 
-    @Query("select b from Board b join fetch b.writer w " +
+    @Query("select b from Board b join fetch b.writer w join fetch b.address " +
             "where w.id = :userId order by b.updatedAt desc")
     List<Board> findAllByUserId(Long userId);
 
@@ -31,11 +31,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from Board b " +
             "join fetch b.writer " +
+            "join fetch b.address " +
             "join fetch b.trade t where t.buyer.id = :id")
     List<Board> findMyBuyingBoards(Long id);
 
     @Query("select b from Board b " +
             "join fetch b.writer " +
+            "join fetch b.address " +
             "join fetch b.trade t where t.seller.id = :id")
     List<Board> findMySellingBoards(Long id);
 }

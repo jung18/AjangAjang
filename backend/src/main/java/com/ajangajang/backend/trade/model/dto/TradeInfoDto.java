@@ -5,14 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
-@Getter
-@Setter
+@Getter @Setter
 @AllArgsConstructor
-public class TradeListDto {
+public class TradeInfoDto {
 
-    private List<TradeInfoDto> buyingTrades;
-    private List<TradeInfoDto> sellingTrades;
+    private BoardListDto board;
+    private Long tradeId;
 
 }

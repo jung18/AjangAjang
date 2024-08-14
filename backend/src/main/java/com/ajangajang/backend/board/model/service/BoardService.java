@@ -168,11 +168,13 @@ public class BoardService {
         for (Board board : boards) {
             User writer = board.getWriter();
             String thumbnail = getThumbnail(board);
+            Address address = board.getAddress();
+            String adressName = address.getSigg() + address.getEmd();
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
                     writer.getProfileImg(), levelService.getLevel(writer.getScore()));
-            result.add(new BoardListDto(board.getId(), thumbnail, profile, board.getTitle(), board.getPrice(),
-                    board.getCategory().name(),
-                    board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
+            result.add(new BoardListDto(board.getId(), thumbnail, profile, board.getTitle(),
+                    board.getPrice(), adressName, board.getCategory().name(), board.getStatus(),
+                    board.getLikedUsers().size(), board.getViewCount()));
         }
         return result;
     }

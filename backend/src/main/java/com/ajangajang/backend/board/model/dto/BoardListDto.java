@@ -4,7 +4,6 @@ import com.ajangajang.backend.board.model.entity.Status;
 import com.ajangajang.backend.user.model.dto.UserProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
@@ -16,6 +15,7 @@ public class BoardListDto {
     private UserProfileDto writer;
     private String title;
     private int price;
+    private String address;
     private String category;
     private Status status;
     private int likeCount;

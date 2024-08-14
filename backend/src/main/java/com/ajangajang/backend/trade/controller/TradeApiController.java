@@ -2,10 +2,7 @@ package com.ajangajang.backend.trade.controller;
 
 import com.ajangajang.backend.board.model.dto.BoardListDto;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
-import com.ajangajang.backend.trade.model.dto.CreateRecommendDto;
-import com.ajangajang.backend.trade.model.dto.CreateTradeDto;
-import com.ajangajang.backend.trade.model.dto.TradeDto;
-import com.ajangajang.backend.trade.model.dto.TradeListDto;
+import com.ajangajang.backend.trade.model.dto.*;
 import com.ajangajang.backend.trade.model.service.TradeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +39,8 @@ public class TradeApiController {
     @GetMapping("/my")
     public ResponseEntity<?> getMyBuyingTrades(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         String username = customOAuth2User.getUsername();
-        List<BoardListDto> buyingTrades = tradeService.getMyBuyingTrades(username);
-        List<BoardListDto> sellingTrades = tradeService.getMySellingTrades(username);
+        List<TradeInfoDto> buyingTrades = tradeService.getMyBuyingTrades(username);
+        List<TradeInfoDto> sellingTrades = tradeService.getMySellingTrades(username);
         TradeListDto tradeList = new TradeListDto(buyingTrades, sellingTrades);
         return new ResponseEntity<>(tradeList, HttpStatus.OK);
     }
