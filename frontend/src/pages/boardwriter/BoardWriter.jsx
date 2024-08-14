@@ -28,6 +28,7 @@ const BoardWrite = () => {
   const [originalImages, setOriginalImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isBgRemoved, setIsBgRemoved] = useState(false);
+  const [bgRemovedImage, setBgRemovedImage] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
@@ -93,8 +94,6 @@ const BoardWrite = () => {
   const handleCheckboxChange = async () => {
     if (!selectedImage) return;
 
-    setIsBgRemoved((prev) => !prev);
-
     if (!isBgRemoved) {
       try {
         const formData = new FormData();
@@ -108,28 +107,14 @@ const BoardWrite = () => {
         });
 
         const newImage = response.data.data[0];
-        setImages((prevImages) =>
-          prevImages.map((img) =>
-            img === selectedImage ? newImage.url : img
-          )
-        );
-        setSelectedImage(newImage.url);
+        setBgRemovedImage(newImage.url);
       } catch (error) {
         console.error('Error removing background', error);
       }
     } else {
-      const originalImage = originalImages.find(
-        (img) => img === selectedImage
-      );
-      if (originalImage) {
-        setImages((prevImages) =>
-          prevImages.map((img) =>
-            img === selectedImage ? originalImage : img
-          )
-        );
-        setSelectedImage(originalImage);
-      }
+      setBgRemovedImage(null);
     }
+    setIsBgRemoved((prev) => !prev);
   };
 
   const handleTitleChange = (e) => {
@@ -218,7 +203,21 @@ const BoardWrite = () => {
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
+    setBgRemovedImage(null);
     setIsBgRemoved(false);
+  };
+
+  const handleApply = () => {
+    if (bgRemovedImage) {
+      setImages((prevImages) =>
+        prevImages.map((img) =>
+          img === selectedImage ? bgRemovedImage : img
+        )
+      );
+      setUploadedUrls([...uploadedFiles, { url: bgRemovedImage }]);
+    } else {
+      setUploadedUrls([...uploadedFiles, { url: URL.createObjectURL(selectedImage) }]);
+    }
   };
 
   if (isLoading) {
@@ -332,7 +331,7 @@ const BoardWrite = () => {
       {selectedImage && (
         <div className="selected-image-container">
           <img
-            src={typeof selectedImage === 'string' ? selectedImage : URL.createObjectURL(selectedImage)}
+            src={bgRemovedImage ? bgRemovedImage : (typeof selectedImage === 'string' ? selectedImage : URL.createObjectURL(selectedImage))}
             alt="Selected Preview"
             className="selected-image"
           />
@@ -346,7 +345,7 @@ const BoardWrite = () => {
           </label>
           <button
             type="button"
-            onClick={() => setUploadedUrls(images)}
+            onClick={handleApply}
             className="apply-button"
           >
             설정
@@ -362,7 +361,7 @@ const BoardWrite = () => {
                 src={deleteIcon}
                 alt="Delete Icon"
                 className="delete-icon"
-                onClick={() => handleDeleteImage(index)}
+                onClick={() => setUploadedUrls(uploadedFiles.filter((_, i) => i !== index))}
               />
             </div>
           ))}
