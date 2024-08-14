@@ -11,20 +11,23 @@ function MyTrade() {
   const [maxHeight, setMaxHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("구매 내역"); // 활성화된 탭 상태
+  const [activeList, setActiveList] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetchTradeList();
+      console.log(response);
+      setBuyList(response.buyingTrades);
+      setSellList(response.sellingTrades);
+      setActiveList(response.buyingTrades);
+    } catch (error) {
+      console.error("Failed to fetch trade list:", error);
+    } finally {
+      setIsLoading(false); // 데이터 로드가 완료되었을 때 로딩 상태 해제
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchTradeList();
-        setBuyList(response.data.buyingTrades);
-        setSellList(response.data.sellingTrades);
-      } catch (error) {
-        console.error("Failed to fetch trade list:", error);
-      } finally {
-        setIsLoading(false); // 데이터 로드가 완료되었을 때 로딩 상태 해제
-      }
-    };
-
     fetchData();
 
     const calculateMaxHeight = () => {
@@ -42,14 +45,14 @@ function MyTrade() {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab); // 클릭한 탭으로 활성 탭 변경
+    if (tab === "구매 내역") setActiveList(buyList);
+    else setActiveList(sellList);
     // 추가적으로 탭 클릭 시 필터링 로직을 구현할 수 있음
   };
 
   if (isLoading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
-
-  const activeList = activeTab === "구매 내역" ? buyList : sellList;
 
   return (
     <div>

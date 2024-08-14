@@ -351,7 +351,7 @@ const Chat = () => {
   
       const creatorUserId = data.creatorUserId;
       console.log("===================");
-      console.log(roomData);
+      console.log(data);
   
       let buyerId = '';
       let sellerId = '';
@@ -363,7 +363,7 @@ const Chat = () => {
           sellerId = room.userId;
         } else {
           buyerId = room.userId;
-          boardId = roomData.boardId;
+          boardId = data.boardId;
         }
       });
 
@@ -382,6 +382,8 @@ const Chat = () => {
   const createTrade = async () => {
     try {
       const { accessToken } = useTokenStore.getState();
+      console.log(buyerId);
+      console.log(boardId);
 
       //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
       const response = await fetch(
@@ -394,13 +396,14 @@ const Chat = () => {
           },
           credentials: "include",
           body: JSON.stringify({
-            buyId: buyerId,
+            buyerId: buyerId,
             boardId: boardId,
           }),
         }
       );
 
       const data = await response.json();
+      alert('거래 완료!');
       return data;
     } catch (error) {
       console.error("Error fetching board list", error);
