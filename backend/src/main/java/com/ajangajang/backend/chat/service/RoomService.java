@@ -71,6 +71,19 @@ public class RoomService {
     }
 
     @Transactional(readOnly = true)
+    public RoomResponseDTO getUserRoomById(Long roomId, User user) {
+        // 방과 사용자를 기준으로 UserRoom을 찾음
+        UserRoom userRoom = userRoomRepository.findByUserIdAndRoomId(user.getId(), roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID or you do not have access to this room"));
+
+        // 방 정보 가져오기
+        Room room = userRoom.getRoom();
+
+        // 해당 방의 RoomResponseDTO 반환
+        return getRoomResponseDTO(room, user.getId());
+    }
+
+    @Transactional(readOnly = true)
     public RoomResponseDTO getRoomResponseDTO(Room room, Long userId) {
         RoomResponseDTO dto = new RoomResponseDTO();
         dto.setId(room.getId());

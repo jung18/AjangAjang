@@ -45,6 +45,23 @@ public class RoomController {
         return roomService.getUserRooms(user);
     }
 
+    @GetMapping("/myRooms/{roomId}")
+    public RoomResponseDTO getUserRoomById(@PathVariable Long roomId,
+                                           @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        User user = userRepository.findByUsername(customOAuth2User.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 해당 사용자가 해당 roomId에 접근할 수 있는지 확인
+        RoomResponseDTO roomResponseDTO = roomService.getUserRoomById(roomId, user);
+
+        // 예외 처리: 만약 사용자가 이 방에 속하지 않으면 예외를 던짐
+        if (roomResponseDTO == null) {
+            throw new RuntimeException("Room not found or you do not have access to this room");
+        }
+
+        return roomResponseDTO;
+    }
+
     @GetMapping
     public List<RoomResponseDTO> getAllRooms() {
         return roomService.getAllRooms();
