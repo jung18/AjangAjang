@@ -119,7 +119,7 @@ function BoardDetail() {
       console.error("채팅방 생성 실패:", error);
       alert("채팅방을 생성할 수 없습니다. 다시 시도해 주세요.");
     }
-
+  }
   const handlePreviousImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1
