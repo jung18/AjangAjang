@@ -26,7 +26,7 @@ function BoardDetail() {
 
   const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
-  
+
   const handleEditButtonClick = () => {
     usePageStore.getState().setCurrentPage(`/board/${id}`); // 현재 페이지 정보 저장
     navigate(`/edit/${id}`, { state: { boardDetail: boardDetail } }); // 수정 페이지로 이동
@@ -69,9 +69,13 @@ function BoardDetail() {
   const isLiked = likedBoards[id] || false;
 
   const videoBtnClickHandler = () => {
-    // 예시로 사용한 비디오 URL, 실제로는 API에서 가져온다거나 하는 방법으로 설정
-    const url =
-      boardDetail.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4"; // videoUrl은 백엔드에서 받아온 비디오 URL
+    // VIDEO 타입의 미디어를 찾는다
+    const videoMedia = boardDetail.mediaList.find((media) => media.mediaType === "VIDEO");
+
+    // VIDEO 타입의 미디어가 있으면 그 mediaUrl을 사용, 없으면 기본 URL을 사용
+    const url = videoMedia
+      ? videoMedia.mediaUrl
+      : "";
 
     if (!url) {
       alert("영상이 존재하지 않습니다.");
