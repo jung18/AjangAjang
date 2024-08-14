@@ -36,7 +36,7 @@ const Chat = () => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/chat/messages/${roomId}`);
+                const response = await axios.get(`https://i11b210.p.ssafy.io:4443/api/chat/messages/${roomId}`);
                 if (Array.isArray(response.data)) {
                     setMessages(response.data);
                 } else {
@@ -49,7 +49,7 @@ const Chat = () => {
         };
         fetchMessages();
 
-        const socket = new SockJS('http://localhost:8080/ws-stomp');
+        const socket = new SockJS('https://i11b210.p.ssafy.io:4443/ws-stomp');
         const client = Stomp.over(socket);
         if (stompClientRef.current) {
             stompClientRef.current.disconnect();
@@ -85,7 +85,7 @@ const Chat = () => {
 
     const handleCallButtonClick = async () => {
         try {
-            const sessionResponse = await axios.post(`http://localhost:8080/api/sessions/create`);
+            const sessionResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/create`);
             const newSessionId = sessionResponse.data;
             
             const message = {
@@ -94,7 +94,7 @@ const Chat = () => {
             };
             stompClientRef.current.send(`/pub/chat/${roomId}`, {}, JSON.stringify(message));
 
-            const tokenResponse = await axios.post(`http://localhost:8080/api/sessions/${newSessionId}/connections`);
+            const tokenResponse = await axios.post(`https://i11b210.p.ssafy.io:4443/api/sessions/${newSessionId}/connections`);
             const token = tokenResponse.data;
 
             let newSession = OV.current.initSession();
