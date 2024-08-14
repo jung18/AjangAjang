@@ -127,6 +127,8 @@ const Chat = () => {
             const message = {
                 sessionId: newSessionId,
                 type: 'CALL_REQUEST',
+                roomId,
+
             };
             console.log("Sending CALL_REQUEST message:", message);
             stompClientRef.current.send(`/pub/chat/message`, {}, JSON.stringify(message));
