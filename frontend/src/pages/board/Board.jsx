@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { fetchBoardList } from "../../api/boardService";
-import useTokenStore from '../../store/useTokenStore'; // 경로 수정
+import useTokenStore from '../../store/useTokenStore';
 import useUserStore from "../../store/useUserStore";
-
 import apiClient from "../../api/apiClient";
-
 import BoardList from "./components/boardList/BoardList";
 import SelectBox from "../../components/SelectBox";
-
 import "./Board.css";
 
 const Board = () => {
   const [boards, setBoards] = useState([]);
   const [addressList, setAddressList] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
+  const [autoRecommend, setAutoRecommend] = useState(false);
 
   const setAccessToken = useTokenStore((state) => state.setAccessToken);
   const setRefreshToken = useTokenStore((state) => state.setRefreshToken);
@@ -25,41 +22,36 @@ const Board = () => {
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
 
+  const getBoards = async () => {
+    try {
+      const boardList = await fetchBoardList();
+      setBoards(boardList.searchResult.content || []);
+
+      const combinedAddresses = (boardList.addressList || []).map(address => address.fullAddress);
+      setAddressList(combinedAddresses);
+
+    } catch (error) {
+      console.error("Failed to fetch boards", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculateMaxHeight = () => {
+    const totalHeight = window.innerHeight;
+    setMaxHeight(totalHeight - 170);
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const response = await apiClient.get("http://localhost:8080/api/user/my");
+      setUser(response.data);
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
   useEffect(() => {
-    const getBoards = async () => {
-      try {
-        const boardList = await fetchBoardList();
-        setBoards(boardList.searchResult.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
-        
-        // addressList의 각 요소를 하나의 문자열로 합치기
-        const combinedAddresses = (boardList.addressList || []).map(address => {
-          return address.fullAddress;
-        });
-
-        setAddressList(combinedAddresses);
-
-      } catch (error) {
-        console.error("Failed to fetch boards", error);
-      } finally {
-        setIsLoading(false); // 데이터 로드가 끝나면 로딩 상태를 false로 설정
-      }
-    };
-
-    const calculateMaxHeight = () => {
-      const totalHeight = window.innerHeight;
-      setMaxHeight(totalHeight - 170);
-    };
-
-    const fetchUserData = async () => {
-      try {
-        const response = await apiClient.get("https://i11b210.p.ssafy.io:4443/api/user/my");
-        setUser(response.data); // 사용자 정보를 상태에 저장
-      } catch (error) {
-        console.error("Failed to fetch user data", error);
-      }
-    };
-
-
     getBoards();
     calculateMaxHeight();
     window.addEventListener("resize", calculateMaxHeight);
@@ -80,41 +72,58 @@ const Board = () => {
       setRefreshToken(refreshTokenFromCookie);
     }
 
-    // 쿠키 삭제
     if (accessTokenFromCookie || refreshTokenFromCookie) {
       document.cookie = 'Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = 'Authorization-refresh=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
 
-    console.log('Access Token from Cookie:', accessTokenFromCookie);
-    console.log('Refresh Token from Cookie:', refreshTokenFromCookie);
-
-    // 사용자 상태가 없으면 사용자 정보를 불러옴
     if (!user) {
       fetchUserData();
     }
-
-    console.log(user);
 
     return () => {
       window.removeEventListener("resize", calculateMaxHeight);
     };
   }, [setAccessToken, setRefreshToken, accessToken, refreshToken, user, setUser]);
 
+  // 자동 추천 체크박스 상태 변경 핸들러
+  const handleAutoRecommendChange = async (event) => {
+    setAutoRecommend(event.target.checked);
+    if (event.target.checked) {
+      try {
+        const response = await apiClient.post("/api/board/recommendation", {
+          page: 0,
+          size: 10,
+        });
+        setBoards(response.data.content || []);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          alert("대표 자녀가 등록되지 않았습니다.");
+          setAutoRecommend(false); // 체크박스 해제
+        } else {
+          console.error("Failed to fetch recommended boards", error);
+        }
+      }
+    } else {
+      getBoards(); // 자동 추천이 해제되면 원래의 게시판 목록을 가져옵니다
+    }
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+    return <div>Loading...</div>;
   }
 
-  // optionList에 사용자 주소 목록 넣어줘야함
   return (
     <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
       <div className="user-option">
-        <SelectBox
-          optionList={addressList}
-        />
+        <SelectBox optionList={addressList} />
         <label className="recommand">
           자동 추천
-          <input type="checkbox" />
+          <input 
+            type="checkbox" 
+            checked={autoRecommend} 
+            onChange={handleAutoRecommendChange} 
+          />
         </label>
       </div>
       
