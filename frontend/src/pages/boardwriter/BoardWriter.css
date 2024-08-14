@@ -95,6 +95,7 @@
 }
 
 .image-container {
+  margin-bottom: 0;
   position: relative;
   border: 2px solid #ff879e; /* 테두리 추가 */
   border-radius: 5px; /* 둥근 테두리 */
@@ -105,6 +106,30 @@
   width: 70px; /* 컨테이너 너비 조절 */
   height: 70px; /* 컨테이너 높이 조절 */
   overflow: hidden; /* 이미지가 컨테이너를 벗어나지 않도록 함 */
+}
+
+.checkbox-container {
+  position: relative;
+  width: 70px; /* 컨테이너 너비 조절 */
+  height: 90px; /* 컨테이너 높이 조절 */
+}
+
+.recommand input {
+  border-color: #ff879e;
+  accent-color: #ffca00;
+  width: 17px;
+  height: 17px;
+}
+
+.image-checkbox {
+  top: -25px; /* 상단에 고정 */
+  left: 50%; /* 컨테이너의 가로 중앙에 배치 */
+  transform: translateX(-50%); /* 중앙 정렬 */
+  position: absolute;
+  z-index: 10; /* 이미지 위로 체크박스가 나타나도록 z-index 설정 */
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
 .image-thumbnail {
@@ -142,4 +167,19 @@
     font-size: 12px;
     padding: 8px;
   }
+}
+
+.btn-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.removebg-btn {
+  background-color: #ff879e;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 15px;
 }

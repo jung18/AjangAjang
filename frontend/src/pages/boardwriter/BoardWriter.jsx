@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import cameraImage from "../../assets/camera.png";
@@ -29,6 +30,8 @@ const BoardWrite = () => {
   const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
   const location = useLocation(); // 상태를 받기 위해 useLocation 사용
+  const [selectedImages, setSelectedImages] = useState([]); // 선택된 이미지를 저장할 상태
+  const [uploadedFiles, setUploadedUrls] = useState([]); // 누끼딴 이미지 url들
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -89,7 +92,47 @@ const BoardWrite = () => {
       setContent(content || "");
       setPrice(price || "");
     }
-  }, []);
+
+  }, [location.state]);
+  
+  const handleCheckboxChange = (image) => { // 누끼딸 이미지 선택
+    console.log(selectedImages)
+    setSelectedImages((prevSelectedImages) => {
+      if (prevSelectedImages.includes(image)) {
+        // 이미 선택된 이미지라면 배열에서 제거
+        return prevSelectedImages.filter((img) => img !== image);
+      } else {
+        // 선택되지 않은 이미지라면 배열에 추가
+        return [...prevSelectedImages, image];
+      }
+    });
+  };
+
+  const handleRemoveBg = async () => { // 누끼따는 함수
+    if (selectedImages.length === 0) {
+      alert('이미지를 선택해주세요.');
+      return;
+    }
+    // 선택된 이미지들을 formData에 추가
+    const formData = new FormData();
+    selectedImages.forEach((image) => {
+      formData.append('files', image);
+    });
+    
+    try {
+      const response = await axios.post("http://localhost:8000/api/remove-background", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('Response:', response.data);
+      setUploadedUrls(response.data.data)
+
+    } catch (error) {
+      console.error('Error submitting the form', error);
+    }
+
+  };
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -132,6 +175,10 @@ const BoardWrite = () => {
 
   const handleDeleteImage = (index) => {
     setImages(images.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteS3Image = (index) => {
+    setUploadedUrls(uploadedFiles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -257,24 +304,36 @@ const BoardWrite = () => {
         onChange={handleContentChange}
         className="textarea-field"
       />
+      <div className='btn-section'>
+      {images.length > 0 && (
+          <button type="button" className="removebg-btn" onClick={handleRemoveBg}>
+            누끼
+          </button>
+        )}
+      </div>
       <div className="camera-section">
         <div className="video-icon" onClick={handleIconClick}>
           <img src={videoImage} alt="Video Icon" className="camera-image" />
         </div>
         <div className="image-preview">
           {images.map((image, index) => (
-            <div key={index} className="image-container">
-              <img
-                src={URL.createObjectURL(image)}
-                alt={`Preview ${index}`}
-                className="image-thumbnail"
-              />
-              <img
-                src={deleteIcon}
-                alt="Delete Icon"
-                className="delete-icon"
-                onClick={() => handleDeleteImage(index)}
-              />
+            <div key={index} className='checkbox-container'>
+              <label className='recommand'>
+                <input 
+                  type="checkbox" 
+                  className="image-checkbox" 
+                  onChange={() => handleCheckboxChange(image)} 
+                />
+              </label>
+              <div key={index} className="image-container">
+                <img src={URL.createObjectURL(image)} alt={`Preview ${index}`} className="image-thumbnail" />
+                <img
+                  src={deleteIcon}
+                  alt="Delete Icon"
+                  className="delete-icon"
+                  onClick={() => handleDeleteImage(index)}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -288,7 +347,23 @@ const BoardWrite = () => {
         style={{ display: "none" }}
         onChange={handleFileChange}
         multiple // 여러 장 선택 가능하도록 설정
-      />
+      /> 
+      {/* 누끼 결과 */}
+      <div className='camera-section'> 
+      <div className="image-preview">
+          {uploadedFiles.map((data, index) => (
+            <div key={index} className="image-container">
+              <img src={data.url} alt={`Preview ${index}`} className="image-thumbnail" />
+              <img
+                src={deleteIcon}
+                alt="Delete Icon"
+                className="delete-icon"
+                onClick={() => handleDeleteS3Image(index)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </form>
   );
 };
