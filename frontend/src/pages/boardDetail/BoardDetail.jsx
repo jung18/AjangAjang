@@ -34,6 +34,7 @@ function BoardDetail() {
 
   const handleDeleteButtonClick = () => {
     deleteMyBoard(id);
+    navigate(`/direct`);
   };
 
   const getCategoryLabel = (category) => {
