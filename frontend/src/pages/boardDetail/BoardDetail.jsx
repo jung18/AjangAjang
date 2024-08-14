@@ -1,273 +1,358 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"; // axios를 사용하여 API 요청을 처리합니다.
-
-import { deleteMyBoard } from "../../api/boardService";
-import { fetchBoardDetail } from "../../api/boardDetailService";
-import useUserStore from "../../store/useUserStore";
-import usePageStore from "../../store/currentPageStore";
-
-import LikeIcon from "../../assets/icons/like-inactive.png";
-import LikeActiveIcon from "../../assets/icons/like-active.png";
-import VideoIcon from "../../assets/icons/video.png";
-import CloseIcon from "../../assets/icons/close.png";
-import ImageNotFound from "../../assets/icons/image-not-found.png";
-
-import "./BoardDetetail.css";
+import axios from 'axios';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import cameraImage from "../../assets/camera.png";
+import videoImage from "../../assets/video.png";
+import deleteIcon from "../../assets/delete.png";
 import apiClient from "../../api/apiClient";
+import "./BoardWriter.css";
+import usePageStore from "../../store/currentPageStore";
+import useUserStore from "../../store/useUserStore";
 
-function BoardDetail() {
-  const { id } = useParams(); // URL 경로에서 boardId를 가져옴
-  const [boardDetail, setBoardDetail] = useState(null); // Board 상세 정보를 저장할 상태
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [isLiked, setIsLiked] = useState(false); // 찜 상태를 관리하는 상태
-  const [formattedPrice, setFormattedPrice] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [formattedDate, setFormattedDate] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 이미지 인덱스를 추적
-
+const BoardWrite = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
+
+  const [addressList, setAddressList] = useState([]);
+  const [mainAddress, setMainAddress] = useState();
+
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("ETC");
+  const [region, setRegion] = useState("");
+  const [status, setStatus] = useState("FOR_SALE");
+
+  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isBgRemoved, setIsBgRemoved] = useState(false);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
-
-  const handleEditButtonClick = () => {
-    usePageStore.getState().setCurrentPage(`/board/${id}`); // 현재 페이지 정보 저장
-    navigate(`/edit/${id}`, { state: { boardDetail: boardDetail } }); // 수정 페이지로 이동
-  };
-
-  const handleDeleteButtonClick = () => {
-    deleteMyBoard(id);
-    navigate(`/direct`);
-  };
-
-  const getCategoryLabel = (category) => {
-    switch (category) {
-      case "DAILY_SUPPLIES":
-        return "일상 용품";
-      case "BABY_CARRIAGE":
-        return "유모차";
-      case "FURNITURE":
-        return "아기가구";
-      case "BABY_CLOTHES":
-        return "아기옷";
-      case "TOY":
-        return "장난감";
-      case "CAR_SEAT":
-        return "카시트";
-      default:
-        return "기타";
-    }
-  };
-
-  const getBoardDetail = async () => {
-    try {
-      const data = await fetchBoardDetail(id); // id를 사용해 fetchBoardDetail 호출
-      setBoardDetail(data);
-      setFormattedPrice(new Intl.NumberFormat("en-US").format(data.price));
-      setIsLiked(data.liked); // 초기 찜 상태를 설정
-      const formattedDate = String(
-        new Date(data.createdAt).toISOString().split("T")[0]
-      );
-      setFormattedDate(formattedDate);
-    } catch (error) {
-      console.error("Failed to fetch board details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const setCurrentPage = usePageStore((state) => state.setCurrentPage);
+  const location = useLocation();
+  const [uploadedFiles, setUploadedUrls] = useState([]);
 
   useEffect(() => {
-    getBoardDetail();
-  }, [id]); // boardId가 변경될 때마다 useEffect 재실행
-
-  const toggleLikeStatus = async () => {
-    try {
-      if (isLiked) {
-        // 찜하기 취소 요청
-        await apiClient.delete(`api/board/${id}/likes`);
-        setIsLiked(false); // 찜 상태 업데이트
-        alert("좋아요를 취소했습니다.");
-      } else {
-        // 찜하기 요청
-        await apiClient.post(`api/board/${id}/likes`);
-        setIsLiked(true); // 찜 상태 업데이트
-        alert("좋아요를 눌렀습니다.");
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get("/api/user/my");
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
       }
-    } catch (error) {
-      console.error("Failed to toggle like status:", error);
-      alert("자신의 글은 찜을 할 수 없습니다.");
+    };
+
+    const fetchAddress = async () => {
+      try {
+        const response = await apiClient.get("/api/address/my");
+
+        if (response.data && response.data.data && response.data.data.length > 0) {
+          const addressData = response.data.data;
+
+          let mainAddressIndex = -1;
+          addressData.forEach((address, index) => {
+            if (address.addressId === user.mainAddressId) {
+              mainAddressIndex = index;
+              setRegion(address.fullAddress);
+            }
+          });
+
+          if (mainAddressIndex === -1 && addressData.length > 0) {
+            setMainAddress(0);
+            setRegion(addressData[0].fullAddress);
+          }
+
+          setAddressList(addressData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch address data", error);
+      }
+    };
+
+    const initialize = async () => {
+      if (!user) {
+        await fetchUserData();
+      }
+      await fetchAddress();
+      setIsLoading(false);
+    };
+
+    initialize();
+
+    if (location.state?.templateData) {
+      const { title, content, price } = location.state.templateData;
+      setTitle(title || "");
+      setContent(content || "");
+      setPrice(price || "");
+    }
+
+  }, [location.state]);
+
+  const handleCheckboxChange = async () => {
+    if (!selectedImage) return;
+
+    const selectedIndex = images.findIndex(img => img.id === selectedImage.id);
+
+    if (!images[selectedIndex].bgRemovedImage) {
+      try {
+        const formData = new FormData();
+        formData.append('files', selectedImage.original);
+
+        const response = await axios.post("https://i11b210.p.ssafy.io:3443/api/remove-background", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          credentials: 'include'
+        });
+
+        const newImage = response.data.data[0];
+        const updatedImages = [...images];
+        updatedImages[selectedIndex].bgRemovedImage = newImage.url;
+        setImages(updatedImages);
+        setIsBgRemoved(true);
+      } catch (error) {
+        console.error('Error removing background', error);
+      }
+    } else {
+      setIsBgRemoved((prev) => !prev);
     }
   };
 
-  const handleChatButtonClick = async () => {
-    if (user?.id === boardDetail.writer.userId) {
-      alert("자신의 글에는 채팅을 걸 수 없습니다.");
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value);
+  };
+
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
+  const handleRegionChange = (e) => {
+    setRegion(e.target.value);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files).map((file, index) => ({
+        id: `${file.name}-${Date.now()}`,
+        original: file,
+        bgRemovedImage: null,
+      }));
+      setImages([...images, ...newFiles]);
+    }
+  };
+
+  const handleIconClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleTemplate = () => {
+    setCurrentPage("post/template");
+    navigate("/post/template");
+  };
+
+  const isFormValid = () => {
+    return title.trim() !== "" && price.trim() !== "" && content.trim() !== "";
+  };
+
+  const handleDeleteImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isFormValid()) {
+      alert("제목, 가격, 내용은 반드시 입력해야 합니다.");
       return;
     }
+
+    const createBoardDto = {
+      title,
+      price: parseInt(price),
+      content,
+      category,
+      status,
+      addressId: 1,
+    };
+
+    const formData = new FormData();
+    formData.append(
+      "board",
+      new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
+    );
+    images.forEach((image) => {
+      formData.append("media", image.bgRemovedImage || image.original);
+    });
 
     try {
-      // 방을 생성하는 API 요청
-      const response = await apiClient.post(`/api/rooms`, {
-        name: boardDetail.title,
-        boardId: id,
+      await apiClient.post("/api/board", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      const roomId = response.data.id;
-      // 채팅방으로 네비게이트
-      navigate(`/room/${roomId}`);
+      navigate("/direct");
     } catch (error) {
-      console.error("채팅방 생성 실패:", error);
-      alert("채팅방을 생성할 수 없습니다. 다시 시도해 주세요.");
+      console.error("Error submitting the form", error);
     }
-  }
-  const handlePreviousImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1
-    );
   };
 
-  const handleNextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === filteredImages.length - 1 ? 0 : prevIndex + 1
-    );
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+    setIsBgRemoved(!!image.bgRemovedImage);
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
-  }
-
-  if (!boardDetail) {
-    return (
-      <div className="board-detail-page">
-        <div className="not-found-content">게시글이 존재하지 않습니다.</div>
-      </div> // boardDetail이 null일 경우
-    );
-  }
-
-  //이미지 슬라이더에 사용할 이미지 필터링 (VIDEO는 제외)
-  const filteredImages = boardDetail.mediaList.filter(
-    (media) => media.mediaType === "IMAGE"
-  );
-
-  const videoBtnClickHandler = () => {
-    //VIDEO 타입의 미디어를 찾는다
-    const videoMedia = boardDetail.mediaList.find(
-      (media) => media.mediaType === "VIDEO"
-    );
-
-    const url = videoMedia ? videoMedia.mediaUrl : "";
-
-    if (!url) {
-      alert("영상이 존재하지 않습니다.");
-      return;
+  const handleApply = () => {
+    if (isBgRemoved) {
+      const updatedImages = images.map(img =>
+        img.id === selectedImage.id ? { ...img, bgRemovedImage: selectedImage.bgRemovedImage } : img
+      );
+      setImages(updatedImages);
     }
-
-    setVideoUrl(url);
-    setIsVideoPlaying(true);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="board-detail-page">
-      <div className="image-slider">
-        {filteredImages.length > 0 ? (
-          <div className="slider">
-            <img
-              alt="board-img"
-              src={filteredImages[currentImageIndex].mediaUrl || ImageNotFound}
-            />
-            <button className="prev-btn" onClick={handlePreviousImage}>
-              &#8249; {/* 이전 화살표 */}
-            </button>
-            <button className="next-btn" onClick={handleNextImage}>
-              &#8250; {/* 다음 화살표 */}
-            </button>
-          </div>
-        ) : (
-          <img alt="board-img" src={ImageNotFound} />
-        )}
-      </div>
-      <div className="img-btns">
-        <img
-          className="like-btn"
-          alt="like"
-          src={isLiked ? LikeActiveIcon : LikeIcon}
-          onClick={toggleLikeStatus} // 클릭 시 찜 상태를 토글
-        />
-        <img
-          className="video-btn"
-          alt="video"
-          src={VideoIcon}
-          onClick={videoBtnClickHandler}
-        />
-      </div>
-      <div className="profile-bar">
-        <div className="writer-profile">
-          <img
-            alt="작성자 프로필"
-            src={boardDetail.writer.profileImage || ImageNotFound}
-          />
-          <div className="writer-info">
-            <div className="writer-name">{boardDetail.writer.nickname}</div>
-            <div className="other-info">
-              <span className="level">{boardDetail.writer.level}</span>
-              <span>{boardDetail.address}</span>
-            </div>
-          </div>
-        </div>
-        {user?.id === boardDetail.writer.userId ? (
-          <div className="btns">
-            <button className="edit-btn" onClick={handleEditButtonClick}>
-              수정
-            </button>
-            <button className="delete-btn" onClick={handleDeleteButtonClick}>
-              삭제
-            </button>
-          </div>
-        ) : (
-          <button className="chat-btn" onClick={handleChatButtonClick}>
-            채팅
-          </button>
-        )}
-      </div>
-      <div className="post-content">
-        <div className="post-content-info">
-          <div className="info-left">
-            <div className="post-title">{boardDetail.title}</div>
-            <div className="post-other-info">
-              <span className="post-category">
-                {getCategoryLabel(boardDetail.category)}
-              </span>
-              <span>{formattedDate}</span>
-            </div>
-          </div>
-          <div className="post-price">{formattedPrice}원</div>
-        </div>
-        <div className="post-main-content">{boardDetail.content}</div>
-        <div className="post-last-info">
-          <span>관심 {boardDetail.likeCount}</span>
-          <span>조회 {boardDetail.viewCount}</span>
-        </div>
-      </div>
-
-      {/* 비디오 재생 모달 */}
-      {isVideoPlaying && (
-        <div className="video-modal">
+    <form onSubmit={handleSubmit} className="board-write-container">
+      <div className="header">
+        <button
+          type="button"
+          className="template-button"
+          onClick={handleTemplate}
+        >
+          템플릿
+        </button>
+        <div>
           <button
-            className="close-btn"
-            onClick={() => setIsVideoPlaying(false)}
+            type="submit"
+            className="submit-button"
+            disabled={!isFormValid()}
           >
-            <img alt="close icon" src={CloseIcon} />
+            완료
           </button>
-          <div className="video-container">
-            <video controls autoPlay width="100%">
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
+        </div>
+      </div>
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="제목"
+          value={title}
+          onChange={handleTitleChange}
+          className="input-field"
+        />
+        <select
+          value={category}
+          onChange={handleCategoryChange}
+          className="category-select"
+        >
+          <option value="ETC">기타</option>
+          <option value="DAILY_SUPPLIES">일상용품</option>
+          <option value="BABY_CARRIAGE">유모차</option>
+          <option value="FURNITURE">아기가구</option>
+          <option value="BABY_CLOTHES">아기옷</option>
+          <option value="TOY">장난감</option>
+          <option value="CAR_SEAT">카시트</option>
+        </select>
+      </div>
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="가격"
+          value={price}
+          onChange={handlePriceChange}
+          className="input-field"
+        />
+      </div>
+      <div style={{ display: "flex", flexDirection: "row", margin: "15px", alignItems: "center" }}>
+        <span className="region-label">지역 선택</span>
+        <select
+          value={region}
+          onChange={handleRegionChange}
+          className="region-select"
+        >
+          {addressList.map((address, index) => (
+            <option key={index} value={address.addressId}>
+              {address.fullAddress}
+            </option>
+          ))}
+        </select>
+      </div>
+      <textarea
+        placeholder="내용을 입력하세요."
+        value={content}
+        onChange={handleContentChange}
+        className="textarea-field"
+      />
+      <div className="camera-section">
+        <div className="video-icon" onClick={handleIconClick}>
+          <img src={videoImage} alt="Video Icon" className="camera-image" />
+        </div>
+        <div className="image-preview">
+          {images.map((image, index) => (
+            <div key={index} className="image-container">
+              <img
+                src={isBgRemoved && selectedImage && selectedImage.id === image.id && image.bgRemovedImage ? image.bgRemovedImage : URL.createObjectURL(image.original)}
+                alt={`Preview ${index}`}
+                className="image-thumbnail"
+                onClick={() => handleImageClick(image)}
+              />
+              <img
+                src={deleteIcon}
+                alt="Delete Icon"
+                className="delete-icon"
+                onClick={() => handleDeleteImage(index)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="camera-icon" onClick={handleIconClick}>
+          <img src={cameraImage} alt="Camera Icon" className="camera-image" />
+        </div>
+      </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+        multiple
+      />
+      {selectedImage && (
+        <div className="selected-image-container">
+          <img
+            src={isBgRemoved && selectedImage.bgRemovedImage ? selectedImage.bgRemovedImage : URL.createObjectURL(selectedImage.original)}
+            alt="Selected Preview"
+            className="selected-image"
+          />
+          <label>
+            <input
+              type="checkbox"
+              checked={isBgRemoved}
+              onChange={handleCheckboxChange}
+            />
+            누끼 따기
+          </label>
+          <button
+            type="button"
+            onClick={handleApply}
+            className="apply-button"
+          >
+            설정
+          </button>
         </div>
       )}
-    </div>
+    </form>
   );
-}
+};
 
-export default BoardDetail;
+export default BoardWrite;
