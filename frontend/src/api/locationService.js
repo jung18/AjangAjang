@@ -3,7 +3,7 @@ import apiClient from "./apiClient";
 
 export const fetchRoomData = async (id) => { // 추천 위치
     try {
-      const response = await apiClient.get("https://i11b210.p.ssafy.io:4443/api/rooms/myRooms/" + id);
+      const response = await apiClient.get("/api/rooms/myRooms/" + id);
       const data = await response.json();
       console.log("locationService: ", data)
       return data;
@@ -15,7 +15,7 @@ export const fetchRoomData = async (id) => { // 추천 위치
 
   export const fetchUserData = async (id) => { // 추천 위치
     try {
-      const response = await apiClient.get("https://i11b210.p.ssafy.io:4443/api/user/" + id);
+      const response = await apiClient.get("/api/user/" + id);
       const data = await response.json();
       return data;
     } catch (error) {

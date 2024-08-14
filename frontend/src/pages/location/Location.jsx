@@ -6,6 +6,7 @@ import useTokenStore from "../../store/useTokenStore";
 import { fetchUserData, fetchRoomData } from "../../api/locationService";
 import { useParams } from "react-router-dom";
 import apiClient from "../../api/apiClient";
+
 import "./Location.css";
 
 function Location() {
@@ -22,6 +23,8 @@ function Location() {
   const [recommendType, setRecommendType] = useState(''); // 추천 위치 타입
   const [sellerLocation, setSellerLocation] = useState(''); // 판매자 위치 (게시글에 설정된 위치)
   const [buyerLocation, setBuyerLocation] = useState(''); // 구매자 위치
+  const [buyerId, setBuyerId] = useState(''); // 구매자 아이디
+  const [sellerId, setSellerId] = useState(''); // 판매자 아이디
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커
   const [roomData, setRoomData] = useState(null); // 채팅방 정보
   const [buyerData, setBuyerData] = useState(null); // 구매자 정보
@@ -29,51 +32,81 @@ function Location() {
   const [loading, setLoading] = useState(true); // 로딩 상태
   const { roomId } = useParams(); // URL 경로에서 roomId를 가져옴
 
-  // 채팅방 정보 및 사용자 데이터 가져오기
-  const getRoomAndUserData = async () => {
-    try {
-      console.log("Fetching Room Data");
-      const roomDataResponse = await fetchRoomData(roomId);
-      setRoomData(roomDataResponse);
+  // 채팅방 정보
+     const getRoomData = async () => {
+      try {
+        console.log("getRoomData")
+        const data = await fetchRoomData(roomId);
+        setRoomData(data);
+        const creatorUserId = data.creatorUserId;
+        console.log("===================")
+        console.log(roomData)
+        
+        data.userRooms.forEach(room => {
+          if (room.userId === creatorUserId) {
+            setSellerId(room.userId);
+          } else {
+              setBuyerId(room.userId);
+          }
+        });
 
-      const creatorUserId = roomDataResponse.creatorUserId;
+        setCenter({ lat: data.latitude, lng: data.longitude })
+      } catch (error) {
+        console.log("에러에러")
+        console.error(error);
+      }};
 
-      let sellerId = '';
-      let buyerId = '';
-
-      roomDataResponse.userRooms.forEach(room => {
-        if (room.userId === creatorUserId) {
-          sellerId = room.userId;
-        } else {
-          buyerId = room.userId;
+     const getBuyerData = async () => {
+        try {
+          const data = await fetchUserData(buyerId);
+          setBuyerData(data);
+          console.log("buyerData")
+          console.log(buyerData)
+          setBuyerLocation(data.mainAddressName);
+        } catch (error) {
+          console.error(error);
         }
-      });
+     };
 
-      setCenter({ lat: roomDataResponse.latitude, lng: roomDataResponse.longitude });
+     const getSellerData = async () => {
+      try {
+        const data = await fetchUserData(sellerId);
+        setSellerLocation(data.mainAddressName)
+        setSellerData(data)
+        console.log("sellerData")
+        console.log(sellerData)
+      } catch (error) {
+        console.error(error);
+      }
+   };
 
-      // 병렬로 사용자 데이터 가져오기
-      console.log("Fetching Buyer and Seller Data");
-      const [buyerDataResponse, sellerDataResponse] = await Promise.all([
-        fetchUserData(buyerId),
-        fetchUserData(sellerId)
-      ]);
-
-      setBuyerData(buyerDataResponse);
-      setSellerData(sellerDataResponse);
-
-      setBuyerLocation(buyerDataResponse.mainAddressName);
-      setSellerLocation(sellerDataResponse.mainAddressName);
-
+   const recommendDataInit = async () => {
+    try {
+      await getRoomData();
+      await getBuyerData();
+      await getSellerData();
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getRoomAndUserData();
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+    recommendDataInit();
+}, []); // 초기 데이터 로드
+
+useEffect(() => {
+    if (buyerId) {
+        getBuyerData();
+    }
+}, [buyerId]);
+
+useEffect(() => {
+    if (sellerId) {
+        getSellerData();
+    }
+}, [sellerId]);
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend(); // 비동기로 호출하고 기다림
@@ -94,13 +127,8 @@ function Location() {
 
   const handleRecommend = async () => {
     try {
-      if (!buyerData || !sellerData) {
-        console.error("Buyer or Seller data is missing.");
-        return [];
-      }
-
       const createTradeDto = {
-        buyerId: buyerData.userId,
+        buyerId: buyerId,
         recommendType: recommendType,
         longitude: sellerData.longitude,
         latitude: sellerData.latitude
@@ -137,7 +165,7 @@ function Location() {
           탐색
         </button>
         <select className="safe-location" defaultValue="" onChange={handleRecommendChange}>
-          <option value="" disabled>추천 기준</option>
+        <option value="" disabled>추천 기준</option>
           <option value="SELLER">판매자 가까운 쪽</option>
           <option value="BUYER">구매자 가까운 쪽</option>
           <option value="MIDDLE">중간 위치</option>
@@ -150,7 +178,7 @@ function Location() {
           level={level}
           onClick={(_, mouseEvent) => {
             const pointLatLng = mouseEvent.latLng;
-            setPointLatLng({ lat: pointLatLng.getLat(), lng: pointLatLng.getLng() });
+            setPointLatLng({lat: pointLatLng.getLat(),  lng: pointLatLng.getLng()});
           }}
         >
           {locations.map((loc, idx) => (
@@ -158,9 +186,9 @@ function Location() {
               key={`${loc.title}-${loc.latlng}`}
               position={loc.latlng}
               image={{
-                src: selectedMarker === loc.title
-                  ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
-                  : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
+                src: selectedMarker === loc.title 
+                      ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png" 
+                      : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
                 size: { width: 24, height: 35 }
               }}
               title={loc.title}
@@ -180,16 +208,16 @@ function Location() {
         </div>
       </div>
       {markerList.length > 0 && (
-        <div className="location-list">
-          추천 장소
-          <div className="location-items location-scroll">
-            {markerList.map((item, idx) => (
-              <div key={idx} className="location-item" onClick={() => handleMarkerClick(item.latlng, item.title)}>
-                {item.title}
-              </div>
-            ))}
-          </div>
+      <div className="location-list">
+        추천 장소
+        <div className="location-items location-scroll">
+          {markerList.map((item, idx) => (
+            <div key={idx} className="location-item" onClick={() => handleMarkerClick(item.latlng, item.title)}>
+              {item.title}
+            </div>
+          ))}
         </div>
+      </div>
       )}
     </div>
   );
