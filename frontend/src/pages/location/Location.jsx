@@ -80,11 +80,29 @@ function Location() {
       }
    };
 
-   const recommendDataInit = async () => {
+   const waitForId = (idVariable) => {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (idVariable) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100); // 100ms마다 확인
+    });
+  };
+  
+  const recommendDataInit = async () => {
     try {
       await getRoomData();
   
-      // getRoomData 후 buyerId와 sellerId가 설정된 후에만 실행
+      if (!buyerId) {
+        await waitForId(buyerId);
+      }
+      if (!sellerId) {
+        await waitForId(sellerId);
+      }
+  
+      // buyerId와 sellerId가 설정된 이후에만 실행
       if (buyerId) {
         await getBuyerData();
       }
@@ -97,6 +115,7 @@ function Location() {
       setLoading(false);
     }
   };
+  
   
 
   useEffect(() => {
