@@ -25,6 +25,7 @@ public class BoardDto {
     private List<BoardMediaDto> mediaList = new ArrayList<>();
     private int likeCount;
     private int viewCount;
+    private boolean isLiked;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

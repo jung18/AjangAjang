@@ -52,7 +52,7 @@ public class BoardApiController {
         log.info(username);
         boardService.increaseRecommendationViewCount(username, id);
         boardService.increaseViewCount(id);
-        BoardDto result = boardService.findById(id);
+        BoardDto result = boardService.findById(username, id);
         return ResponseEntity.ok(result);
     }
 

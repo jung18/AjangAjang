@@ -40,6 +40,7 @@ public class BoardService {
     private final AddressRepository addressRepository;
     private final ChildRepository childRepository;
     private final RecommendationRepository recommendationRepository;
+    private final BoardLikeRepository boardLikeRepository;
 
     private final FileService fileService;
     private final KakaoApiService kakaoApiService;
@@ -57,7 +58,8 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public BoardDto findById(Long id) {
+    public BoardDto findById(String username, Long id) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.BOARD_NOT_FOUND));
 
         List<BoardMediaDto> mediaDtoList = findBoard.getMediaList().stream()
@@ -73,6 +75,7 @@ public class BoardService {
                             findBoard.getContent(), findBoard.getCategory().name(), findBoard.getStatus(),
                             findBoard.getAddress().getSigg() + " " + findBoard.getAddress().getEmd(),
                             mediaDtoList, findBoard.getLikedUsers().size(), findBoard.getViewCount(),
+                            boardLikeRepository.existsByBoardIdAndUserId(id, user.getId()),
                             findBoard.getCreatedAt(), findBoard.getUpdatedAt());
     }
 
