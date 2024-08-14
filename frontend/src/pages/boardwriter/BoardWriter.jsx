@@ -109,7 +109,7 @@ const BoardWrite = () => {
 
         const newImage = response.data.data[0];
         setImages((prevImages) =>
-          prevImages.map((img, idx) =>
+          prevImages.map((img) =>
             img === selectedImage ? newImage.url : img
           )
         );
@@ -119,7 +119,7 @@ const BoardWrite = () => {
       }
     } else {
       const originalImage = originalImages.find(
-        (img) => img.name === selectedImage.name
+        (img) => img === selectedImage
       );
       if (originalImage) {
         setImages((prevImages) =>
@@ -335,8 +335,6 @@ const BoardWrite = () => {
             src={typeof selectedImage === 'string' ? selectedImage : URL.createObjectURL(selectedImage)}
             alt="Selected Preview"
             className="selected-image"
-            height="200px"
-            width="200px"
           />
           <label>
             <input
