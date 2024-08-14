@@ -9,17 +9,15 @@ const isLocalhost = Boolean(
 // 서비스 워커 등록 함수
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    // PUBLIC_URL이 HTTPS로 설정되어 있는지 확인
-    const publicUrl = new URL(process.env.PUBLIC_URL.replace(/^http:/, 'https:'), window.location.href);
+    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       return;
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${publicUrl.origin}/service-worker.js`;
+      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
-        // 로컬 개발 환경에서 서비스 워커의 유효성 검사
         checkValidServiceWorker(swUrl, config);
 
         navigator.serviceWorker.ready.then(() => {
@@ -29,7 +27,6 @@ export function register(config) {
           );
         });
       } else {
-        // 실제 배포 환경에서 서비스 워커 등록
         registerValidSW(swUrl, config);
       }
     });
@@ -53,7 +50,7 @@ function registerValidSW(swUrl, config) {
                 'New content is available; please refresh.'
               );
 
-              // 사용자에게 새 콘텐츠가 있음을 알리고 새로고침 요청
+              // 사용자에게 새로운 콘텐츠가 있음을 알리고 새로고침 요청
               if (confirm('새로운 콘텐츠가 있습니다. 페이지를 새로고침하시겠습니까?')) {
                 window.location.reload();
               }
