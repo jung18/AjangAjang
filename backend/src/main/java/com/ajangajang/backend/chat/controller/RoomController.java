@@ -2,12 +2,15 @@ package com.ajangajang.backend.chat.controller;
 
 import com.ajangajang.backend.chat.dto.RoomRequestDTO;
 import com.ajangajang.backend.chat.dto.RoomResponseDTO;
+import com.ajangajang.backend.chat.dto.UserRoomDTO;
 import com.ajangajang.backend.chat.entity.Room;
 import com.ajangajang.backend.chat.service.RoomService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/rooms")
 public class RoomController {
+    private static final Logger log = LoggerFactory.getLogger(RoomController.class);
     private final RoomService roomService;
     private final UserRepository userRepository;
 
@@ -48,6 +52,8 @@ public class RoomController {
     @GetMapping("/myRooms/{roomId}")
     public RoomResponseDTO getUserRoomById(@PathVariable Long roomId,
                                            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        log.info("/myRooms/{roomId} 진입");
+        log.info("roomId: {}", roomId);
         User user = userRepository.findByUsername(customOAuth2User.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -59,6 +65,7 @@ public class RoomController {
             throw new RuntimeException("Room not found or you do not have access to this room");
         }
 
+        log.info(roomResponseDTO.getUserRooms().get(0).getUserId().toString());
         return roomResponseDTO;
     }
 
