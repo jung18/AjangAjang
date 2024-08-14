@@ -17,6 +17,7 @@ public class RoomResponseDTO {
     private Long creatorUserId;
     private double longitude;
     private double latitude;
+    private String sellerAddress; // 판매글 주소 추가
     private long unreadCount;
     private LocalDateTime lastReadTime; // 이 필드를 추가합니다.
 }

@@ -68,7 +68,7 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), getLevel(user.getScore()), user.getScore());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), user.getMainAddress().getFullAddress(), getLevel(user.getScore()), user.getScore());
     }
 
     public List<BoardListDto> findMyLikes(String username) {

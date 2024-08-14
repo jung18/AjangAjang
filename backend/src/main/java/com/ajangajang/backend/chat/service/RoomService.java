@@ -112,6 +112,7 @@ public class RoomService {
         if (room.getBoard() != null) {
             dto.setLongitude(room.getBoard().getAddress().getLongitude());
             dto.setLatitude(room.getBoard().getAddress().getLatitude());
+            dto.setSellerAddress(room.getBoard().getAddress().getFullAddress()); // 판매글 주소 추가
         }
 
         if (userId != null) {

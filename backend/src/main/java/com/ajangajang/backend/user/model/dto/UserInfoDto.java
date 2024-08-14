@@ -13,6 +13,7 @@ public class UserInfoDto {
     private String nickname;
     private String profileImg;
     private Long mainAddressId;
+    private String mainAddressName;
     private String level;
     private int score;
 
