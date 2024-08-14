@@ -1,0 +1,58 @@
+/* SignUp.module.css */
+.container {
+  max-width: 400px;
+  margin: -50px auto 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+form {
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.inputField {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.smsButton,
+.verifyButton,
+.searchButton,
+.submitButton {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #ff6f7d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.smsButton:hover,
+.verifyButton:hover,
+.searchButton:hover,
+.submitButton:hover {
+  background-color: #ff879e;
+}

@@ -1,0 +1,97 @@
+.boardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff879e;
+  padding-left: 20px;
+  padding-top: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.boardPage {
+  position: fixed;
+  top: 180px;
+  left: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  overflow-y: auto;
+}
+
+.boardPage .notFoundContent {
+  margin-top: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.review-body {
+  margin: 20px 20px;
+}
+
+.review-container {
+  padding: 20px;
+  background-color: #f4f7f6;
+}
+
+.review-card {
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.review-score {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff879e;
+}
+
+.review-content {
+  font-size: 16px;
+  line-height: 1.6;
+  padding-left: 10px;
+  border-left: 4px solid #ff879e;
+}
+
+.category-tab {
+  position: fixed;
+  top: 120px;
+  left: 0;
+  right: 0;
+  margin: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.category-tab .tab-item {
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 15px;
+  background-color: #fef391;
+  color: rgb(207, 207, 207);
+}
+
+.category-tab .active {
+  background-color: #ffca00;
+  color: rgb(255, 255, 255);
+}

@@ -26,6 +26,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log(`Deleting old cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
@@ -38,19 +39,22 @@ self.addEventListener('activate', (event) => {
 
 // fetch 이벤트: 네트워크 요청 가로채기 및 캐시 응답 제공
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request, { cache: "no-store" }) // 네트워크 요청 우선, 캐시 사용 안함
       .then((response) => {
-        // 캐시된 자산이 있으면 제공하고, 없으면 네트워크 요청
-        return response || fetch(event.request).then((response) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response.clone()); // 최신 응답을 캐시에 저장
-            return response;
-          });
+        // 네트워크 요청이 성공하면 최신 응답을 캐시에 저장
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, response.clone());
+          return response;
         });
       })
       .catch(() => {
-        // 네트워크 요청이 실패하고 캐시에도 없을 경우, fallback으로 처리할 수 있습니다.
+        // 네트워크 요청이 실패하면 캐시에서 응답 제공
+        return caches.match(event.request);
       })
   );
 });

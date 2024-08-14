@@ -1,95 +1,67 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import cameraImage from "../../assets/camera.png";
 import videoImage from "../../assets/video.png";
-import deleteIcon from "../../assets/delete.png"; // 삭제 아이콘 추가
+import deleteIcon from "../../assets/delete.png";
 import apiClient from "../../api/apiClient";
-import "./BoardWriter.css"; // CSS 파일 import
+import "./BoardEditor.css"; // 동일한 CSS 파일 사용
 import usePageStore from "../../store/currentPageStore";
-import useUserStore from "../../store/useUserStore";
 
-const BoardWrite = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const user = useUserStore((state) => state.user);
-  const setUser = useUserStore((state) => state.setUser);
-
-  const [addressList, setAddressList] = useState([]);
-  const [mainAddress, setMainAddress] = useState();
-
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("ETC");
-  const [region, setRegion] = useState("");
-  const [status, setStatus] = useState("FOR_SALE"); // status 상태 추가
-
-  const [images, setImages] = useState([]); // 이미지 상태를 배열로 변경
-  const fileInputRef = useRef(null);
-  const navigate = useNavigate(); // 리다이렉션을 위해 useNavigate 사용
+const BoardEditor = () => {
+  const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
-  const location = useLocation(); // 상태를 받기 위해 useLocation 사용
+  const location = useLocation();
+  const boardDetail = location.state?.boardDetail;
+  const { id } = useParams(); 
+
+  const [title, setTitle] = useState(boardDetail.title);
+  const [price, setPrice] = useState(String(boardDetail.price));
+  const [content, setContent] = useState(boardDetail.content);
+  const [category, setCategory] = useState(boardDetail.category);
+  const [region, setRegion] = useState("");
+  const [status, setStatus] = useState(boardDetail.status);
+  const [addressId, setAddressId] = useState("");
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState(null);
+  const fileInputRef = useRef(null);
+
+  console.log(boardDetail);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await apiClient.get("/api/user/my");
-        setUser(response.data);
-      } catch (error) {
-        console.error("Failed to fetch user data", error);
-      }
-    };
-
     const fetchAddress = async () => {
-      console.log("1. 사용자 정보 : " + user);
       try {
         const response = await apiClient.get("/api/address/my");
-        console.log("2. 사용자 주소 목록 : " + response.data);
-
         if (
           response.data &&
           response.data.data &&
           response.data.data.length > 0
         ) {
-          const addressData = response.data.data;
-
-          let mainAddressIndex = -1;
-          addressData.forEach((address, index) => {
-            if (address.addressId === user.mainAddressId) {
-              mainAddressIndex = index;
-              setRegion(address.fullAddress); // region을 fullAddress로 설정
-            }
-          });
-
-          if (mainAddressIndex === -1 && addressData.length > 0) {
-            setMainAddress(0);
-            setRegion(addressData[0].fullAddress); // 첫 번째 주소를 기본값으로 설정
-          }
-
-          setAddressList(addressData); // 전체 주소 목록을 상태에 저장
+          const addressId = response.data.data[0].addressId;
+          setAddressId(addressId);
         }
       } catch (error) {
         console.error("Failed to fetch address data", error);
       }
     };
 
-    const initialize = async () => {
-      if (!user) {
-        await fetchUserData();
-      }
-      await fetchAddress();
-      setIsLoading(false);
-    };
+    fetchAddress();
 
-    initialize();
-
-    if (location.state?.templateData) {
-      const { title, content, price } = location.state.templateData;
-      setTitle(title || "");
-      setContent(content || "");
-      setPrice(price || "");
+    // mediaList를 순회하여 video와 images 분리
+    if (boardDetail.mediaList) {
+      const imageList = [];
+      boardDetail.mediaList.forEach((media, index) => {
+        if (media.mediaType === "VIDEO") {
+          setVideo({ url: media.mediaUrl, index });
+        } else if (media.mediaType === "IMAGE") {
+          imageList.push({
+            url: media.mediaUrl,
+            file: null, // 기존의 이미지이므로 파일 객체가 없음
+          });
+        }
+      });
+      setImages(imageList);
     }
-  }, [location.state, user, setUser]);
+  }, [location.state, boardDetail.mediaList]);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -113,7 +85,11 @@ const BoardWrite = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files) {
-      setImages([...images, ...Array.from(e.target.files)]);
+      const newImages = Array.from(e.target.files).map((file) => ({
+        url: URL.createObjectURL(file),
+        file,
+      }));
+      setImages([...images, ...newImages]);
     }
   };
 
@@ -123,7 +99,7 @@ const BoardWrite = () => {
 
   const handleTemplate = () => {
     setCurrentPage("post/template");
-    navigate("/post/template"); // 템플릿 이동
+    navigate("/post/template");
   };
 
   const isFormValid = () => {
@@ -142,49 +118,47 @@ const BoardWrite = () => {
       return;
     }
 
-    const createBoardDto = {
-      title,
-      price: parseInt(price),
-      content,
-      category,
-      status,
-      // addressId,
+    const updateBoardDto = {
+      title: title,
+      price: parseInt(price, 10),
+      content: content,
+      category: category,
+      status: status,
+      addressId: addressId,
+      deleteFileIds: [], // 서버에서 받을 것으로 예상되는 필드
     };
 
     const formData = new FormData();
     formData.append(
       "board",
-      new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
+      new Blob([JSON.stringify(updateBoardDto)], { type: "application/json" })
     );
+
     images.forEach((image) => {
-      formData.append("media", image); // 서버에서 배열로 받도록 설정
+      if (image.file) {
+        formData.append("media", image.file);
+      }
     });
 
-    console.log("createBoardDto:", createBoardDto);
-    console.log("FormData entries:");
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-
-    const url = "/api/board";
+    console.log(id);
+    const url = `/api/board/${id}`;
 
     try {
-      const response = await apiClient.post(url, formData, {
+      const response = await apiClient.put(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       console.log("Response:", response.data);
-      navigate("/direct"); // 전송이 완료되면 리다이렉션
+      navigate("/direct");
     } catch (error) {
-      console.error("Error submitting the form", error);
+      console.error("Error updating the form", error);
+
+      if (error.response && error.response.data) {
+        console.error("Server Response:", error.response.data);
+      }
     }
   };
-
-  if (isLoading) {
-    // 데이터가 로딩 중인 경우 로딩 메시지 또는 스피너를 표시
-    return <div>Loading...</div>;
-  }
 
   return (
     <form onSubmit={handleSubmit} className="board-write-container">
@@ -236,19 +210,14 @@ const BoardWrite = () => {
           onChange={handlePriceChange}
           className="input-field"
         />
-      </div>
-      <div style={{ display: "flex", flexDirection: "row", margin: "15px", alignItems: "center" }}>
         <span className="region-label">지역 선택</span>
         <select
           value={region}
           onChange={handleRegionChange}
           className="region-select"
         >
-          {addressList.map((address, index) => (
-            <option key={index} value={address.addressId}>
-              {address.fullAddress}
-            </option>
-          ))}
+          <option value="선택">선택</option>
+          {/* 지역 옵션 추가 가능 */}
         </select>
       </div>
       <textarea
@@ -265,7 +234,7 @@ const BoardWrite = () => {
           {images.map((image, index) => (
             <div key={index} className="image-container">
               <img
-                src={URL.createObjectURL(image)}
+                src={image.mediaUrl}
                 alt={`Preview ${index}`}
                 className="image-thumbnail"
               />
@@ -287,10 +256,10 @@ const BoardWrite = () => {
         ref={fileInputRef}
         style={{ display: "none" }}
         onChange={handleFileChange}
-        multiple // 여러 장 선택 가능하도록 설정
+        multiple
       />
     </form>
   );
 };
 
-export default BoardWrite;
+export default BoardEditor;

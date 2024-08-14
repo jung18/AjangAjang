@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchBoardList } from "../../api/boardService";
 import useTokenStore from '../../store/useTokenStore'; // 경로 수정
+import useUserStore from "../../store/useUserStore";
+
+import apiClient from "../../api/apiClient";
 
 import BoardList from "./components/boardList/BoardList";
 import SelectBox from "../../components/SelectBox";
@@ -9,6 +12,8 @@ import "./Board.css";
 
 const Board = () => {
   const [boards, setBoards] = useState([]);
+  const [addressList, setAddressList] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [maxHeight, setMaxHeight] = useState(0);
 
@@ -17,11 +22,22 @@ const Board = () => {
   const accessToken = useTokenStore((state) => state.accessToken);
   const refreshToken = useTokenStore((state) => state.refreshToken);
 
+  const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
+
   useEffect(() => {
     const getBoards = async () => {
       try {
         const boardList = await fetchBoardList();
-        setBoards(boardList.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
+        setBoards(boardList.searchResult.content || []); // 응답 데이터의 content 배열을 사용하고 기본값으로 빈 배열 설정
+        
+        // addressList의 각 요소를 하나의 문자열로 합치기
+        const combinedAddresses = (boardList.addressList || []).map(address => {
+          return address.fullAddress;
+        });
+
+        setAddressList(combinedAddresses);
+
       } catch (error) {
         console.error("Failed to fetch boards", error);
       } finally {
@@ -33,6 +49,16 @@ const Board = () => {
       const totalHeight = window.innerHeight;
       setMaxHeight(totalHeight - 170);
     };
+
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get("https://i11b210.p.ssafy.io:4443/api/user/my");
+        setUser(response.data); // 사용자 정보를 상태에 저장
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
 
     getBoards();
     calculateMaxHeight();
@@ -63,10 +89,17 @@ const Board = () => {
     console.log('Access Token from Cookie:', accessTokenFromCookie);
     console.log('Refresh Token from Cookie:', refreshTokenFromCookie);
 
+    // 사용자 상태가 없으면 사용자 정보를 불러옴
+    if (!user) {
+      fetchUserData();
+    }
+
+    console.log(user);
+
     return () => {
       window.removeEventListener("resize", calculateMaxHeight);
     };
-  }, [setAccessToken, setRefreshToken, accessToken, refreshToken]);
+  }, [setAccessToken, setRefreshToken, accessToken, refreshToken, user, setUser]);
 
   if (isLoading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
@@ -77,14 +110,14 @@ const Board = () => {
     <div className="board-page" style={{ maxHeight: `${maxHeight}px` }}>
       <div className="user-option">
         <SelectBox
-          optionList={["대전시 유성구 덕명동", "대전시 유성구 계산동"]}
+          optionList={addressList}
         />
         <label className="recommand">
           자동 추천
           <input type="checkbox" />
         </label>
       </div>
-
+      
       {!boards || boards.length === 0 ? (
         <div className="not-found-content">게시글이 존재하지 않습니다.</div>
       ) : (

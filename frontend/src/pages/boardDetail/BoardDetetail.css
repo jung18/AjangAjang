@@ -80,6 +80,29 @@
   background-color: #fef391;
 }
 
+.board-detail-page .profile-bar .btns {
+  display: flex;
+  flex-direction: row;
+}
+
+.board-detail-page .profile-bar .btns button {
+  margin-right: 15px;
+  background-color: #ff8796;
+  border-style: none;
+  border-radius: 4px;
+  color: white;
+  font-family: "GmarketSansMedium", sans-serif;
+  font-size: 18px;
+  width: 75px;
+  height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+.board-detail-page .profile-bar .btns .delete-btn {
+  background-color: #ff001e;
+}
+
 .board-detail-page .profile-bar .chat-btn {
   margin-right: 15px;
   background-color: #ff8796;
