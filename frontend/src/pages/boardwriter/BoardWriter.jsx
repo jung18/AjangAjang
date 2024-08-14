@@ -120,7 +120,7 @@ const BoardWrite = () => {
     });
     
     try {
-      const response = await axios.post("https://i11b210.p.ssafy.io:4443/api/remove-background", formData, {
+      const response = await axios.post("https://i11b210.p.ssafy.io:8000/api/remove-background", formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
