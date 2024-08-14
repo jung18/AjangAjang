@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-cache-v1';
+const CACHE_NAME = 'my-cache-v2'; // 캐시 이름에 버전을 포함하여 새로운 캐시 적용
 const urlsToCache = [
   '/',
   '/index.html',
@@ -44,18 +44,18 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(event.request, { cache: "no-store" }) // 네트워크 요청 우선, 캐시 사용 안함
-      .then((response) => {
-        // 네트워크 요청이 성공하면 최신 응답을 캐시에 저장
-        return caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then((cache) => {
+      return fetch(event.request)
+        .then((response) => {
+          // 최신 응답을 캐시에 저장
           cache.put(event.request, response.clone());
           return response;
+        })
+        .catch(() => {
+          // 네트워크 요청이 실패하면 캐시에서 응답 제공
+          return cache.match(event.request);
         });
-      })
-      .catch(() => {
-        // 네트워크 요청이 실패하면 캐시에서 응답 제공
-        return caches.match(event.request);
-      })
+    })
   );
 });
 
