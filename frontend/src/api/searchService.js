@@ -2,6 +2,7 @@ import useTokenStore from "../store/useTokenStore";
 
 export const fetchSearchResults = async (searchTerm, searchCategory, isRetry) => {
   try {
+    console.log(searchTerm + " " + searchCategory + " " + isRetry);
     const { accessToken } = useTokenStore.getState();
 
     //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요

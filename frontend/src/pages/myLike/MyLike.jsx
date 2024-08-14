@@ -17,7 +17,7 @@ const MyLike = () => {
     useEffect(() => {
         const getBoards = async () => {
           try {
-            const boardList = await fetchMyLikeList();
+            const boardList = await fetchMyLikeList().data;
             setBoards(boardList);
           } catch (error) {
             console.error("Failed to fetch my likes", error);
