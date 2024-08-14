@@ -26,12 +26,10 @@ const BoardWrite = () => {
 
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isBgRemoved, setIsBgRemoved] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
   const location = useLocation();
-  const [uploadedFiles, setUploadedUrls] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -110,13 +108,17 @@ const BoardWrite = () => {
         const updatedImages = [...images];
         updatedImages[selectedIndex].bgRemovedImage = newImage.url;
         setImages(updatedImages);
-        setIsBgRemoved(true);
+        setSelectedImage(updatedImages[selectedIndex]); // 현재 선택된 이미지의 상태를 업데이트
       } catch (error) {
         console.error('Error removing background', error);
       }
-    } else {
-      setIsBgRemoved((prev) => !prev);
     }
+
+    // 기존 상태 반영
+    setSelectedImage(prev => ({
+      ...prev,
+      isBgRemoved: !prev.isBgRemoved,
+    }));
   };
 
   const handleTitleChange = (e) => {
@@ -141,10 +143,11 @@ const BoardWrite = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files).map((file, index) => ({
+      const newFiles = Array.from(e.target.files).map((file) => ({
         id: `${file.name}-${Date.now()}`,
         original: file,
         bgRemovedImage: null,
+        isBgRemoved: false,
       }));
       setImages([...images, ...newFiles]);
     }
@@ -190,7 +193,7 @@ const BoardWrite = () => {
       new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
     );
     images.forEach((image) => {
-      formData.append("media", image.bgRemovedImage || image.original);
+      formData.append("media", image.isBgRemoved ? image.bgRemovedImage : image.original);
     });
 
     try {
@@ -207,13 +210,12 @@ const BoardWrite = () => {
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
-    setIsBgRemoved(!!image.bgRemovedImage);
   };
 
   const handleApply = () => {
-    if (isBgRemoved) {
+    if (selectedImage) {
       const updatedImages = images.map(img =>
-        img.id === selectedImage.id ? { ...img, bgRemovedImage: selectedImage.bgRemovedImage } : img
+        img.id === selectedImage.id ? selectedImage : img
       );
       setImages(updatedImages);
     }
@@ -302,7 +304,7 @@ const BoardWrite = () => {
           {images.map((image, index) => (
             <div key={index} className="image-container">
               <img
-                src={isBgRemoved && selectedImage && selectedImage.id === image.id && image.bgRemovedImage ? image.bgRemovedImage : URL.createObjectURL(image.original)}
+                src={image.isBgRemoved && image.bgRemovedImage ? image.bgRemovedImage : URL.createObjectURL(image.original)}
                 alt={`Preview ${index}`}
                 className="image-thumbnail"
                 onClick={() => handleImageClick(image)}
@@ -330,14 +332,14 @@ const BoardWrite = () => {
       {selectedImage && (
         <div className="selected-image-container">
           <img
-            src={isBgRemoved && selectedImage.bgRemovedImage ? selectedImage.bgRemovedImage : URL.createObjectURL(selectedImage.original)}
+            src={selectedImage.isBgRemoved && selectedImage.bgRemovedImage ? selectedImage.bgRemovedImage : URL.createObjectURL(selectedImage.original)}
             alt="Selected Preview"
             className="selected-image"
           />
           <label>
             <input
               type="checkbox"
-              checked={isBgRemoved}
+              checked={selectedImage.isBgRemoved}
               onChange={handleCheckboxChange}
             />
             누끼 따기
