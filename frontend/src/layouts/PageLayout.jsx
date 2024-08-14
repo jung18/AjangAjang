@@ -43,6 +43,10 @@ const PageLayout = ({ page, pageType }) => {
       break;
     case "chating":
       headerComponent = <SearchHeader />; 
+      break;
+    case "recommendLocation":
+      headerComponent = <SearchHeader />; 
+      break;
     default:
       headerComponent = null;
       break;
