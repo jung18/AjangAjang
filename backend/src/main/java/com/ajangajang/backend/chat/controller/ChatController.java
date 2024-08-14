@@ -25,7 +25,7 @@ public class ChatController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto message) {
-        log.info("Controller message type = {}", message.getType());
+        log.info("Controller message type = {}", message.toString());
         log.info("message.getType() == ChatMessageDto.MessageType.CALL_REQUEST => {}", message.getType() == ChatMessageDto.MessageType.CALL_REQUEST);
         // CALL_REQUEST 왔을 때,
         if (message.getType() == ChatMessageDto.MessageType.CALL_REQUEST) {
