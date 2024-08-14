@@ -43,7 +43,15 @@
   color: rgb(255, 255, 255);
 }
 
-.search-page .recent-search .recent-search-header {
+.search-page .recent-search {
+  position: fixed;
+  top: 230px;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.search-page .recent-search .recent-search-items .recent-search-header {
   margin: 30px 10px;
   display: flex;
   flex-direction: row;
@@ -52,19 +60,32 @@
   padding-bottom: 8px;
 }
 
-.search-page .recent-search .recent-search-header .search-header-title {
+.search-page
+  .recent-search
+  .recent-search-items
+  .recent-search-header
+  .search-header-title {
   color: #ff8796;
   font-size: 20px;
 }
 
-.search-page .recent-search .recent-search-header .clear-options {
+.search-page
+  .recent-search
+  .recent-search-items
+  .recent-search-header
+  .clear-options {
   color: rgb(163, 163, 163);
   display: flex;
   flex-direction: row;
   align-items: flex-end;
 }
 
-.search-page .recent-search .recent-search-header .clear-options span {
+.search-page
+  .recent-search
+  .recent-search-items
+  .recent-search-header
+  .clear-options
+  span {
   margin-right: 8px;
   font-size: 14px;
   letter-spacing: -1px;
@@ -72,6 +93,7 @@
 
 .search-page
   .recent-search
+  .recent-search-items
   .recent-search-header
   .clear-options
   .auto-save-active {

@@ -23,6 +23,8 @@ import MyInfo from "./pages/myInfo/MyInfo";
 import MyTrade from "./pages/myTrade/MyTrade";
 import EditMyInfo from "./pages/myInfo/EditMyInfo";
 
+import BoardEditor from "./pages/boardEditor/BoardEditor";
+
 const AppRoutes = () => {
   const location = useLocation();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
@@ -53,15 +55,6 @@ const AppRoutes = () => {
           />
         }
       />
-      <Route
-        path="/parcel"
-        element={
-          <PageLayout
-            page={<Board />}
-            pageType={"board"}
-          />
-        }
-      />
        <Route
         path="/post"
         element={<PageLayout page={<BoardWriter />} pageType={"search"} />}
@@ -70,24 +63,6 @@ const AppRoutes = () => {
       <Route
         path="/search"
         element={<PageLayout page={<Search />} pageType={"search"} />}
-      />
-      <Route
-        path="/direct/:id"
-        element={
-          <PageLayout
-            page={<BoardDetail />}
-            pageType={"boardDetail"}
-          />
-        }
-      />
-      <Route
-        path="/parcel/:id"
-        element={
-          <PageLayout
-            page={<BoardDetail />}
-            pageType={"boardDetail"}
-          />
-        }
       />
       <Route
         path="/post/template"
@@ -99,6 +74,15 @@ const AppRoutes = () => {
           <PageLayout
             page={<BoardDetail />}
             pageType={"boardDetail"}
+          />
+        }
+      />
+      <Route
+        path="/edit/:id"
+        element={
+          <PageLayout
+            page={<BoardEditor />}
+            pageType={"search"}
           />
         }
       />

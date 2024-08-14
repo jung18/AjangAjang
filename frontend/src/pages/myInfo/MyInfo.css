@@ -107,8 +107,23 @@ button {
   padding: 7px 10px;
   margin-right: 5px;
   display: flex;
-  align-items: center;
   font-size: 17px;
+  width: 70px;
+  height: 20px;
+  justify-content: center;
+}
+
+.myPage .address .address-header .address-btns .save-changes {
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin-right: 5px;
+  display: flex;
+  font-size: 17px;
+  width: 70px;
+  height: 20px;
+  justify-content: center;
 }
 
 .myPage .address .address-header .address-btns .add-address {
@@ -126,14 +141,18 @@ button {
   transition: transform 0.3s ease;
   font-family: "GmarketSansMedium", sans-serif;
   height: 190px;
-  overflow-y: auto;
 }
 
 .myPage .address .address-list:hover {
   transform: translateY(-5px);
 }
 
-.myPage .address .address-list .address-item {
+.myPage .address .address-list .address-list-wrap {
+  overflow-y: auto;
+  height: 180px;
+}
+
+.myPage .address .address-list .address-list-wrap .address-item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -141,25 +160,29 @@ button {
   align-items: center;
 }
 
-.myPage .address .address-list .address-item .address-content {
+.myPage .address .address-list .address-list-wrap .address-item .address-content {
   width: 230px;
-  word-wrap: break-word; 
-  overflow-wrap: break-word;
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
+  white-space: normal; /* 기본 줄바꿈 동작 */
 }
 
-.myPage .address .address-list .address-item .address-item-btns {
+.myPage .address .address-list .address-list-wrap .address-item .rep {
+  font-weight: 900;
+}
+
+.myPage .address .address-list .address-list-wrap .address-item .address-item-btns {
   display: flex;
   flex-direction: row;
 }
 
-.myPage .address .address-list .address-item .address-item-btns .address-type-set {
+.myPage .address .address-list .address-list-wrap .address-item .address-item-btns .address-type-set {
   color: #ff8796;
   margin-right: 5px;
   display: flex;
   align-items: flex-end;
 }
 
-.myPage .address .address-list .address-item .address-item-btns img {
+.myPage .address .address-list .address-list-wrap .address-item .address-item-btns img {
   width: 23px;
 }
 
@@ -225,12 +248,29 @@ button {
   align-items: center;
 }
 
+.myPage .children .children-list .rep {
+  font-weight: 900;
+}
+
 .myPage .children .children-list .children-item .children-content {
-  width: 230px;
-  word-wrap: break-word; 
-  overflow-wrap: break-word;
+  width: 290px;
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
+  white-space: normal; /* 기본 줄바꿈 동작 */
 }
 
 .myPage .children .children-list .children-item img {
   width: 23px;
+}
+
+.myPage .children .children-header .children-btns .save-changes {
+  background-color: #ff8796;
+  color: white;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin-right: 5px;
+  display: flex;
+  font-size: 17px;
+  width: 70px;
+  height: 20px;
+  justify-content: center;
 }
