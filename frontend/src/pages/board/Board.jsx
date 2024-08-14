@@ -133,7 +133,7 @@ const Board = () => {
       try {
         const response = await apiClient.post("/api/board/recommendation", {
           page: 0,
-          size: 10,
+          size: 100,
         });
         setBoards(response.data.content || []);
       } catch (error) {
