@@ -23,7 +23,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         registry.addMapping("/**")
                 .exposedHeaders("Set-Cookie", "Authorization", "Authorization-refresh")
-                .allowedOrigins(frontUrl)
+                .allowedOrigins(frontUrl, "http://localhost:3000")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -32,7 +32,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList(frontUrl));
+        configuration.setAllowedOrigins(Arrays.asList(frontUrl, "http://localhost:3000"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Collections.singletonList("*"));
