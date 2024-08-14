@@ -15,6 +15,7 @@ export const fetchRoomData = async (id) => { // 추천 위치
       });
   
       const data = await response.json();
+      console.log("locationService: ", data)
       return data;
     } catch (error) {
       console.error("Error fetching recommend locations", error);
