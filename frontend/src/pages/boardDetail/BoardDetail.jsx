@@ -25,6 +25,7 @@ function BoardDetail() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [formattedDate, setFormattedDate] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 이미지 인덱스를 추적
 
   const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
@@ -68,8 +69,6 @@ function BoardDetail() {
         new Date(data.createdAt).toISOString().split("T")[0]
       );
       setFormattedDate(formattedDate);
-      console.log(boardDetail.createdAt);
-      console.log(formattedDate);
     } catch (error) {
       console.error("Failed to fetch board details:", error);
     } finally {
@@ -100,6 +99,18 @@ function BoardDetail() {
     }
   };
 
+  const handlePreviousImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? filteredImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === filteredImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
@@ -112,8 +123,13 @@ function BoardDetail() {
     );
   }
 
+  //이미지 슬라이더에 사용할 이미지 필터링 (VIDEO는 제외)
+  const filteredImages = boardDetail.mediaList.filter(
+    (media) => media.mediaType === "IMAGE"
+  );
+
   const videoBtnClickHandler = () => {
-    // VIDEO 타입의 미디어를 찾는다
+    //VIDEO 타입의 미디어를 찾는다
     const videoMedia = boardDetail.mediaList.find(
       (media) => media.mediaType === "VIDEO"
     );
@@ -135,7 +151,24 @@ function BoardDetail() {
 
   return (
     <div className="board-detail-page">
-      <img alt="board-img" src={boardDetail.thumbnailUrl || ImageNotFound} />
+      <div className="image-slider">
+        {filteredImages.length > 0 ? (
+          <div className="slider">
+            <img
+              alt="board-img"
+              src={filteredImages[currentImageIndex].mediaUrl || ImageNotFound}
+            />
+            <button className="prev-btn" onClick={handlePreviousImage}>
+              &#8249; {/* 이전 화살표 */}
+            </button>
+            <button className="next-btn" onClick={handleNextImage}>
+              &#8250; {/* 다음 화살표 */}
+            </button>
+          </div>
+        ) : (
+          <img alt="board-img" src={ImageNotFound} />
+        )}
+      </div>
       <div className="img-btns">
         <img
           className="like-btn"
