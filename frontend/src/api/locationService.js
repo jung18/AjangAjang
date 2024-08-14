@@ -4,8 +4,8 @@ import apiClient from "./apiClient";
 export const fetchRoomData = async (id) => { // 추천 위치
     try {
       const response = await apiClient.get("/api/rooms/myRooms/" + id);
+      const data = await response.data;
       console.log("fetchRoomData: ", response)
-      const data = await response.json();
       return data;
     } catch (error) {
       console.error("Error fetching room data", error);
@@ -17,7 +17,7 @@ export const fetchRoomData = async (id) => { // 추천 위치
     try {
       const response = await apiClient.get("/api/user/" + id);
       console.log("fetchUserData: ", response)
-      const data = await response.json();
+      const data = await response.data;
       return data;
     } catch (error) {
       console.error("Error fetching user data", error);
