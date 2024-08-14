@@ -55,6 +55,7 @@ function Location() {
       });
 
       if (buyerId) {
+        setBuyerId(buyerId)
         const buyerData = await fetchUserData(buyerId);
         setBuyerData(buyerData);
         setBuyerLocation(buyerData.mainAddressName);
@@ -62,6 +63,7 @@ function Location() {
       }
 
       if (sellerId) {
+        setSellerId(sellerId)
         const sellerData = await fetchUserData(sellerId);
         setSellerData(sellerData);
         setSellerLocation(sellerData.mainAddressName);
