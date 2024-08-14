@@ -14,14 +14,9 @@ public class UserInfoDto {
     private String profileImg;
     private Long mainAddressId;
     private String mainAddressName;
+    private double longitude;
+    private double latitude;
     private String level;
     private int score;
 
-    public UserInfoDto(Long id, String nickname, String profileImg, String level, int score) {
-        this.id = id;
-        this.nickname = nickname;
-        this.profileImg = profileImg;
-        this.level = level;
-        this.score = score;
-    }
 }
