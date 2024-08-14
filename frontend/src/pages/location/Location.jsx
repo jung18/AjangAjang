@@ -83,14 +83,21 @@ function Location() {
    const recommendDataInit = async () => {
     try {
       await getRoomData();
-      await getBuyerData();
-      await getSellerData();
+  
+      // getRoomData 후 buyerId와 sellerId가 설정된 후에만 실행
+      if (buyerId) {
+        await getBuyerData();
+      }
+      if (sellerId) {
+        await getSellerData();
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     recommendDataInit();
