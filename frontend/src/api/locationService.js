@@ -3,6 +3,8 @@ import useTokenStore from "../store/useTokenStore";
 export const fetchRoomData = async (id) => { // 추천 위치
     try {
       const { accessToken } = useTokenStore.getState();
+
+      console.log("accessToken: ", accessToken)
   
       const response = await fetch("https://i11b210.p.ssafy.io:4443/api/rooms/myRooms/" + id, {
         method: "GET",
