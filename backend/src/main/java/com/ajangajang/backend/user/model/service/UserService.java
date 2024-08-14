@@ -36,6 +36,7 @@ public class UserService {
     private final FileService fileService;
     private final BoardService boardService;
     private final ChildRepository childRepository;
+    private final LevelService levelService;
 
     public void signUp(String username, UserInputDto userInputDto) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -68,8 +69,9 @@ public class UserService {
 
     public UserInfoDto findMyInfo(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
-        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), user.getMainAddress().getFullAddress(),
-                user.getMainAddress().getLongitude(), user.getMainAddress().getLatitude(), getLevel(user.getScore()), user.getScore());
+        return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(),
+                user.getMainAddress().getFullAddress(), user.getMainAddress().getLongitude(),
+                user.getMainAddress().getLatitude(), levelService.getLevel(user.getScore()), user.getScore());
     }
 
     public List<BoardListDto> findMyLikes(String username) {
@@ -87,7 +89,7 @@ public class UserService {
     public UserInfoDto findUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         return new UserInfoDto(user.getId(), user.getNickname(), user.getProfileImg(), user.getMainAddress().getId(), user.getMainAddress().getFullAddress(),
-                user.getMainAddress().getLongitude(), user.getMainAddress().getLatitude(), getLevel(user.getScore()), user.getScore());
+                user.getMainAddress().getLongitude(), user.getMainAddress().getLatitude(), levelService.getLevel(user.getScore()), user.getScore());
     }
 
     public void updateMyInfo(String username, UserInputDto userInputDto) {
@@ -152,28 +154,6 @@ public class UserService {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         user.setMainChildId(childId);
-    }
-
-    public String getLevel(int score) {
-        if (score > 92) {
-            return "숲";
-        } else if (score > 80) {
-            return "나무";
-        } else if (score > 68) {
-            return "열매";
-        } else if (score > 56) {
-            return "가지";
-        } else if (score > 44) {
-            return "잎새";
-        } else if (score > 32) {
-            return "새싹";
-        } else if (score > 20) {
-            return "씨앗";
-        } else if (score > 8) {
-            return "사기꾼";
-        } else {
-            return "범죄자";
-        }
     }
 
 }

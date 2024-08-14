@@ -13,6 +13,7 @@ import com.ajangajang.backend.user.model.entity.User;
 import com.ajangajang.backend.user.model.repository.AddressRepository;
 import com.ajangajang.backend.user.model.repository.ChildRepository;
 import com.ajangajang.backend.user.model.repository.UserRepository;
+import com.ajangajang.backend.user.model.service.LevelService;
 import com.ajangajang.backend.user.model.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public class BoardService {
 
     private final FileService fileService;
     private final KakaoApiService kakaoApiService;
-    private final UserService userService;
+    private final LevelService levelService;
 
     public Board save(String username, CreateBoardDto dto, List<MultipartFile> files) {
         User writer = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
@@ -66,7 +67,7 @@ public class BoardService {
 
         User findWriter = findBoard.getWriter();
         UserProfileDto userProfileDto = new UserProfileDto(findWriter.getId(), findWriter.getNickname(), findWriter.getProfileImg(),
-                userService.getLevel(findWriter.getScore()));
+                levelService.getLevel(findWriter.getScore()));
 
         return new BoardDto(userProfileDto, findBoard.getTitle(), findBoard.getPrice(),
                             findBoard.getContent(), findBoard.getCategory().name(), findBoard.getStatus(),
@@ -156,7 +157,7 @@ public class BoardService {
             User writer = board.getWriter();
             String thumbnail = getThumbnail(board);
             UserProfileDto profile = new UserProfileDto(writer.getId(), writer.getNickname(),
-                    writer.getProfileImg(), userService.getLevel(writer.getScore()));
+                    writer.getProfileImg(), levelService.getLevel(writer.getScore()));
             result.add(new BoardListDto(board.getId(), thumbnail, profile, board.getTitle(), board.getPrice(),
                     board.getCategory().name(),
                     board.getStatus(), board.getLikedUsers().size(), board.getViewCount()));
