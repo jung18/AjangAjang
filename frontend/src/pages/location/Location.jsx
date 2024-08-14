@@ -43,9 +43,9 @@ function Location() {
 
       data.userRooms.forEach(room => {
         if (room.userId === creatorUserId) {
-          sellerId = room.userId;
-        } else {
           buyerId = room.userId;
+        } else {
+          sellerId = room.userId;
         }
       });
 
@@ -170,7 +170,7 @@ function Location() {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `KakaoAK YOUR_KAKAO_REST_API_KEY`,
+          'Authorization': `KakaoAK 429a317e8b573f6ae550bebbd54536d5`,
         },
       });
 
