@@ -42,8 +42,8 @@ public class BoardApiController {
                                        @RequestParam(value = "media", required = false) List<MultipartFile> files,
                                        @RequestParam(value = "imageUrls", required = false) String[] imageUrls) {
         String username = customOAuth2User.getUsername();
-        log.info("imageUrls: {}", imageUrls);
-        System.out.println("imageUrls: " + imageUrls);
+        log.info("imageUrls: {}", Arrays.toString(imageUrls));
+        System.out.println("imageUrls: " + Arrays.toString(imageUrls));
         List<String> imageUrlList = imageUrls != null ? Arrays.asList(imageUrls) : new ArrayList<>();
         Board board = boardService.save(username, createBoardDto, files, imageUrlList);
         boardSearchService.save(board);
