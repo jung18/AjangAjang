@@ -20,6 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +40,12 @@ public class BoardApiController {
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
                                        @RequestParam(value = "media", required = false) List<MultipartFile> files,
-                                       @RequestParam(value = "imageUrls", required = false) List<String> imageUrls) {
+                                       @RequestParam(value = "imageUrls", required = false) String[] imageUrls) {
         String username = customOAuth2User.getUsername();
         log.info("imageUrls: {}", imageUrls);
-        System.out.println("imageUrls: " + imageUrls);:
-        Board board = boardService.save(username, createBoardDto, files, imageUrls);
+        System.out.println("imageUrls: " + imageUrls);
+        List<String> imageUrlList = imageUrls != null ? Arrays.asList(imageUrls) : new ArrayList<>();
+        Board board = boardService.save(username, createBoardDto, files, imageUrlList);
         boardSearchService.save(board);
         Long boardId = board.getId();
         return ResponseEntity.ok(Map.of("boardId", boardId));
