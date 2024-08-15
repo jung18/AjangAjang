@@ -1,5 +1,5 @@
 import useTokenStore from "../store/useTokenStore";
-import apiClient from "./apiClient";
+import apiClient from "../api/apiClient";
 
 export const fetchRoomData = async (id) => { // 추천 위치
     try {

@@ -8,4 +8,5 @@
   flex-wrap: wrap;
   gap: 32px; /* 아이템 간의 간격 */
   margin: 18px 30px 32px;
+  background-color: transparent;
 }

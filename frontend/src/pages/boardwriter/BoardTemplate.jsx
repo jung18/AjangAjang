@@ -12,7 +12,7 @@ const BoardTemplate = () => {
     const [gender, setGender] = useState('');
     const [templateResult, setTemplateResult] = useState('');
     const [templateTitle, setTemplateTitle] = useState('');
-    const [tone, setTone] = useState('차분한'); // tone 상태 추가
+    const [tone, setTone] = useState('사무적인'); // tone 상태 추가
 
     const navigate = useNavigate();
 
@@ -80,11 +80,11 @@ const BoardTemplate = () => {
                     />
                     <select className={styles.selectField} value={useagePeriod} onChange={handleUsagePeriodChange}>
                         <option value="">사용 기간</option>
+                        <option value="3개월 이하">3개월 이하</option>
+                        <option value="6개월">6개월</option>
                         <option value="1년">1년</option>
                         <option value="2년">2년</option>
-                        <option value="3년">3년</option>
-                        <option value="4년">4년</option>
-                        <option value="5년 이상">5년 이상</option>
+                        <option value="2년 이상">2년 이상</option>
                     </select>
                 </div>
                 <div className={styles.formGroup}>
@@ -101,27 +101,19 @@ const BoardTemplate = () => {
                         <input
                             type="radio"
                             name="tone"
-                            value="차분한"
-                            checked={tone === '차분한'}
+                            value="사무적인"
+                            checked={tone === '사무적인'}
                             onChange={handleToneChange}
                         />
-                        차분한 톤
+                        사무적인 톤
                         <input
                             type="radio"
                             name="tone"
-                            value="친근한 톤"
-                            checked={tone === '친근한 톤'}
+                            value="친근한"
+                            checked={tone === '친근한'}
                             onChange={handleToneChange}
                         />
                         친근한 톤
-                        <input
-                            type="radio"
-                            name="tone"
-                            value="아이같은 톤"
-                            checked={tone === '아이같은 톤'}
-                            onChange={handleToneChange}
-                        />
-                        아이같은 톤
                     </label>
                 </div>
             </div>
