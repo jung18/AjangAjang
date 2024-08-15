@@ -125,9 +125,6 @@ function MyPage() {
           <div className={styles.menuItem} onClick={handleClickTrade}>거래내역</div>
         </div>
         <div className={styles.menuitemcontainer}>
-          <div className={styles.myInfo} onClick={handleClickMyInfo}>회원정보 수정</div>
-        </div>
-        <div className={styles.menuitemcontainer}>
           <div className={styles.myInfo} onClick={handleClickLogOut}>로그 아웃</div>
         </div>
         <div className={styles.menuitemcontainer}>
