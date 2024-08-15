@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: flex-end;
   height: calc(100vh - 120px);
-  padding: 10px;
+  padding: 3px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   margin: 0 auto;
