@@ -173,7 +173,7 @@ select {
   .address-list-wrap
   .address-item
   .address-content {
-  width: 220px;
+  width: 150px;
   word-break: keep-all; /* 단어 단위로 줄바꿈 */
   white-space: normal; /* 기본 줄바꿈 동작 */
 }
@@ -282,7 +282,7 @@ select {
 }
 
 .myPage .children .children-list .children-item .children-content {
-  width: 290px;
+  width: 240px;
   word-break: keep-all; /* 단어 단위로 줄바꿈 */
   white-space: normal; /* 기본 줄바꿈 동작 */
 }
