@@ -48,13 +48,13 @@ function MyTrade() {
 
   const fetchData = async () => {
     try {
-      const response = await fetchTradeList();
-      console.log(response);
-      setBuyList(response.buyingTrades);
-      setSellList(response.sellingTrades);
-      setActiveList(response.buyingTrades);
-      // setBuyList(dummy);
-      // setActiveList(dummy);
+      // const response = await fetchTradeList();
+      // console.log(response);
+      // setBuyList(response.buyingTrades);
+      // setSellList(response.sellingTrades);
+      // setActiveList(response.buyingTrades);
+      setBuyList(dummy);
+      setActiveList(dummy);
     } catch (error) {
       console.error("Failed to fetch trade list:", error);
     } finally {
@@ -120,7 +120,7 @@ function MyTrade() {
           Authorization: `${accessToken}`,
         },
         credentials: "include",
-        body: review,
+        body: JSON.stringify(review),
       });
 
       const data = await response.json();
