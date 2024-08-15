@@ -11,6 +11,7 @@ import sentActiveImage from "../../assets/icons/sent-active.png";
 import usePageStore from "../../store/currentPageStore";
 import useTokenStore from "../../store/useTokenStore";
 import { fetchRoomData } from "../../api/locationService";
+import CallIcon from "../../assets/icons/call.png";
 
 const Chat = () => {
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
@@ -30,7 +31,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const sessionRef = useRef(null);
   const chatBoxRef = useRef(null);
-  const [roomData, setRoomData] = useState(null); 
+  const [roomData, setRoomData] = useState(null);
   const [buyerId, setBuyerId] = useState(0);
   const [boardId, setBoardId] = useState(0);
 
@@ -137,7 +138,7 @@ const Chat = () => {
 
   useEffect(() => {
     getRoomData();
-  }, [])
+  }, []);
 
   const handleCallButtonClick = async () => {
     setLoading(true); // 로딩 상태 시작
@@ -304,7 +305,7 @@ const Chat = () => {
       roomId,
       userId,
       message,
-      time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
+      time: new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString(),
     };
     stompClientRef.current.send(
       "/pub/chat/message",
@@ -348,17 +349,17 @@ const Chat = () => {
       console.log("getRoomData");
       const data = await fetchRoomData(roomId);
       setRoomData(data);
-  
+
       const creatorUserId = data.creatorUserId;
       console.log("===================");
       console.log(data);
-  
-      let buyerId = '';
-      let sellerId = '';
-      let boardId = '';
-  
+
+      let buyerId = "";
+      let sellerId = "";
+      let boardId = "";
+
       // roomData를 기반으로 buyerId와 sellerId 설정
-      data.userRooms.forEach(room => {
+      data.userRooms.forEach((room) => {
         if (room.userId === creatorUserId) {
           sellerId = room.userId;
         } else {
@@ -372,7 +373,6 @@ const Chat = () => {
       console.log("boardId", boardId);
       setBuyerId(buyerId);
       setBoardId(boardId);
-
     } catch (error) {
       console.log("에러 발생:", error);
       console.error(error);
@@ -403,7 +403,7 @@ const Chat = () => {
       );
 
       const data = await response.json();
-      alert('거래 완료!');
+      alert("거래 완료!");
       return data;
     } catch (error) {
       console.error("Error fetching board list", error);
@@ -413,47 +413,59 @@ const Chat = () => {
 
   return (
     <div className={styles["chat-room-container"]}>
-      <button
-        className={styles["location-btn"]}
-        type="button"
-        onClick={navigateToPage}
-      >
-        위치추천
-      </button>
-      <button
-        className={styles["finish-btn"]}
-        type="button"
-        onClick={createTrade}
-      >
-        거래완료
-      </button>
+      <div className={styles["chat-room-menu-btns"]}>
+        <div className={styles["chat-room-left-btns"]}>
+          <button
+            className={styles["location-btn"]}
+            type="button"
+            onClick={navigateToPage}
+          >
+            위치추천
+          </button>
+          <button
+            className={styles["finish-btn"]}
+            type="button"
+            onClick={createTrade}
+          >
+            거래완료
+          </button>
+        </div>
+        <img
+          alt="call-icon"
+          src={CallIcon}
+          className={styles["call-button"]}
+          onClick={handleCallButtonClick}
+        />
+      </div>
       <div className={styles["chat-box"]} ref={chatBoxRef}>
-        {Array.isArray(messages) ? (
-          messages.map((msg, index) => {
-            const previousMessage = messages[index - 1];
-            const showTime = shouldShowTime(msg, previousMessage);
+        <div className={styles["chat-box-wrapper"]}>
+          {Array.isArray(messages) ? (
+            messages.map((msg, index) => {
+              const previousMessage = messages[index - 1];
+              const showTime = shouldShowTime(msg, previousMessage);
 
-            return (
-              <div
-                key={index}
-                className={`${styles.message} ${
-                  msg.userId === userId
-                    ? styles["from-user"]
-                    : styles["from-other"]
-                }`}
-              >
-                <div className={styles["message-content"]}>{msg.message}</div>
-                {showTime && (
-                  <div className={styles["message-time"]}>
-                    {dayjs(msg.time).format("HH:mm")}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <p>Loading messages...</p>
-        )}
+              return (
+                <div
+                  key={index}
+                  className={`${styles.message} ${
+                    msg.userId === userId
+                      ? styles["from-user"]
+                      : styles["from-other"]
+                  }`}
+                >
+                  <div className={styles["message-content"]}>{msg.message}</div>
+                  {showTime && (
+                    <div className={styles["message-time"]}>
+                      {dayjs(msg.time).format("HH:mm")}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <p>Loading messages...</p>
+          )}
+        </div>
       </div>
       <div className={styles["message-input-container"]}>
         <input
@@ -470,12 +482,6 @@ const Chat = () => {
           onClick={sendMessage}
           style={{ cursor: message.trim() ? "pointer" : "not-allowed" }}
         />
-        <button
-          className={styles["call-button"]}
-          onClick={handleCallButtonClick}
-        >
-          통화
-        </button>
       </div>
 
       {inCall && (

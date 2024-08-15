@@ -7,6 +7,8 @@ import apiClient from '../../api/apiClient';
 import usePageStore from '../../store/currentPageStore'; // 페이지 스토어 import
 import useTokenStore from '../../store/useTokenStore';
 
+import ImageNotFound from "../../assets/icons/image-not-found.png";
+
 const ChatRoom = () => {
     const [rooms, setRooms] = useState([]);
     const [newMessages, setNewMessages] = useState(() => {
@@ -141,14 +143,11 @@ const ChatRoom = () => {
     
     return (
         <div className={styles['room-list-container']}>
-            <div className={styles.header}>
-                <span className={styles['header-title']}>채팅</span>
-                <div className={styles['filter-buttons']}>
-                    <button className={styles['filter-button']}>전체</button>
-                    <button className={styles['filter-button']}>판매</button>
-                    <button className={styles['filter-button']}>구매</button>
+            {rooms && (
+                <div className={styles['rooms-not-found']}>
+                    채팅 내역이 없습니다.
                 </div>
-            </div>
+            )}
             <ul className={styles['room-list']}>
                 {rooms.map(room => (
                     <li 
@@ -156,9 +155,7 @@ const ChatRoom = () => {
                         className={styles['room-item']}
                         onClick={() => handleRoomClick(room.id)}
                     >
-                        <div className={styles['room-avatar']}>
-                            {/* 프로필 이미지를 추가할 수 있습니다. */}
-                        </div>
+                        <img alt='profile' src={ImageNotFound} className={styles['room-avatar']}/>
                         <div className={styles['room-info']}>
                             <div className={styles['room-header']}>
                                 <div className={styles['room-name']}>{room.name}</div>

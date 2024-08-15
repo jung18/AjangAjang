@@ -1,32 +1,19 @@
 .room-list-container {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
   padding: 20px 15px;
   background-color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  font-family: GmarketSansMedium, sans-serif;
 }
 
-.header {
-  margin-bottom: 20px; /* 필터 버튼과 채팅 방 리스트 사이 간격 */
-  display: flex;
-  gap: 10px;
-}
-
-.filter-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.filter-button {
-  background-color: #ff7096;
-  color: #fff;
-  border: none;
-  padding: 5px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
+.rooms-not-found {
+  margin-top: 30vh;
 }
 
 .room-list {
@@ -38,13 +25,14 @@
 }
 
 .room-item {
-  padding: 10px 15px;
+  padding: 10px;
   border-bottom: 1px solid #eee;
   display: flex;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.3s;
   width: 95%;
+  justify-content: flex-start;
 }
 
 .room-item:hover {
@@ -56,7 +44,6 @@
   height: 50px;
   border-radius: 50%;
   margin-right: 15px;
-  background-color: #ddd;
 }
 
 .room-info {
