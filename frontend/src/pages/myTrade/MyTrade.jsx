@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { fetchTradeList } from "../../api/tradeService";
 
 import "./MyTrade.css";
-import BoardList from "../board/components/boardList/BoardList";
+import BoardItem from "../board/components/boardItem/BoardItem";
 
 function MyTrade() {
   const [sellList, setSellList] = useState([]);
@@ -50,6 +50,11 @@ function MyTrade() {
     // 추가적으로 탭 클릭 시 필터링 로직을 구현할 수 있음
   };
 
+  const handleBuyItemClick = (board) => {
+    console.log("구매 내역에서 클릭된 아이템:", board);
+    // 원하는 로직을 여기서 추가할 수 있습니다.
+  };
+
   if (isLoading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
@@ -77,7 +82,19 @@ function MyTrade() {
           </div>
         ) : (
           <div className="trade-list">
-            <BoardList boards={activeList} />
+            {activeList.map((board, idx) => (
+              <div
+                className="clickable-div"
+                key={idx}
+                onClick={
+                  activeTab === "구매 내역"
+                    ? () => handleBuyItemClick(board)
+                    : null
+                }
+              >
+                <BoardItem board={board} />
+              </div>
+            ))}
           </div>
         )}
       </div>
