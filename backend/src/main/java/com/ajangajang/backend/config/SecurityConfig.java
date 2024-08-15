@@ -77,7 +77,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/reissue", "/ws-stomp/**").permitAll()
                         .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").permitAll()
                         .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정

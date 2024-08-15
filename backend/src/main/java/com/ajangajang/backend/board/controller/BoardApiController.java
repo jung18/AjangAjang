@@ -10,15 +10,20 @@ import com.ajangajang.backend.elasticsearch.model.service.NaverApiService;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.user.model.dto.AddressDto;
 import com.ajangajang.backend.user.model.service.UserAddressService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +38,31 @@ public class BoardApiController {
     private final BoardSearchService boardSearchService;
     private final UserAddressService userAddressService;
 
-    @PostMapping("/board")
+    @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
                                        @RequestPart(value = "media", required = false) List<MultipartFile> files,
-                                       @RequestPart(value = "imageUrls", required = false) List<String> imageUrls) {
+                                       @RequestPart(value = "imageUrls", required = false) String imageUrlsJson) {
         String username = customOAuth2User.getUsername();
-        Board board = boardService.save(username, createBoardDto, files, imageUrls);
+        String[] imageUrls = new String[]{};
+
+        try {
+            // JSON 문자열을 배열로 변환
+            imageUrls = new ObjectMapper().readValue(imageUrlsJson, String[].class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace(); // 로그 출력 또는 예외 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JSON format for imageUrls");
+        }
+
+        log.info("imageUrls: {}", Arrays.toString(imageUrls));
+        List<String> imageUrlList = imageUrls != null ? Arrays.asList(imageUrls) : new ArrayList<>();
+        Board board = boardService.save(username, createBoardDto, files, imageUrlList);
         boardSearchService.save(board);
         Long boardId = board.getId();
         return ResponseEntity.ok(Map.of("boardId", boardId));
     }
+
+
 
 
     @GetMapping("/board/{id}")
