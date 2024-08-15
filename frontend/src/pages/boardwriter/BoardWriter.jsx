@@ -193,7 +193,7 @@ const BoardWrite = () => {
       content,
       category,
       status,
-      addressId: 1,
+      addressId: user.mainAddressId,
     };
 
     const formData = new FormData();
