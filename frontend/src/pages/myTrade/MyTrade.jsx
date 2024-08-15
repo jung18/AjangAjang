@@ -5,6 +5,72 @@ import { fetchTradeList } from "../../api/tradeService";
 import "./MyTrade.css";
 import BoardItem from "../board/components/boardItem/BoardItem";
 
+const dummy = [
+  {
+    board: {
+      boardId: 20,
+      thumbnailUrl: "",
+      writer: {
+        userId: 3,
+        nickname: "연동1",
+        profileImage:
+          "https://ajangajangbucket.s3.ap-northeast-2.amazonaws.com/15e5e2ba-ba34-454e-8975-cdabc2f50f30_%ED%9E%9D.png",
+        level: "범죄자",
+      },
+      title: "연금은동",
+      price: 888,
+      address: "유성구봉명동",
+      category: "ETC",
+      status: "SOLD_OUT",
+      likeCount: 0,
+      viewCount: 14,
+    },
+    tradeId: 1,
+  },
+  {
+    board: {
+      boardId: 20,
+      thumbnailUrl: "",
+      writer: {
+        userId: 3,
+        nickname: "연동1",
+        profileImage:
+          "https://ajangajangbucket.s3.ap-northeast-2.amazonaws.com/15e5e2ba-ba34-454e-8975-cdabc2f50f30_%ED%9E%9D.png",
+        level: "범죄자",
+      },
+      title: "연금은동",
+      price: 888,
+      address: "유성구봉명동",
+      category: "ETC",
+      status: "SOLD_OUT",
+      likeCount: 0,
+      viewCount: 14,
+    },
+    tradeId: 1,
+  },
+  {
+    board: {
+      boardId: 20,
+      thumbnailUrl: "",
+      writer: {
+        userId: 3,
+        nickname: "연동1",
+        profileImage:
+          "https://ajangajangbucket.s3.ap-northeast-2.amazonaws.com/15e5e2ba-ba34-454e-8975-cdabc2f50f30_%ED%9E%9D.png",
+        level: "범죄자",
+      },
+      title: "연금은동",
+      price: 888,
+      address: "유성구봉명동",
+      category: "ETC",
+      status: "SOLD_OUT",
+      likeCount: 0,
+      viewCount: 14,
+    },
+    tradeId: 1,
+  },
+];
+
 function MyTrade() {
   const [sellList, setSellList] = useState([]);
   const [buyList, setBuyList] = useState([]);
@@ -15,11 +81,13 @@ function MyTrade() {
 
   const fetchData = async () => {
     try {
-      const response = await fetchTradeList();
-      console.log(response);
-      setBuyList(response.buyingTrades);
-      setSellList(response.sellingTrades);
-      setActiveList(response.buyingTrades);
+      // const response = await fetchTradeList();
+      // console.log(response);
+      //setBuyList(response.buyingTrades);
+      setBuyList(dummy);
+      setActiveList(dummy);
+      // setSellList(response.sellingTrades);
+      // setActiveList(response.buyingTrades);
     } catch (error) {
       console.error("Failed to fetch trade list:", error);
     } finally {
@@ -83,16 +151,20 @@ function MyTrade() {
         ) : (
           <div className="trade-list">
             {activeList.map((board, idx) => (
-              <div
-                className="clickable-div"
-                key={idx}
-                onClick={
-                  activeTab === "구매 내역"
-                    ? () => handleBuyItemClick(board)
-                    : null
-                }
-              >
-                <BoardItem board={board} />
+              <div className="trade-item">
+                <div className="clickable-div" key={idx}>
+                  <BoardItem board={board.board} />
+                </div>
+                <button
+                  type="button"
+                  onClick={
+                    activeTab === "구매 내역"
+                      ? () => handleBuyItemClick(board)
+                      : null
+                  }
+                >
+                  리뷰하기
+                </button>
               </div>
             ))}
           </div>

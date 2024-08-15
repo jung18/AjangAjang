@@ -97,21 +97,19 @@
 }
 
 .trade-list {
-  display: flex;
-  flex-wrap: wrap; /* 한 줄에 2개씩 배치하고 나머지는 줄바꿈 */
-  justify-content: flex-start; /* 기본적으로 왼쪽 정렬 */
-  gap: 16px; /* 각 항목 사이의 간격 */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 15px;
 }
 
-.trade-list > .clickable-div {
-  flex: 1 1 calc(50% - 16px); /* 너비를 50%로 설정하고, gap을 고려하여 마진 조정 */
-  box-sizing: border-box; /* padding과 border를 포함하여 크기를 계산 */
-  max-width: 400px; /* 최대 너비를 지정하여 항목이 너무 넓어지지 않도록 */
+.trade-list .trade-item {
+  justify-self: center;
+  margin-bottom: 30px;
 }
 
-.trade-list > .clickable-div:first-child:last-child {
-  flex: 1 1 100%; /* 요소가 하나일 때 너비를 100%로 설정 */
-  max-width: none; /* 최대 너비 제한 해제 */
+.trade-list .trade-item button {
+  height: 30px;
+  font-size: 15px;
 }
 
 .clickable-div {
