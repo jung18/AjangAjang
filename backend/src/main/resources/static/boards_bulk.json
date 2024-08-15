@@ -1,0 +1,119 @@
+{ "index": { "_index": "boards", "_id": 1 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 1, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020010100" }
+
+{ "index": { "_index": "boards", "_id": 2 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 2, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020010200" }
+
+{ "index": { "_index": "boards", "_id": 3 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 3, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020010300" }
+
+{ "index": { "_index": "boards", "_id": 4 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 4, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020010400" }
+
+{ "index": { "_index": "boards", "_id": 5 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 5, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020010500" }
+
+{ "index": { "_index": "boards", "_id": 6 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 6, "category": "DAILY_SUPPLIES", "status": "FOR_SALE", "title": "일상용품 판매합니다", "addressCode": "3020010600" }
+
+{ "index": { "_index": "boards", "_id": 7 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 7, "category": "ETC", "status": "FOR_SALE", "title": "기타 용품 판매합니다", "addressCode": "3020010700" }
+
+{ "index": { "_index": "boards", "_id": 8 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 8, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020010800" }
+
+{ "index": { "_index": "boards", "_id": 9 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 9, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020010900" }
+
+{ "index": { "_index": "boards", "_id": 10 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 10, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020011000" }
+
+{ "index": { "_index": "boards", "_id": 11 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 11, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020011100" }
+
+{ "index": { "_index": "boards", "_id": 12 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 12, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020011200" }
+
+{ "index": { "_index": "boards", "_id": 13 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 13, "category": "DAILY_SUPPLIES", "status": "FOR_SALE", "title": "일상용품 판매합니다", "addressCode": "3020011300" }
+
+{ "index": { "_index": "boards", "_id": 14 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 14, "category": "ETC", "status": "FOR_SALE", "title": "기타 용품 판매합니다", "addressCode": "3020011400" }
+
+{ "index": { "_index": "boards", "_id": 15 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 15, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020011500" }
+
+{ "index": { "_index": "boards", "_id": 16 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 16, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020011600" }
+
+{ "index": { "_index": "boards", "_id": 17 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 17, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020011700" }
+
+{ "index": { "_index": "boards", "_id": 18 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 18, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020011800" }
+
+{ "index": { "_index": "boards", "_id": 19 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 19, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020011900" }
+
+{ "index": { "_index": "boards", "_id": 20 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 20, "category": "DAILY_SUPPLIES", "status": "FOR_SALE", "title": "일상용품 판매합니다", "addressCode": "3020012000" }
+
+{ "index": { "_index": "boards", "_id": 21 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 21, "category": "ETC", "status": "FOR_SALE", "title": "기타 용품 판매합니다", "addressCode": "3020012100" }
+
+{ "index": { "_index": "boards", "_id": 22 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 22, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020012200" }
+
+{ "index": { "_index": "boards", "_id": 23 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 23, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020012300" }
+
+{ "index": { "_index": "boards", "_id": 24 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 24, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020012400" }
+
+{ "index": { "_index": "boards", "_id": 25 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 25, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020012500" }
+
+{ "index": { "_index": "boards", "_id": 26 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 26, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020012600" }
+
+{ "index": { "_index": "boards", "_id": 27 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 27, "category": "DAILY_SUPPLIES", "status": "FOR_SALE", "title": "일상용품 판매합니다", "addressCode": "3020012700" }
+
+{ "index": { "_index": "boards", "_id": 28 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 28, "category": "ETC", "status": "FOR_SALE", "title": "기타 용품 판매합니다", "addressCode": "3020012800" }
+
+{ "index": { "_index": "boards", "_id": 29 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 29, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020012900" }
+
+{ "index": { "_index": "boards", "_id": 30 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 30, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020013000" }
+
+{ "index": { "_index": "boards", "_id": 31 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 31, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020013100" }
+
+{ "index": { "_index": "boards", "_id": 32 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 32, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020013200" }
+
+{ "index": { "_index": "boards", "_id": 33 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 33, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020013300" }
+
+{ "index": { "_index": "boards", "_id": 34 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 34, "category": "DAILY_SUPPLIES", "status": "FOR_SALE", "title": "일상용품 판매합니다", "addressCode": "3020013400" }
+
+{ "index": { "_index": "boards", "_id": 35 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 35, "category": "ETC", "status": "FOR_SALE", "title": "기타 용품 판매합니다", "addressCode": "3020013500" }
+
+{ "index": { "_index": "boards", "_id": 36 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 36, "category": "BABY_CARRIAGE", "status": "FOR_SALE", "title": "유모차 판매합니다", "addressCode": "3020013600" }
+
+{ "index": { "_index": "boards", "_id": 37 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 37, "category": "TOY", "status": "FOR_SALE", "title": "장난감 판매합니다", "addressCode": "3020013700" }
+
+{ "index": { "_index": "boards", "_id": 38 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 38, "category": "FURNITURE", "status": "FOR_SALE", "title": "가구 판매합니다", "addressCode": "3020013800" }
+
+{ "index": { "_index": "boards", "_id": 39 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 39, "category": "BABY_CLOTHES", "status": "FOR_SALE", "title": "아기 옷 판매합니다", "addressCode": "3020013900" }
+
+{ "index": { "_index": "boards", "_id": 40 }}
+{ "_class": "com.ajangajang.backend.elasticsearch.model.document.BoardDocument", "boardId": 40, "category": "CAR_SEAT", "status": "FOR_SALE", "title": "카시트 판매합니다", "addressCode": "3020014000" }
