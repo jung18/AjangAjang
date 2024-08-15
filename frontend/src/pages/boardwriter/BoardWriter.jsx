@@ -8,6 +8,7 @@ import apiClient from "../../api/apiClient";
 import "./BoardWriter.css";
 import usePageStore from "../../store/currentPageStore";
 import useUserStore from "../../store/useUserStore";
+import { log } from 'console';
 
 const BoardWrite = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -197,6 +198,7 @@ const BoardWrite = () => {
       console.log(image.bgRemovedImage);
       console.log(image.isBgRemovedImage)
       if (image.isBgRemoved) {
+        console.log("여기입니다ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ");
         // 누끼 딴 이미지 URL을 폼 데이터에 추가
         formData.append("imageUrls", image.bgRemovedImage);
       } else {
