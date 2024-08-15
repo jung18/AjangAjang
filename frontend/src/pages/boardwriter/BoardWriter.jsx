@@ -93,6 +93,8 @@ const BoardWrite = () => {
   const handleCheckboxChange = async () => {
     if (!selectedImage) return;
 
+    setIsLoading(true); // 로딩 시작
+
     const selectedIndex = images.findIndex(
       (img) => img.id === selectedImage.id
     );
@@ -117,17 +119,18 @@ const BoardWrite = () => {
         const updatedImages = [...images];
         updatedImages[selectedIndex].bgRemovedImage = newImage.url;
         setImages(updatedImages);
-        setSelectedImage(updatedImages[selectedIndex]); // 현재 선택된 이미지의 상태를 업데이트
+        setSelectedImage(updatedImages[selectedIndex]);
       } catch (error) {
         console.error("Error removing background", error);
       }
     }
 
-    // 기존 상태 반영
     setSelectedImage((prev) => ({
       ...prev,
       isBgRemoved: !prev.isBgRemoved,
     }));
+
+    setIsLoading(false); // 로딩 종료
   };
 
   const handleTitleChange = (e) => {
@@ -176,8 +179,14 @@ const BoardWrite = () => {
   };
 
   const handleDeleteImage = (index) => {
-    setImages(images.filter((_, i) => i !== index));
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+  
+    if (updatedImages.length === 0) {
+      setSelectedImage(null); // 이미지가 없을 때 선택된 이미지도 초기화
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -379,14 +388,18 @@ const BoardWrite = () => {
             className="selected-image"
           />
           <div className="btns-checkbox">
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedImage.isBgRemoved}
-                onChange={handleCheckboxChange}
-              />
-              누끼 따기
-            </label>
+            {isLoading ? (
+              <div className="loading-spinner"></div> // 로딩 중일 때 스피너 표시
+            ) : (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedImage.isBgRemoved}
+                  onChange={handleCheckboxChange}
+                />
+                누끼 따기
+              </label>
+            )}
             <button
               type="button"
               onClick={handleApply}

@@ -1,3 +1,4 @@
+/* BoardTemplate.module.css */
 .container {
   position: fixed;
   top: 50px;
@@ -13,6 +14,8 @@
   max-width: 600px; /* 최대 너비를 조정 */
   margin: 0 auto; /* 화면 중앙에 배치 */
   border-radius: 10px; /* 모서리 둥글게 */
+  height: calc(100vh - 100px); /* 화면 높이에 따라 자동 조정 */
+  overflow-y: auto; /* 컨테이너 내부에 스크롤 추가 */
 }
 
 .section {
@@ -78,7 +81,9 @@
   border-radius: 10px;
   margin-bottom: 10px;
   padding: 10px; /* 패딩 추가로 내부 여백 확보 */
-  width:94%; /* 부모 요소의 너비를 100%로 설정 */
+  width: 94%; /* 부모 요소의 너비를 100%로 설정 */
+  max-height: 250px; /* 결과 섹션의 최대 높이 설정 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤 가능하도록 설정 */
 }
 
 .resultBox {
@@ -88,24 +93,27 @@
   white-space: pre-line; /* 줄 바꿈을 반영 */
   word-wrap: break-word; /* 긴 단어를 줄 바꿈 */
   overflow-wrap: break-word; /* 긴 단어를 줄 바꿈 */
-  overflow: hidden; /* 넘치는 내용을 숨김 */
   padding: 10px;
   box-sizing: border-box; /* 패딩을 포함한 크기 계산 */
   max-width: 100%; /* 최대 너비를 100%로 설정 */
-  height: auto; /* 높이를 내용에 맞게 자동 조정 */
   width: 100%; /* 너비를 100%로 설정 */
-  overflow-y: auto;
 }
 
 .resultText {
   display: block; /* div 요소를 블록으로 표시 */
-  text-align: left; /* 텍스트를 왼쪽 정렬 (필요에 따라 변경 가능) */
+  text-align: left; /* 텍스트를 왼쪽 정렬 */
   width: 100%; /* 너비를 100%로 설정 */
   word-break: break-word; /* 단어 단위로 줄 바꿈 */
   white-space: pre-wrap; /* 줄 바꿈과 공백을 그대로 반영 */
   height: auto; /* 높이를 내용에 맞게 자동 조정 */
 }
 
+.buttonContainer {
+  display: flex;
+  justify-content: center; /* 버튼들을 중앙 정렬 */
+  padding-bottom: 20px; /* 버튼들이 화면 아래로 너무 내려가지 않도록 여백 추가 */
+  width: 100%;
+}
 
 .createButton {
   background-color: #ff6f61;
@@ -120,11 +128,6 @@
 
 .createButton:hover {
   background-color: #ff4f41;
-}
-
-.buttonContainer {
-  display: flex;
-  justify-content: center; /* 버튼들을 중앙 정렬 */
 }
 
 /* 반응형 디자인 추가 */
@@ -152,4 +155,37 @@
   .section {
     padding: 10px; /* 모바일에서 섹션 내부 여백 조정 */
   }
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #ff6f61;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 로딩 중인 상태를 덮어씌울 수 있도록 */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }

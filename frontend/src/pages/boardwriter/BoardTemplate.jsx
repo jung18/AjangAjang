@@ -13,6 +13,7 @@ const BoardTemplate = () => {
     const [templateResult, setTemplateResult] = useState('');
     const [templateTitle, setTemplateTitle] = useState('');
     const [tone, setTone] = useState('사무적인'); // tone 상태 추가
+    const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
     const navigate = useNavigate();
 
@@ -34,6 +35,9 @@ const BoardTemplate = () => {
             gender: gender,
             age: months
         };
+
+        setLoading(true); // 로딩 시작
+
         console.log('생성된 템플릿 데이터:', templateData);
         try {
             const response = await apiClient.post('/api/claude', {
@@ -44,6 +48,8 @@ const BoardTemplate = () => {
             setTemplateResult(response.data.content);
         } catch (error) {
             console.error('Error creating template:', error);
+        } finally {
+            setLoading(false); // 로딩 끝
         }
     };
 
@@ -59,6 +65,11 @@ const BoardTemplate = () => {
 
     return (
         <div className={styles.container}>
+            {loading && (
+                <div className={styles.loadingOverlay}>
+                    <div className={styles.spinner}></div>
+                </div>
+            )}
             <div className={styles.section}>
                 <div className={styles.title}>상품 정보</div>
                 <div className={styles.formGroup}>
