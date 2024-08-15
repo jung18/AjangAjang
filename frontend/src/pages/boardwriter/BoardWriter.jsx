@@ -207,21 +207,13 @@ const BoardWrite = () => {
         formData.append("media", new Blob([image.original], { type: image.original.type }));
       }
     });
-
-    // imageUrls 배열의 각 요소를 formData에 추가
-    imageUrls.forEach((url) => {
-      formData.append('imageUrls', url);
-    });
+    formData.append('imageUrls', imageUrls);
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
 
     try {
-      await apiClient.post("/api/board", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await apiClient.post("/api/board", formData);
       navigate("/direct");
     } catch (error) {
       console.error("Error submitting the form", error);
