@@ -27,7 +27,7 @@ function Location() {
   const [roomData, setRoomData] = useState(null);
   const [buyerData, setBuyerData] = useState(null);
   const [sellerData, setSellerData] = useState(null);
-  const [markerList, setMarkerList] = useState([]); // markerList 상태 추가
+  const [markerList, setMarkerList] = useState([]); 
   const [loading, setLoading] = useState(true);
   const { roomId } = useParams();
   
@@ -87,7 +87,7 @@ function Location() {
 
   const confirmBtnClickHandler = async () => {
     const data = await handleRecommend();
-    setMarkerList(data); // 추천된 장소 목록 설정
+    setMarkerList(data); 
     setLocations(data);
     setCenter(data[0]?.latlng || center);
   };
@@ -99,11 +99,11 @@ function Location() {
 
   const toggleMarker = async (index, latlng) => {
     if (selectedMarkerIndex === index) {
-      setSelectedMarkerIndex(null); // 선택 해제
+      setSelectedMarkerIndex(null); 
       setSellerRoute({ distance: null, duration: null, path: [] });
       setBuyerRoute({ distance: null, duration: null, path: [] });
     } else {
-      setSelectedMarkerIndex(index); // 새로운 마커 선택
+      setSelectedMarkerIndex(index); 
 
       if (sellerLatLng.lat && sellerLatLng.lng) {
         const sellerRouteData = await getRouteData(sellerLatLng, latlng);
@@ -196,7 +196,7 @@ function Location() {
   const formatDuration = (durationInSeconds) => {
     const hours = Math.floor(durationInSeconds / 3600);
     const minutes = Math.floor((durationInSeconds % 3600) / 60);
-    return `${hours > 0 ? `${hours}시간 ` : ''}${minutes}분`;
+    return `${hours > 0 ? `${hours}차량 ` : ''}${minutes}분`;
   };
 
   if (loading) {
@@ -230,7 +230,7 @@ function Location() {
                 position={loc.latlng}
                 image={{
                   src: selectedMarkerIndex === idx
-                    ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
+                    ? "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"
                     : "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
                   size: { width: 24, height: 35 }
                 }}
@@ -240,12 +240,36 @@ function Location() {
             )
           ))}
 
+          {/* 판매자 마커 */}
+          {sellerLatLng.lat && sellerLatLng.lng && (
+            <MapMarker
+              position={sellerLatLng}
+              image={{
+                src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png", // 빨간색 마커 이미지
+                size: { width: 24, height: 35 }
+              }}
+              title="판매자 위치"
+            />
+          )}
+
+          {/* 구매자 마커 */}
+          {buyerLatLng.lat && buyerLatLng.lng && (
+            <MapMarker
+              position={buyerLatLng}
+              image={{
+                src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_blue.png", // 파란색 마커 이미지
+                size: { width: 24, height: 35 }
+              }}
+              title="구매자 위치"
+            />
+          )}
+
           {/* 판매자와의 경로 */}
           {selectedMarkerIndex !== null && sellerRoute.path.length > 0 && (
             <Polyline
               path={sellerRoute.path}
               strokeWeight={5}
-              strokeColor="#FF0000" // 빨간색
+              strokeColor="#FF0000" // 빨간색 경로
               strokeOpacity={0.7}
               strokeStyle="solid"
             />
@@ -256,7 +280,7 @@ function Location() {
             <Polyline
               path={buyerRoute.path}
               strokeWeight={5}
-              strokeColor="#0000FF" // 파란색
+              strokeColor="#0000FF" // 파란색 경로
               strokeOpacity={0.7}
               strokeStyle="solid"
             />
@@ -266,18 +290,18 @@ function Location() {
 
       <div className="location-inputs-horizontal">
         <div className="location-input">
-          판매자 위치
+          판매자
           <textarea
-            value={`${sellerLocation}\n거리: ${sellerRoute.distance || 'N/A'} km\n시간: ${sellerRoute.duration || 'N/A'}`}
+            value={`${sellerRoute.distance ? `거리: ${sellerRoute.distance} km\n` : ''}${sellerRoute.duration ? `시간: ${sellerRoute.duration}` : ''}`}
             readOnly
             style={{ color: "#FF0000" }} // 텍스트 색상 빨간색
             rows="3"
           />
         </div>
         <div className="location-input">
-          구매자 위치
+          구매자
           <textarea
-            value={`${buyerLocation}\n거리: ${buyerRoute.distance || 'N/A'} km\n시간: ${buyerRoute.duration || 'N/A'}`}
+            value={`${buyerRoute.distance ? `거리: ${buyerRoute.distance} km\n` : ''}${buyerRoute.duration ? `시간: ${buyerRoute.duration}` : ''}`}
             readOnly
             style={{ color: "#0000FF" }} // 텍스트 색상 파란색
             rows="3"

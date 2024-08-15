@@ -196,7 +196,7 @@ const BoardWrite = () => {
     images.forEach((image) => {
       if (image.isBgRemoved) {
         // 누끼 딴 이미지 URL을 폼 데이터에 추가
-        formData.append("media", image.bgRemovedImage);
+        formData.append("imageUrls", image.bgRemovedImage);
       } else {
         formData.append("media", image.original);
       }
