@@ -6,6 +6,12 @@ button {
   font-family: "GmarketSansMedium", sans-serif;
 }
 
+select {
+  font-family: "GmarketSansMedium", sans-serif;
+  margin-right: 3px;
+  border: none;
+}
+
 .board-title {
   font-size: 24px;
   font-weight: 700;
@@ -27,6 +33,7 @@ button {
   width: 100%;
   font-family: "GmarketSansMedium", sans-serif;
   overflow-y: auto;
+  max-height: 70vh;
 }
 
 .myPage .page-top {
@@ -160,8 +167,13 @@ button {
   align-items: center;
 }
 
-.myPage .address .address-list .address-list-wrap .address-item .address-content {
-  width: 230px;
+.myPage
+  .address
+  .address-list
+  .address-list-wrap
+  .address-item
+  .address-content {
+  width: 220px;
   word-break: keep-all; /* 단어 단위로 줄바꿈 */
   white-space: normal; /* 기본 줄바꿈 동작 */
 }
@@ -170,19 +182,36 @@ button {
   font-weight: 900;
 }
 
-.myPage .address .address-list .address-list-wrap .address-item .address-item-btns {
+.myPage
+  .address
+  .address-list
+  .address-list-wrap
+  .address-item
+  .address-item-btns {
   display: flex;
   flex-direction: row;
 }
 
-.myPage .address .address-list .address-list-wrap .address-item .address-item-btns .address-type-set {
+.myPage
+  .address
+  .address-list
+  .address-list-wrap
+  .address-item
+  .address-item-btns
+  .address-type-set {
   color: #ff8796;
   margin-right: 5px;
   display: flex;
   align-items: flex-end;
 }
 
-.myPage .address .address-list .address-list-wrap .address-item .address-item-btns img {
+.myPage
+  .address
+  .address-list
+  .address-list-wrap
+  .address-item
+  .address-item-btns
+  img {
   width: 23px;
 }
 
@@ -273,4 +302,30 @@ button {
   width: 70px;
   height: 20px;
   justify-content: center;
+}
+
+.child-modal-title {
+  font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: 900;
+  display: flex;
+  justify-content: center;
+}
+
+.child-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  font-size: 20px;
+  padding: 3px 10px;
 }

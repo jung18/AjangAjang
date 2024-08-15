@@ -297,10 +297,10 @@ function MyInfo() {
       {/* 모달 UI */}
       {isModalOpen && (
         <Modal onClose={closeModal}>
-          <h2>아이 정보 입력</h2>
-          <form>
+          <div className="child-modal-title">아이 정보 입력</div>
+          <form className="child-modal-form">
             <label>
-              이름:
+              이름 
               <input
                 type="text"
                 name="name"
@@ -309,7 +309,7 @@ function MyInfo() {
               />
             </label>
             <label>
-              성별:
+              성별<br/>
               <select
                 name="gender"
                 value={formData.gender}
@@ -320,7 +320,7 @@ function MyInfo() {
               </select>
             </label>
             <label>
-              생년월일:
+              생년월일<br/>
               <input
                 type="date"
                 name="birthDate"
@@ -349,12 +349,8 @@ function MyInfo() {
                 <div className="profile-nickname">닉네임</div>
                 <div className="profile-level">레벨 0</div>
               </div>
-              <div>010-1111-1111</div>
             </div>
           </div>
-          <button onClick={editBtnClickHandler} type="button">
-            수정
-          </button>
         </div>
 
         {/* 주소 목록 */}
@@ -396,7 +392,6 @@ function MyInfo() {
                   <div
                     className={`address-content ${address.rep ? "rep" : ""}`}
                   >
-                    {address.sido} {address.sigg} {address.emd}{" "}
                     {address.fullAddress}
                   </div>
                   <div className="address-item-btns">

@@ -19,6 +19,7 @@
   width: 100%;
   font-family: "GmarketSansMedium", sans-serif;
   overflow-y: auto;
+  max-height: 75vh;
 }
 
 .boardPage .userOption {
