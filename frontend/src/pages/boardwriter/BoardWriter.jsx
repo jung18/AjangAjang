@@ -195,11 +195,12 @@ const BoardWrite = () => {
   
     images.forEach((image) => {
       console.log(image.bgRemovedImage);
-      if (image.isBgRemoved) {
+      console.log(image.isBgRemovedImage)
+      if (image.isBgRemovedImage) {
         // 누끼 딴 이미지 URL을 폼 데이터에 추가
         formData.append("imageUrls", image.bgRemovedImage);
       } else {
-        formData.append("media", image.original);
+        formData.append("media", new Blob([image.original], { type: image.original.type }));
       }
     });
   
