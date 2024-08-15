@@ -339,19 +339,7 @@ function MyInfo() {
           </form>
         </Modal>
       )}
-      <div className="board-title">내 정보</div>
       <div className="myPage">
-        <div className="page-top">
-          <div className="profile">
-            <img src="https://via.placeholder.com/100" alt="Profile" />
-            <div className="profile-info">
-              <div className="profile-info-top">
-                <div className="profile-nickname">닉네임</div>
-                <div className="profile-level">레벨 0</div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* 주소 목록 */}
         <div className="address">
