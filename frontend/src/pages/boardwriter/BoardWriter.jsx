@@ -206,11 +206,7 @@ const BoardWrite = () => {
     });
   
     try {
-      await apiClient.post("/api/board", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await apiClient.post("/api/board", formData);
       navigate("/direct");
     } catch (error) {
       console.error("Error submitting the form", error);
