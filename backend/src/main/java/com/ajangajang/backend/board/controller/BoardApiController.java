@@ -33,7 +33,7 @@ public class BoardApiController {
     private final BoardSearchService boardSearchService;
     private final UserAddressService userAddressService;
 
-    @PostMapping(value = "/board", consumes = { "multipart/form-data", "application/octet-stream" })
+    @PostMapping(value = "/board", consumes = "multipart/form-data")
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
                                        @RequestPart(value = "media", required = false) List<MultipartFile> files,
