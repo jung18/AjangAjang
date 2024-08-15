@@ -1,4 +1,9 @@
 /* BoardTemplate.module.css */
+
+input {
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
 .container {
   position: fixed;
   top: 50px;
@@ -16,6 +21,7 @@
   border-radius: 10px; /* 모서리 둥글게 */
   height: calc(100vh - 100px); /* 화면 높이에 따라 자동 조정 */
   overflow-y: auto; /* 컨테이너 내부에 스크롤 추가 */
+  max-height: 80vh;
 }
 
 .section {

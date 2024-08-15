@@ -340,9 +340,6 @@ const BoardWrite = () => {
         className="textarea-field"
       />
       <div className="camera-section">
-        <div className="video-icon" onClick={handleIconClick}>
-          <img src={videoImage} alt="Video Icon" className="camera-image" />
-        </div>
         <div className="image-preview">
           {images.map((image, index) => (
             <div key={index} className="image-container">

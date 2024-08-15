@@ -1,3 +1,11 @@
+select {
+  font-family: GmarketSansMedium, sans-serif;
+}
+
+textarea {
+  font-family: GmarketSansMedium, sans-serif;
+}
+
 .board-write2-container {
   position: fixed;
   top: 50px;
@@ -42,6 +50,14 @@
   flex-direction: row;
   align-items: center;
   margin: 0 15px 15px;
+}
+
+.input-group input {
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.input-group select {
+  font-family: "GmarketSansMedium", sans-serif;
 }
 
 .input-field {
