@@ -41,7 +41,7 @@ public class UserAddressService {
     public AddressDto saveAddressInfo(String username, String addressName) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Address responseAddress = kakaoApiService.getAddressByAddressName(addressName);
-        Address findAddress = addressRepository.findByAddressCode(responseAddress.getAddressCode());
+        Address findAddress = addressRepository.findByFullAddress(responseAddress.getFullAddress());
 
         // 이미 있는 주소면 조회 / 없으면 저장후 반환
         Address address;
@@ -70,7 +70,7 @@ public class UserAddressService {
     public AddressDto saveAddressInfo(String username, double longitude, double latitude) {
         User findUser = userRepository.findByUsername(username).orElseThrow(() -> new CustomGlobalException(CustomStatusCode.USER_NOT_FOUND));
         Address responseAddress = kakaoApiService.getAddressByCoordinates(longitude, latitude);
-        Address findAddress = addressRepository.findByAddressCode(responseAddress.getAddressCode());
+        Address findAddress = addressRepository.findByFullAddress(responseAddress.getFullAddress());
 
         // 이미 있는 주소면 조회 / 없으면 저장후 반환
         Address address;
