@@ -120,3 +120,57 @@
 .clickable-div * {
   pointer-events: none; /* 자식 요소들이 클릭 이벤트를 받지 않도록 설정 */
 }
+
+.modal-close-btn {
+  display: flex;
+  align-self: flex-end;
+}
+
+.modal-close-btn > button {
+  border-style: none;
+  background-color: transparent;
+  width: 30px;
+  height: 30px;
+}
+
+.modal-close-btn > button > img {
+  width: 30px;
+  height: 30px;
+}
+
+.modal-title {
+  display: flex;
+  align-self: center;
+  margin: 15px 0;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.report-content {
+  width: 301px;
+  height: 150px;
+  font-size: 15px;
+  font-family: "GmarketSansMedium", sans-serif;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  border-color: #bbbbbb;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.report-content:focus {
+  border-color: #ffca00; /* 포커스 시 테두리 색상 변경 */
+  border-style: solid 8px;
+  outline: none;
+}
+
+.report-btn {
+  border-style: none;
+  background-color: #ff8796;
+  border-radius: 4px;
+  color: white;
+  font-family: "GmarketSansMedium", sans-serif;
+  font-size: 20px;
+  padding: 13px 0;
+}
