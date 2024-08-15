@@ -6,7 +6,7 @@ import { fetchUserData, fetchRoomData } from "../../api/locationService";
 import { useParams } from "react-router-dom";
 
 import RedMarker from "../../assets/icons/red-marker.png"
-import BlueMarker from "../../assets/icons/blue-marker.png"
+import BlueMarker from "../../assets/icons/blue-marker.png";
 
 import "./Location.css";
 
@@ -248,7 +248,7 @@ function Location() {
             <MapMarker
               position={sellerLatLng}
               image={{
-                src: {RedMarker}, // 빨간색 마커 이미지
+                src: RedMarker, // 빨간색 마커 이미지
                 size: { width: 24, height: 35 }
               }}
               title="판매자 위치"
@@ -260,7 +260,7 @@ function Location() {
             <MapMarker
               position={buyerLatLng}
               image={{
-                src: {BlueMarker}, // 파란색 마커 이미지
+                src: BlueMarker, // 파란색 마커 이미지
                 size: { width: 24, height: 35 }
               }}
               title="구매자 위치"
