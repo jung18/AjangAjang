@@ -11,7 +11,7 @@
   height: 50px;
   width: -webkit-fill-available;
   position: fixed;
-  top: 50px;
+  top: 65px;
   left: 0;
   display: flex;
   justify-content: space-between;
@@ -20,7 +20,7 @@
   margin-top: 10px;
   padding-left: 15px;
   padding-right: 15px;
-  background-color: white;
+  background-color: transparent;
   z-index: 1000; /* 배경색 추가 */
 }
 
