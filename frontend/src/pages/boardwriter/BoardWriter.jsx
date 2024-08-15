@@ -209,9 +209,12 @@ const BoardWrite = () => {
     });
 
     // imageUrls 배열의 각 요소를 formData에 추가
-    imageUrls.forEach((url, index) => {
-      formData.append(`imageUrls[${index}]`, url);
+    imageUrls.forEach((url) => {
+      formData.append('imageUrls', url);
     });
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       await apiClient.post("/api/board", formData, {
