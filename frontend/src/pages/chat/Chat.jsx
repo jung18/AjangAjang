@@ -304,7 +304,7 @@ const Chat = () => {
       roomId,
       userId,
       message,
-      time: new Date().toISOString(),
+      time: new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString(),
     };
     stompClientRef.current.send(
       "/pub/chat/message",
