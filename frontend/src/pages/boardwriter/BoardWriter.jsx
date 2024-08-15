@@ -105,7 +105,7 @@ const BoardWrite = () => {
         formData.append("files", selectedImage.original);
 
         const response = await axios.post(
-          "https://i11b210.p.ssafy.io:3443/api/remove-background",
+          "https://i11b210.p.ssafy.io:4443/api/remove-background",
           formData,
           {
             headers: {
