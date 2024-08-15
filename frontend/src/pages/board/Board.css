@@ -28,6 +28,13 @@ body.loading {
   z-index: 1000; /* 배경색 추가 */
 }
 
+.board-page .user-option select {
+  border: none;
+  font-family: "GmarketSansMedium", sans-serif;
+  font-size: 18px;
+  color: #ff879e;
+}
+
 .board-page .user-option .recommand {
   display: flex;
   align-items: center;

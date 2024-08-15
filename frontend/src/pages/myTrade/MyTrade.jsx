@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { fetchTradeList } from "../../api/tradeService";
+import apiClient from "../../api/apiClient";
 
 import "./MyTrade.css";
 import BoardItem from "../board/components/boardItem/BoardItem";
@@ -8,6 +9,30 @@ import BoardItem from "../board/components/boardItem/BoardItem";
 import Modal from "../../components/Modal";
 import CloseIcon from "../../assets/icons/close.png";
 import useTokenStore from "../../store/useTokenStore";
+
+const dummy = [
+  {
+    board: {
+      boardId: 20,
+      thumbnailUrl: "",
+      writer: {
+        userId: 3,
+        nickname: "연동1",
+        profileImage:
+          "https://ajangajangbucket.s3.ap-northeast-2.amazonaws.com/15e5e2ba-ba34-454e-8975-cdabc2f50f30_%ED%9E%9D.png",
+        level: "범죄자",
+      },
+      title: "연금은동",
+      price: 888,
+      address: "유성구봉명동",
+      category: "ETC",
+      status: "SOLD_OUT",
+      likeCount: 0,
+      viewCount: 14,
+    },
+    tradeId: 1,
+  },
+];
 
 function MyTrade() {
   const [sellList, setSellList] = useState([]);
@@ -28,6 +53,8 @@ function MyTrade() {
       setBuyList(response.buyingTrades);
       setSellList(response.sellingTrades);
       setActiveList(response.buyingTrades);
+      // setBuyList(dummy);
+      // setActiveList(dummy);
     } catch (error) {
       console.error("Failed to fetch trade list:", error);
     } finally {
@@ -73,7 +100,7 @@ function MyTrade() {
       tradeId: selectedBoard.tradeId,
       score: rating,
       content: reviewContent,
-    }
+    };
     createReview(review);
     closeModal();
   };
@@ -81,7 +108,8 @@ function MyTrade() {
   const createReview = async (review) => {
     console.log(review);
     try {
-      const { accessToken } = useTokenStore.getState();
+      const accessToken = useTokenStore.getState().accessToken;
+      console.log(accessToken);
 
       const url = "https://i11b210.p.ssafy.io:4443/api/review";
       //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
@@ -92,7 +120,7 @@ function MyTrade() {
           Authorization: `${accessToken}`,
         },
         credentials: "include",
-        body: review,
+        body: JSON.stringify(review),
       });
 
       const data = await response.json();
@@ -101,6 +129,16 @@ function MyTrade() {
       console.error("Error fetching board detail", error);
       throw error;
     }
+    // try {
+    //   await apiClient.post("/api/board/recommendation", {
+    //     tradeId: review.tradeId,
+    //     score: review.score,
+    //     content: review.content,
+    //   });
+    // } catch (error) {
+    //   console.error("Error fetching board detail", error);
+    //   throw error;
+    // }
   };
 
   const closeModal = () => {
