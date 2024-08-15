@@ -48,13 +48,13 @@ function MyTrade() {
 
   const fetchData = async () => {
     try {
-      const response = await fetchTradeList();
-      console.log(response);
-      setBuyList(response.buyingTrades);
-      setSellList(response.sellingTrades);
-      setActiveList(response.buyingTrades);
-      // setBuyList(dummy);
-      // setActiveList(dummy);
+      // const response = await fetchTradeList();
+      // console.log(response);
+      // setBuyList(response.buyingTrades);
+      // setSellList(response.sellingTrades);
+      // setActiveList(response.buyingTrades);
+      setBuyList(dummy);
+      setActiveList(dummy);
     } catch (error) {
       console.error("Failed to fetch trade list:", error);
     } finally {
@@ -107,38 +107,38 @@ function MyTrade() {
 
   const createReview = async (review) => {
     console.log(review);
-    // try {
-    //   const { accessToken } = useTokenStore.getState();
-    //   console.log(accessToken);
-
-    //   const url = "https://i11b210.p.ssafy.io:4443/api/review";
-    //   //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-
-    //   const response = await fetch(url, {
-    //     method: "POST",
-    //     headers: {
-    //       Authorization: `${accessToken}`,
-    //     },
-    //     credentials: "include",
-    //     body: review,
-    //   });
-
-    //   const data = await response.json();
-    //   return data;
-    // } catch (error) {
-    //   console.error("Error fetching board detail", error);
-    //   throw error;
-    // }
     try {
-      await apiClient.post("/api/board/recommendation", {
-        tradeId: review.tradeId,
-        score: review.score,
-        content: review.content,
+      const accessToken = useTokenStore.getState().accessToken;
+      console.log(accessToken);
+
+      const url = "https://i11b210.p.ssafy.io:4443/api/review";
+      //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+        credentials: "include",
+        body: review,
       });
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Error fetching board detail", error);
       throw error;
     }
+    // try {
+    //   await apiClient.post("/api/board/recommendation", {
+    //     tradeId: review.tradeId,
+    //     score: review.score,
+    //     content: review.content,
+    //   });
+    // } catch (error) {
+    //   console.error("Error fetching board detail", error);
+    //   throw error;
+    // }
   };
 
   const closeModal = () => {
