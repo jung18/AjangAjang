@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,11 +34,11 @@ public class BoardApiController {
     private final BoardSearchService boardSearchService;
     private final UserAddressService userAddressService;
 
-    @PostMapping(value = "/board", consumes = "multipart/form-data")
+    @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
-                                       @RequestPart(value = "media", required = false) List<MultipartFile> files,
-                                       @RequestPart(value = "imageUrls", required = false) List<String> imageUrls) {
+                                       @RequestParam(value = "media", required = false) List<MultipartFile> files,
+                                       @RequestParam(value = "imageUrls", required = false) List<String> imageUrls) {
         String username = customOAuth2User.getUsername();
         log.info("imageUrls: {}", imageUrls);
         Board board = boardService.save(username, createBoardDto, files, imageUrls);
