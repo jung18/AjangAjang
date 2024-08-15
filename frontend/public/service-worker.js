@@ -39,24 +39,7 @@ self.addEventListener('activate', (event) => {
 
 // fetch 이벤트: 네트워크 요청 가로채기 및 캐시 응답 제공
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return fetch(event.request)
-        .then((response) => {
-          // 최신 응답을 캐시에 저장
-          cache.put(event.request, response.clone());
-          return response;
-        })
-        .catch(() => {
-          // 네트워크 요청이 실패하면 캐시에서 응답 제공
-          return cache.match(event.request);
-        });
-    })
-  );
+  
 });
 
 // 푸시 이벤트: 푸시 알림 처리
