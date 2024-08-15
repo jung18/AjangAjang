@@ -192,21 +192,33 @@ const BoardWrite = () => {
       "board",
       new Blob([JSON.stringify(createBoardDto)], { type: "application/json" })
     );
-  
+
+    // imageUrls를 저장할 배열 생성
+    const imageUrls = [];
+
     images.forEach((image) => {
       console.log(image.bgRemovedImage);
       console.log(image.isBgRemovedImage)
       if (image.isBgRemoved) {
         console.log("여기입니다!!!!!!!!!!!!!!!!!!")
-        // 누끼 딴 이미지 URL을 폼 데이터에 추가
-        formData.append("imageUrls", image.bgRemovedImage);
+        // 누끼 딴 이미지 URL을 배열에 추가
+        imageUrls.push(image.bgRemovedImage);
       } else {
         formData.append("media", new Blob([image.original], { type: image.original.type }));
       }
     });
-  
+
+    // imageUrls 배열의 각 요소를 formData에 추가
+    imageUrls.forEach((url, index) => {
+      formData.append(`imageUrls[${index}]`, url);
+    });
+
     try {
-      await apiClient.post("/api/board", formData);
+      await apiClient.post("/api/board", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       navigate("/direct");
     } catch (error) {
       console.error("Error submitting the form", error);
