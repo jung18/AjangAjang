@@ -1,11 +1,10 @@
 import useTokenStore from "../store/useTokenStore";
 
-export const fetchBoardList = async () => {
+export const fetchBoardList = async (page = 0, size = 10) => {
   try {
     const { accessToken } = useTokenStore.getState();
 
-    //거래 유형 별로 해당되는 유형의 게시글만 넘겨주도록 서버 코드 수정 필요
-    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/board/all", {
+    const response = await fetch("http://localhost:8080/api/board/all", {
       method: "POST",
       headers: {
         "Authorization": `${accessToken}`,
@@ -13,8 +12,8 @@ export const fetchBoardList = async () => {
       },
       credentials: 'include',
       body : JSON.stringify({
-        "page":0,
-        "size":100
+        "page": page,
+        "size": size
       })
     });
 

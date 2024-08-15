@@ -1,3 +1,7 @@
+body.loading {
+  overflow-y: hidden;
+}
+
 .board-page {
   position: fixed;
   top: 110px;
@@ -42,4 +46,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.board-page .loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #ff879e;
+}
+
+.board-page .loading-spinner.hidden {
+  display: none;
 }
