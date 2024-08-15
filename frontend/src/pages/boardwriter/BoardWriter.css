@@ -1,4 +1,4 @@
-.board-write-container {
+.board-write2-container {
   position: fixed;
   top: 50px;
   left: 0;
@@ -9,6 +9,8 @@
   border-radius: 8px;
   max-width: 600px; /* 최대 너비를 조정 */
   text-align: center; /* 중앙 정렬 */
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 .header {
@@ -182,4 +184,26 @@
   border-radius: 5px;
   cursor: pointer;
   margin-left: 15px;
+}
+
+.selected-image-container {
+  display: flex;
+  margin-left: 15px;
+}
+
+.selected-image-container > img {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.btns-checkbox {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.btns-checkbox button {
+  font-size: 15px;
+  padding-top: 5px;
+  margin-top: 5px;
 }

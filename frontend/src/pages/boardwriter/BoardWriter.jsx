@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import cameraImage from "../../assets/camera.png";
@@ -45,7 +45,11 @@ const BoardWrite = () => {
       try {
         const response = await apiClient.get("/api/address/my");
 
-        if (response.data && response.data.data && response.data.data.length > 0) {
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.length > 0
+        ) {
           const addressData = response.data.data;
 
           let mainAddressIndex = -1;
@@ -84,25 +88,30 @@ const BoardWrite = () => {
       setContent(content || "");
       setPrice(price || "");
     }
-
   }, [location.state]);
 
   const handleCheckboxChange = async () => {
     if (!selectedImage) return;
 
-    const selectedIndex = images.findIndex(img => img.id === selectedImage.id);
+    const selectedIndex = images.findIndex(
+      (img) => img.id === selectedImage.id
+    );
 
     if (!images[selectedIndex].bgRemovedImage) {
       try {
         const formData = new FormData();
-        formData.append('files', selectedImage.original);
+        formData.append("files", selectedImage.original);
 
-        const response = await axios.post("https://i11b210.p.ssafy.io:3443/api/remove-background", formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          credentials: 'include'
-        });
+        const response = await axios.post(
+          "https://i11b210.p.ssafy.io:3443/api/remove-background",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            credentials: "include",
+          }
+        );
 
         const newImage = response.data.data[0];
         const updatedImages = [...images];
@@ -110,12 +119,12 @@ const BoardWrite = () => {
         setImages(updatedImages);
         setSelectedImage(updatedImages[selectedIndex]); // 현재 선택된 이미지의 상태를 업데이트
       } catch (error) {
-        console.error('Error removing background', error);
+        console.error("Error removing background", error);
       }
     }
 
     // 기존 상태 반영
-    setSelectedImage(prev => ({
+    setSelectedImage((prev) => ({
       ...prev,
       isBgRemoved: !prev.isBgRemoved,
     }));
@@ -172,12 +181,12 @@ const BoardWrite = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!isFormValid()) {
       alert("제목, 가격, 내용은 반드시 입력해야 합니다.");
       return;
     }
-  
+
     const createBoardDto = {
       title,
       price: parseInt(price),
@@ -186,7 +195,7 @@ const BoardWrite = () => {
       status,
       addressId: 1,
     };
-  
+
     const formData = new FormData();
     formData.append(
       "board",
@@ -198,16 +207,22 @@ const BoardWrite = () => {
 
     images.forEach((image) => {
       console.log(image.bgRemovedImage);
-      console.log(image.isBgRemovedImage)
+      console.log(image.isBgRemovedImage);
       if (image.isBgRemoved) {
-        console.log("여기입니다!!!!!!!!!!!!!!!!!!")
+        console.log("여기입니다!!!!!!!!!!!!!!!!!!");
         // 누끼 딴 이미지 URL을 배열에 추가
         imageUrls.push(image.bgRemovedImage);
       } else {
-        formData.append("media", new Blob([image.original], { type: image.original.type }));
+        formData.append(
+          "media",
+          new Blob([image.original], { type: image.original.type })
+        );
       }
     });
-    formData.append('imageUrls', new Blob([JSON.stringify(imageUrls)], { type: 'application/json' }));
+    formData.append(
+      "imageUrls",
+      new Blob([JSON.stringify(imageUrls)], { type: "application/json" })
+    );
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
@@ -219,7 +234,6 @@ const BoardWrite = () => {
       console.error("Error submitting the form", error);
     }
   };
-  
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -227,7 +241,7 @@ const BoardWrite = () => {
 
   const handleApply = () => {
     if (selectedImage) {
-      const updatedImages = images.map(img =>
+      const updatedImages = images.map((img) =>
         img.id === selectedImage.id ? selectedImage : img
       );
       setImages(updatedImages);
@@ -239,7 +253,7 @@ const BoardWrite = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="board-write-container">
+    <form onSubmit={handleSubmit} className="board-write2-container">
       <div className="header">
         <button
           type="button"
@@ -289,7 +303,14 @@ const BoardWrite = () => {
           className="input-field"
         />
       </div>
-      <div style={{ display: "flex", flexDirection: "row", margin: "15px", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          margin: "15px",
+          alignItems: "center",
+        }}
+      >
         <span className="region-label">지역 선택</span>
         <select
           value={region}
@@ -317,7 +338,11 @@ const BoardWrite = () => {
           {images.map((image, index) => (
             <div key={index} className="image-container">
               <img
-                src={image.isBgRemoved && image.bgRemovedImage ? image.bgRemovedImage : URL.createObjectURL(image.original)}
+                src={
+                  image.isBgRemoved && image.bgRemovedImage
+                    ? image.bgRemovedImage
+                    : URL.createObjectURL(image.original)
+                }
                 alt={`Preview ${index}`}
                 className="image-thumbnail"
                 onClick={() => handleImageClick(image)}
@@ -345,25 +370,31 @@ const BoardWrite = () => {
       {selectedImage && (
         <div className="selected-image-container">
           <img
-            src={selectedImage.isBgRemoved && selectedImage.bgRemovedImage ? selectedImage.bgRemovedImage : URL.createObjectURL(selectedImage.original)}
+            src={
+              selectedImage.isBgRemoved && selectedImage.bgRemovedImage
+                ? selectedImage.bgRemovedImage
+                : URL.createObjectURL(selectedImage.original)
+            }
             alt="Selected Preview"
             className="selected-image"
           />
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedImage.isBgRemoved}
-              onChange={handleCheckboxChange}
-            />
-            누끼 따기
-          </label>
-          <button
-            type="button"
-            onClick={handleApply}
-            className="apply-button"
-          >
-            설정
-          </button>
+          <div className="btns-checkbox">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedImage.isBgRemoved}
+                onChange={handleCheckboxChange}
+              />
+              누끼 따기
+            </label>
+            <button
+              type="button"
+              onClick={handleApply}
+              className="apply-button"
+            >
+              확인
+            </button>
+          </div>
         </div>
       )}
     </form>
