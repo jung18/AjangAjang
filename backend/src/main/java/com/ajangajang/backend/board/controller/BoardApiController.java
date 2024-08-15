@@ -39,8 +39,8 @@ public class BoardApiController {
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                        @RequestPart("board") CreateBoardDto createBoardDto,
-                                       @RequestParam(value = "media", required = false) List<MultipartFile> files,
-                                       @RequestParam(value = "imageUrls", required = false) String[] imageUrls) {
+                                       @RequestPart(value = "media", required = false) List<MultipartFile> files,
+                                       @RequestPart(value = "imageUrls", required = false) String[] imageUrls) {
         String username = customOAuth2User.getUsername();
         log.info("imageUrls: {}", Arrays.toString(imageUrls));
         System.out.println("imageUrls: " + Arrays.toString(imageUrls));
