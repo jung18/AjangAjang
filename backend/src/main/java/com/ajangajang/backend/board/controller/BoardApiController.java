@@ -41,6 +41,7 @@ public class BoardApiController {
                                        @RequestParam(value = "imageUrls", required = false) List<String> imageUrls) {
         String username = customOAuth2User.getUsername();
         log.info("imageUrls: {}", imageUrls);
+        System.out.println("imageUrls: " + imageUrls);
         Board board = boardService.save(username, createBoardDto, files, imageUrls);
         boardSearchService.save(board);
         Long boardId = board.getId();
