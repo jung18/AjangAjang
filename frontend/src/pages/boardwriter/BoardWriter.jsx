@@ -207,7 +207,7 @@ const BoardWrite = () => {
         formData.append("media", new Blob([image.original], { type: image.original.type }));
       }
     });
-    formData.append('imageUrls', imageUrls);
+    formData.append('imageUrls', new Blob([JSON.stringify(imageUrls)], { type: 'application/json' }));
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
