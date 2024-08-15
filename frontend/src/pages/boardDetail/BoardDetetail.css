@@ -27,12 +27,12 @@
   right: 0;
   top: 370px;
   padding: 0 15px;
-  z-index: 3; 
+  z-index: 3;
 }
 
 .board-detail-page .img-btns img {
-  height: 30px;
-  width: 30px;
+  height: 38px;
+  width: 40px;
   padding: 0;
   margin: 0;
 }
@@ -61,7 +61,8 @@
 }
 
 .board-detail-page .profile-bar .writer-profile .writer-info {
-  margin-left: 5px;
+  margin-left: 6px;
+  padding: 0px 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -77,7 +78,7 @@
   .writer-info
   .other-info
   .level {
-  margin-right: 8px;
+  margin-right: 5px;
   background-color: #fef391;
 }
 
@@ -112,7 +113,7 @@
   color: white;
   font-family: "GmarketSansMedium", sans-serif;
   font-size: 18px;
-  width: 90px;
+  width: 75px;
   height: 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.3s ease;
@@ -123,6 +124,8 @@
   top: 490px;
   left: 0;
   right: 0;
+  overflow-y: auto;
+  max-height: 24vh;
 }
 
 .board-detail-page .post-content .post-content-info {
@@ -132,21 +135,36 @@
   margin: 10px 15px;
 }
 
+.board-detail-page .post-content .post-content-info .info-left {
+  margin-right: 5px;
+}
 
 .board-detail-page .post-content .post-content-info .info-left .post-title {
   font-size: 19px;
 }
 
 .board-detail-page .post-content .post-content-info .post-price {
-  font-size: 20px;
+  font-size: 17px;
+  min-width: fit-content;
+  display: flex;
+  align-items: flex-end;
 }
 
-.board-detail-page .post-content .post-content-info .info-left .post-other-info {
+.board-detail-page
+  .post-content
+  .post-content-info
+  .info-left
+  .post-other-info {
   font-size: 12px;
   color: rgb(164 164 164);
 }
 
-.board-detail-page .post-content .post-content-info .info-left .post-other-info .post-category {
+.board-detail-page
+  .post-content
+  .post-content-info
+  .info-left
+  .post-other-info
+  .post-category {
   background-color: #feedbe;
   margin-right: 8px;
 }
@@ -212,13 +230,13 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(132, 132, 132, 0.5);
-  color: white;
+  background-color: transparent;
+  color: #ff8796;
   border: none;
   padding: 10px;
   cursor: pointer;
   z-index: 2; /* 이미지 위로 올라오게 설정 */
-  font-size: 40px;
+  font-size: 60px;
 }
 
 .prev-btn {

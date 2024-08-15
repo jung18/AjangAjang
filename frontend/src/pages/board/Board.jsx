@@ -6,7 +6,6 @@ import useTokenStore from "../../store/useTokenStore";
 import useUserStore from "../../store/useUserStore";
 import apiClient from "../../api/apiClient";
 import BoardList from "./components/boardList/BoardList";
-import SelectBox from "../../components/SelectBox";
 import "./Board.css";
 
 const Board = () => {
@@ -53,7 +52,10 @@ const Board = () => {
       setIsLoading(true);
 
       const boardList = await fetchBoardList(page);
-      setBoards((prevBoards) => [...prevBoards, ...boardList.searchResult.content || []]);
+      setBoards((prevBoards) => [
+        ...prevBoards,
+        ...(boardList.searchResult.content || []),
+      ]);
 
       const repIndex = (boardList.addressList || []).findIndex(
         (address) => address.rep === true
@@ -143,14 +145,16 @@ const Board = () => {
 
         setPage((prevPage) => prevPage + 1);
         getBoards(page + 1).then(() => {
-          listRef.current.scrollTop = scrollOffset + (listRef.current.scrollHeight - listHeightBeforeLoad);
+          listRef.current.scrollTop =
+            scrollOffset +
+            (listRef.current.scrollHeight - listHeightBeforeLoad);
         });
       }
     };
 
     observer.current = new IntersectionObserver(callback);
     if (observer.current && boards.length > 0) {
-      observer.current.observe(document.querySelector('.last-item'));
+      observer.current.observe(document.querySelector(".last-item"));
     }
 
     return () => observer.current.disconnect();
@@ -194,7 +198,7 @@ const Board = () => {
   }, [boards]);
 
   return (
-    <div className="board-page" style={{ maxHeight: `${maxHeight}px` }} ref={listRef}>
+    <div>
       <div className="user-option">
         <select value={repAddressIdx} onChange={handleChange}>
           {combinedAddressList.map((address, index) => (
@@ -212,16 +216,21 @@ const Board = () => {
           />
         </label>
       </div>
+      <div
+        className="board-page"
+        style={{ maxHeight: `${maxHeight}px` }}
+        ref={listRef}
+      >
+        {!boards || boards.length === 0 ? (
+          <div className="not-found-content">게시글이 존재하지 않습니다.</div>
+        ) : (
+          <BoardList boards={boards} />
+        )}
 
-      {!boards || boards.length === 0 ? (
-        <div className="not-found-content">게시글이 존재하지 않습니다.</div>
-      ) : (
-        <BoardList boards={boards} />
-      )}
+        {isLoading && <div className="loading-spinner">Loading...</div>}
 
-      {isLoading && <div className="loading-spinner">Loading...</div>}
-
-      <div className="last-item" style={{ height: "1px" }}></div>
+        <div className="last-item" style={{ height: "1px" }}></div>
+      </div>
     </div>
   );
 };

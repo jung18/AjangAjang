@@ -1,4 +1,6 @@
 body.loading {
+  justify-self: center;
+  align-self: center;
   overflow-y: hidden;
 }
 
@@ -11,11 +13,12 @@ body.loading {
   overflow-y: auto;
 }
 
-.board-page .user-option {
+.user-option {
+  font-family: "GmarketSansMedium", sans-serif;
   height: 50px;
   width: -webkit-fill-available;
   position: fixed;
-  top: 65px;
+  top: 50px;
   left: 0;
   display: flex;
   justify-content: space-between;
@@ -28,24 +31,26 @@ body.loading {
   z-index: 1000; /* 배경색 추가 */
 }
 
-.board-page .user-option select {
+.user-option select {
   border: none;
   font-family: "GmarketSansMedium", sans-serif;
   font-size: 18px;
   color: #ff879e;
+  background-color: transparent;
 }
 
-.board-page .user-option .recommand {
+.user-option .recommand {
   display: flex;
   align-items: center;
   color: #ff879e;
 }
 
-.board-page .user-option .recommand input {
+.user-option .recommand input {
   border-color: #ff879e;
-  accent-color: #ffca00;
+  accent-color: #ff4e5b;
   width: 17px;
   height: 17px;
+  color: white;
 }
 
 .board-page .not-found-content {
