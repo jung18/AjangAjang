@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { fetchTradeList } from "../../api/tradeService";
-import apiClient from "./apiClient";
+import apiClient from "../../api/apiClient";
 
 import "./MyTrade.css";
 import BoardItem from "../board/components/boardItem/BoardItem";
