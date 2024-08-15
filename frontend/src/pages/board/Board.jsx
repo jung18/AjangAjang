@@ -100,6 +100,22 @@ const Board = () => {
     window.addEventListener("resize", calculateMaxHeight);
     window.addEventListener("scroll", saveScrollPosition); // 스크롤 이벤트 리스너 추가
 
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    };
+
+    const accessTokenFromCookie = getCookie("Authorization");
+    const refreshTokenFromCookie = getCookie("Authorization-refresh");
+
+    if (accessTokenFromCookie && !accessToken) {
+      setAccessToken(accessTokenFromCookie);
+    }
+    if (refreshTokenFromCookie && !refreshToken) {
+      setRefreshToken(refreshTokenFromCookie);
+    }
+
     if (!user) {
       fetchUserData();
     }
@@ -153,7 +169,7 @@ const Board = () => {
       try {
         const response = await apiClient.post("/api/board/recommendation", {
           page: 0,
-          size: 100,
+          size: 10,
         });
 
         const recommendedBoards = response.data.searchResult.content;

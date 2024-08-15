@@ -4,7 +4,7 @@ export const fetchBoardList = async (page = 0, size = 10) => {
   try {
     const { accessToken } = useTokenStore.getState();
 
-    const response = await fetch("http://localhost:8080/api/board/all", {
+    const response = await fetch("https://i11b210.p.ssafy.io:4443/api/board/all", {
       method: "POST",
       headers: {
         "Authorization": `${accessToken}`,
