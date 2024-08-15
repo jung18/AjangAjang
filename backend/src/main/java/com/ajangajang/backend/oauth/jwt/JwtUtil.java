@@ -1,9 +1,6 @@
 package com.ajangajang.backend.oauth.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-@Slf4j
 public class JwtUtil {
 
     private SecretKey secretKey;
@@ -34,25 +30,8 @@ public class JwtUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    // JWT 토큰의 유효성을 검증하는 메서드
-    public boolean validateToken(String token) {
-        try {
-            // 토큰을 파싱하고 만료 여부를 확인
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return true;  // 토큰이 유효함
-        } catch (ExpiredJwtException e) {
-            // 토큰이 만료된 경우
-            log.info("Expired JWT Token");
-            return false;
-        } catch (JwtException e) {
-            // 기타 JWT 처리 오류
-            log.info("Invalid JWT Token");
-            return false;
-        } catch (IllegalArgumentException e) {
-            // 토큰이 비어있거나 잘못된 형식인 경우
-            log.info("JWT Token is missing or invalid");
-            return false;
-        }
+    public Boolean isExpired(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
     public String createJwt(String category, String username, String role, Long expiredMs) {

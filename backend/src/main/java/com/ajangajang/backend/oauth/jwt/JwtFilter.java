@@ -3,7 +3,6 @@ package com.ajangajang.backend.oauth.jwt;
 import com.ajangajang.backend.oauth.model.dto.CustomOAuth2User;
 import com.ajangajang.backend.oauth.model.dto.UserDto;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,66 +26,60 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        // request에서 Authorization 헤더를 찾음
+        String accessToken = request.getHeader("Authorization");
+
+        // Authorization 헤더 검증
+        if (accessToken == null || !accessToken.startsWith("Bearer/")) {
+            log.info("token null");
+            filterChain.doFilter(request, response);
+
+            return; // 조건이 해당되면 메소드 종료 (필수)
+        }
+
+        // Bearer 부분 제거 후 순수 토큰만 획득
+        String token = accessToken.split("/")[1];
+
+        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {
-            // 헤더에서 토큰 추출
-            String token = resolveToken(request);
-
-            // 토큰 검증 및 SecurityContext 설정
-            if (token != null && jwtUtil.validateToken(token)) {
-                // 토큰에서 username과 role 획득
-                String username = jwtUtil.getUsername(token);
-                String role = jwtUtil.getRole(token);
-
-                // userDTO를 생성하여 값 set
-                UserDto userDTO = new UserDto();
-                userDTO.setUsername(username);
-                userDTO.setRole(role);
-
-                // UserDetails에 회원 정보 객체 담기
-                CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
-
-                // 스프링 시큐리티 인증 토큰 생성
-                Authentication authToken = new UsernamePasswordAuthenticationToken(
-                        customOAuth2User, null, customOAuth2User.getAuthorities());
-
-                // 세션에 사용자 등록
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-
+            jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
-            // 토큰 만료 예외 처리
-            log.info("Expired JWT Token");
-            handleException(response, "Expired JWT Token");
-            return;
-        } catch (JwtException e) {
-            // JWT 관련 예외 처리
-            log.info("Invalid JWT Token");
-            handleException(response, "Invalid JWT Token");
-            return;
-        } catch (Exception e) {
-            // 기타 예외 처리
-            log.error("Internal error during JWT processing", e);
-            handleException(response, "Internal Server Error");
+            PrintWriter writer = response.getWriter();
+            writer.print("access token expired");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        // 다음 필터로 요청 전달
+        // 토큰이 access인지 확인 (발급시 페이로드에 명시)
+        String category = jwtUtil.getCategory(token);
+        if (!category.equals("access")) {
+
+            PrintWriter writer = response.getWriter();
+            writer.print("invalid access token");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        // 토큰에서 username과 role 획득
+        String username = jwtUtil.getUsername(token);
+        String role = jwtUtil.getRole(token);
+
+        // userDTO를 생성하여 값 set
+        UserDto userDTO = new UserDto();
+        userDTO.setUsername(username);
+        userDTO.setRole(role);
+
+        // UserDetails에 회원 정보 객체 담기
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
+
+        // 스프링 시큐리티 인증 토큰 생성
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+
+        // 세션에 사용자 등록
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
         filterChain.doFilter(request, response);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer/")) {
-            return bearerToken.split("/")[1];
-        }
-        return null;
-    }
-
-    private void handleException(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        writer.write("{\"error\": \"" + message + "\"}");
-        writer.flush();
     }
 }
