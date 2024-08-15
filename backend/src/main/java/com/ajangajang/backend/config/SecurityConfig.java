@@ -5,7 +5,6 @@ import com.ajangajang.backend.oauth.jwt.CustomSuccessHandler;
 import com.ajangajang.backend.oauth.jwt.JwtFilter;
 import com.ajangajang.backend.oauth.jwt.JwtUtil;
 import com.ajangajang.backend.oauth.model.service.CustomOAuth2UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -77,7 +72,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/reissue", "/ws-stomp/**").permitAll()
                         .requestMatchers("/sign-up", "/api/user/sms/**", "/api/address/name").hasRole("GUEST")
-                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().hasRole("USER"));
 
         // 세션 stateless 설정
