@@ -1,0 +1,12 @@
+.board-list {
+  position: sticky;
+  top: 100px;
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px; /* 아이템 간의 간격 */
+  margin: 18px 30px 32px;
+  background-color: transparent;
+}

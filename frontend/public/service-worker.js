@@ -1,6 +1,4 @@
-// public/service-worker.js
-
-const CACHE_NAME = 'my-cache-v1';
+const CACHE_NAME = 'my-cache-v2'; // 캐시 이름에 버전을 포함하여 새로운 캐시 적용
 const urlsToCache = [
   '/',
   '/index.html',
@@ -17,9 +15,10 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
+  self.skipWaiting(); // 서비스 워커가 대기 상태 없이 바로 활성화되도록 합니다.
 });
 
-// 활성화 이벤트: 이전 캐시 정리
+// 활성화 이벤트: 이전 캐시 정리 및 활성화된 서비스 워커가 클라이언트에 적용되도록 설정
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -27,23 +26,20 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log(`Deleting old cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim(); // 활성화된 서비스 워커가 기존 클라이언트에도 적용되도록 설정
     })
   );
 });
 
 // fetch 이벤트: 네트워크 요청 가로채기 및 캐시 응답 제공
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // 캐시된 자산이 있으면 제공하고, 없으면 네트워크 요청
-        return response || fetch(event.request);
-      })
-  );
+  
 });
 
 // 푸시 이벤트: 푸시 알림 처리

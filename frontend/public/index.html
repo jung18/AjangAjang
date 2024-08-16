@@ -1,43 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko-KR">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#FF879E" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="아기들을 위한 장터"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <!-- PWA를 위한 매니페스트 파일 링크 -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA 아이콘 설정 -->
+    <link rel="apple-touch-icon" href="/logo192.png">
+
+    <script src="http://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=97461c7397262ab297420b6d4513472c&libraries=services,clusterer"
+></script>
+    <title>아장아장</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>이 앱을 실행하려면 JavaScript를 활성화해야 합니다.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    <script>
+      function findAddr() {
+          new daum.Postcode({
+              oncomplete: function(data) {
+                  const address = data.address;
+                  // addressName 상태를 업데이트하도록 setAddressName 함수를 호출
+                  window.setAddressName(address);
+              }
+          }).open();
+      }
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+      function findAddr2() {
+        return new Promise((resolve) => {
+          new daum.Postcode({
+            oncomplete: function(data) {
+              const address = data.address;
+                resolve(address);  // Promise를 resolve하여 address 값을 반환
+              }
+            }).open();
+         });
+      }
+    </script>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <!-- 서비스 워커 등록 스크립트 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(error) {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+            });
+        }
+    </script>
   </body>
 </html>

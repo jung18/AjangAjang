@@ -1,0 +1,53 @@
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 50px;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 300px;
+  height: 45px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  background-color: white;
+}
+
+.login-button:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-button .logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.login-button .button-text {
+  margin-left: 28px;
+  color: rgb(46, 46, 46);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'GmarketSansMedium', sans-serif;
+}
+
+.login-button.naver {
+  border-color: #03C75A;
+  background-color: #03C75A;
+}
+
+.login-button.naver .button-text {
+  color: white;
+}
+
+.login-button.kakao {
+  background-color: #FEE500;
+  border-color: #FEE500;
+}

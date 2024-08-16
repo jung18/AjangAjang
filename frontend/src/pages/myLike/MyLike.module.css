@@ -1,0 +1,60 @@
+.boardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff879e;
+  padding-left: 20px;
+  padding-top: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+}
+
+.boardPage {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  width: 100%;
+  font-family: "GmarketSansMedium", sans-serif;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+
+.boardPage .userOption {
+  height: 50px;
+  width: -webkit-fill-available;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ff879e;
+  margin-top: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  background-color: white;
+  z-index: 1000; /* 배경색 추가 */
+}
+
+.boardPage .userOption .recommand {
+  display: flex;
+  align-items: center;
+  color: #ff879e;
+}
+
+.boardPage .userOption .recommand input {
+  border-color: #ff879e;
+  accent-color: #ffca00;
+  width: 17px;
+  height: 17px;
+}
+
+.boardPage .notFoundContent {
+  margin-top: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

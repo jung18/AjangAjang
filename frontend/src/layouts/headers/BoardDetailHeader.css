@@ -1,0 +1,138 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  margin-top: 0;
+  background-color: #ff8796;
+  box-shadow: 0px 4px 2px -1px #00000033;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+header .back-btn {
+  background-color: transparent;
+  border-style: none;
+  position: absolute;
+  left: 15px;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .back-btn .icon {
+  height: 25px;
+  width: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+header .menu {
+  position: absolute;
+  right: 15px;
+  height: 30px;
+  width: 30px;
+}
+
+header .menu .menu-btn {
+  background-color: transparent;
+  border-style: none;
+  position: fixed;
+  right: 15px;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .menu .menu-option {
+  position: fixed;
+  top: 50px;
+  right: 5px;
+  width: 100px;
+  height: 70px;
+  background-color: white;
+  opacity: var(--sds-size-stroke-border);
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.15));
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  font-family: "GmarketSansMedium", sans-serif;
+  color: #ff8796;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+header .menu .menu-btn .icon {
+  height: 25px;
+  width: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+header .modal-close-btn {
+  display: flex;
+  align-self: flex-end;
+}
+
+header .modal-close-btn > button {
+  border-style: none;
+  background-color: transparent;
+  width: 30px;
+  height: 30px;
+}
+
+header .modal-close-btn > button > img {
+  width: 30px;
+  height: 30px;
+}
+
+header .modal-title {
+  display: flex;
+  align-self: center;
+  margin: 15px 0;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+header .report-content {
+  width: 301px;
+  height: 150px;
+  font-size: 15px;
+  font-family: "GmarketSansMedium", sans-serif;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  border-color: #bbbbbb;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+header .report-content:focus {
+  border-color: #ffca00; /* 포커스 시 테두리 색상 변경 */
+  border-style: solid 8px;
+  outline: none;
+}
+
+header .report-btn {
+  border-style: none;
+  background-color: #ff8796;
+  border-radius: 4px;
+  color: white;
+  font-family: "GmarketSansMedium", sans-serif;
+  font-size: 20px;
+  padding: 13px 0;
+}

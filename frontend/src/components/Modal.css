@@ -1,0 +1,25 @@
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 필요한 경우 추가 스타일 설정 */
+  background-color: white; /* 모달 배경색 */
+  padding: 20px; /* 모달 내부 여백 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  z-index: 1000; /* 다른 요소들보다 위에 표시 */
+  border-radius: 10px;
+  width: auto; /* 너비 자동 조정 */
+  height: auto; /* 높이 자동 조정 */
+  max-width: 90%; /* 최대 너비 설정 (예: 뷰포트 너비의 90%) */
+  max-height: 90%; /* 최대 높이 설정 (예: 뷰포트 높이의 90%) */
+  overflow: auto; /* 내용이 많을 때 스크롤 표시 */
+}
+
+.modal .modal-content {
+  font-family: "GmarketSansMedium", sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: auto; /* 너비 자동 조정 */
+  height: auto; /* 높이 자동 조정 */
+}

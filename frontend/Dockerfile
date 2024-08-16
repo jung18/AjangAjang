@@ -16,7 +16,7 @@ COPY frontend .
 # 애플리케이션을 빌드합니다.
 RUN npm run build
 
-# 두 번째 스테이지: 실제 실행 환경
+# 두 번째 스테이지: 실제 실행 환경.
 FROM node:20-alpine
 
 # 작업 디렉토리를 /app으로 설정합니다.
