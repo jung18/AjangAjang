@@ -153,7 +153,7 @@ const ChatRoom = () => {
 
   return (
     <div className={styles["room-list-container"]}>
-      {!rooms ? (
+      {!rooms || rooms.length === 0 ? (
         <div className={styles["rooms-not-found"]}>채팅 내역이 없습니다.</div>
       ) : (
         <ul className={styles["room-list"]}>
