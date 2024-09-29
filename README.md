@@ -115,7 +115,68 @@
 
 ## 프로젝트 산출물
 ### 화면
-
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/17801430-3252-4873-8357-46353451dc05" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/501d5d3c-71e9-4bd3-b682-974dff711694" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/2d6ab38e-6873-45fe-aef2-350c2c46979e" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/9db5e7e2-7882-4d4b-b191-baae3ae12c31" width="400"></td>
+  </tr>
+  <tr>
+    <td>회원가입, 로그인</td>
+    <td>메인 페이지</td>
+    <td>메인 페이지 (추천)</td>
+    <td>내 판매글</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/54fe26b2-147f-4cf3-a1af-40fce6cf059f" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/494e0987-c6ce-426e-9c0e-b664470073bb" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/e66e355c-31ca-4c2c-b888-017adffb8762" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/0c1ac7f3-b3bf-4678-ac6e-62b032ee9abe" width="400"></td>
+  </tr>
+  <tr>
+    <td>판매글 상세 페이지</td>
+    <td>영상 재생</td>
+    <td>검색 페이지</td>
+    <td>검색어 제안</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/8e9565d6-86da-4635-912d-92b146a4cc31" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/b10423af-bfe8-43fa-aec6-24c7265db736" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/49605263-d367-4c86-aa3a-48d0d593e06b" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/66d65c7a-26f9-4e14-845d-2a698b2c3ec8" width="400"></td>
+  </tr>
+  <tr>
+    <td>판매글 작성</td>
+    <td>AI 템플릿</td>
+    <td>AI 템플릿</td>
+    <td>판매글 작성</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/ead928d5-24f1-48ba-83e0-1d746fff87eb" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/1c7d0094-3162-4704-80a0-c3b6e7472dc5" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/e6ebdcc8-660a-4118-8b56-ed772332818b" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/c8ea7d4e-08b9-4429-8c5b-14e6dc8071c1" width="400"></td>
+  </tr>
+  <tr>
+    <td>이미지 배경제거</td>
+    <td>이미지 배경제거</td>
+    <td>마이 페이지</td>
+    <td>내 주소, 자녀 정보</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/0cb54a01-aad6-4146-89f0-7fb9b1e2220b" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/ee552534-ef41-4971-b4bc-518c7702c35b" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/5b5247ac-3116-493b-bbc9-7b7dafbd3ef6" width="400"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>주소 검색 페이지</td>
+    <td>내 자녀 등록</td>
+    <td>채팅 페이지</td>
+    <td></td>
+  </tr>
+</table>
 
 ### API 명세서
 <table>
