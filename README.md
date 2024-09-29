@@ -115,7 +115,28 @@
 
 ## 프로젝트 산출물
 ### 화면
+
+
 ### API 명세서
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/ca696f05-fa7c-4ff6-aede-882bc597349d"></td>
+    <td><img src="https://github.com/user-attachments/assets/1f7a9485-9e5c-4cab-85a3-a9a214670b20"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/0ca24454-123d-49ff-ba42-85a664a76a6d"></td>
+    <td><img src="https://github.com/user-attachments/assets/4a527b27-19f1-4399-beda-6b27263d11ea"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/c3c28829-00b6-4a7f-8ee1-3304300251e8"></td>
+    <td><img src="https://github.com/user-attachments/assets/3c82e385-d64e-4575-b86b-5fd052770363"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/3d068fa9-654b-444e-bf0f-9c20ad54bc93"></td>
+    <td></td>
+  </tr>
+</table>
+
 ### ERD
 ![erd](https://github.com/user-attachments/assets/8a75bb09-aae4-4601-920e-4256ba62da40)
 
