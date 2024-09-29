@@ -1,4 +1,7 @@
-# 아장아장
+<img src="https://github.com/user-attachments/assets/12fa1cbe-5110-4e41-90fd-9d271bb37853" alt="logo" width="280" height="100" />
+
+---
+
 ## 목차
 1. 서비스 소개
 2. 기획 배경
