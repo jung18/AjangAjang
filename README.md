@@ -179,6 +179,18 @@
     <td>채팅 페이지</td>
     <td></td>
   </tr>
+    <tr>
+    <td><img src="https://github.com/user-attachments/assets/924f3697-4796-4216-a730-c3ceddf9b21e" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/95d1ef8f-c09c-40d6-abd9-70a6e41eca77" width="400"></td>
+    <td><img src="https://github.com/user-attachments/assets/2ee7eeb2-6508-4414-bb60-00050f643923" width="400"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>거래장소 추천</td>
+    <td>거래장소 길찾기</td>
+    <td>거래장소 길찾기</td>
+    <td></td>
+  </tr>
 </table>
 
 ### API 명세서
